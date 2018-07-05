@@ -1,32 +1,26 @@
 import React, { Component } from "react";
 import propTypes from "prop-types";
+import actions from "../actions";
 
 export default class ClientCounter extends Component {
   static propTypes = {
-    caption: propTypes.string.isRequired,
-    defaultValue: propTypes.number.isRequired,
-    onChange: propTypes.func
+    index: propTypes.number.isRequired,
+    caption: propTypes.string.isRequired
   };
 
   static defalutProps = {
-    caption: "",
-    defaultValue: 0
+    caption: ""
   };
 
   constructor(props, context) {
     super(props, context);
 
-    this.state = { count: props.defaultValue };
     this.handleClickIncrementButton = this.handleClickIncrementButton.bind(
       this
     );
     this.handleClickDecrementButton = this.handleClickDecrementButton.bind(
       this
     );
-  }
-
-  componentWillReceiveProps(nextProps) {
-    console.log("enter componentWillReceiveProps", this.props.caption);
   }
 
   render() {
@@ -37,26 +31,17 @@ export default class ClientCounter extends Component {
         <button onClick={this.handleClickIncrementButton}>+</button>
         <button onClick={this.handleClickDecrementButton}>-</button>
         <span>
-          {caption} Count: {this.state.count}
+          {caption} Count: {this.props.count}
         </span>
       </div>
     );
   }
 
   handleClickIncrementButton() {
-    this.hanldeChange(true);
+    actions.increment(this.props.index);
   }
 
   handleClickDecrementButton() {
-    this.hanldeChange(false);
-  }
-
-  hanldeChange(isIncrement) {
-    let nextCount = this.state.count + (isIncrement ? 1 : -1);
-
-    this.setState(prevState => {
-      prevState.count = nextCount;
-      this.props.onChange && this.props.onChange(this.state.count);
-    });
+    actions.decrement(this.props.index);
   }
 }

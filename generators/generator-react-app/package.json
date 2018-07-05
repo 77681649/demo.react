@@ -15,5 +15,8 @@
   "dependencies": {
     "del": "^3.0.0",
     "yeoman-generator": "^3.0.0"
+  },
+  "devDependencies": {
+    "redux-devtools-extension": "^2.13.5"
   }
 }

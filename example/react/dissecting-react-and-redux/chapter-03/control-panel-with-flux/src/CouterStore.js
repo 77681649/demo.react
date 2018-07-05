@@ -1,3 +1,6 @@
+import AppDispatcher from "./AppDispatcher";
+import actionTypes from "./AcionTypes";
+
 const removeItem = (array, item) => {
   let index = array.indexOf(item);
 
@@ -58,9 +61,21 @@ class CounterStore extends EventEmitter {
     this.on(CHANGE_EVENT, listener);
   }
 
-  removeChangeListener(callback) {
+  removeChangeListener(listener) {
     this.off(CHANGE_EVENT, listener);
   }
 }
 
-export default new CounterStore();
+let store = new CounterStore();
+
+store.dispatchToken = AppDispatcher.register(function(action) {
+  if (action.type === actionTypes.INCREMENT) {
+    store.countValues[action.index]++;
+    store.emitChange();
+  } else if (action.type === actionTypes.DECREMENT) {
+    store.countValues[action.index]--;
+    store.emitChange();
+  }
+});
+
+export default store;

@@ -58,9 +58,9 @@ module.exports = class ReactAppGenerator extends Generator {
 
     log(chalk.gray(`create directory "${appname}".`));
 
-    if (!fs.existsSync(dest)) {
-      fs.mkdirSync(appname);
-    }
+    // if (!fs.existsSync(dest)) {
+    //   fs.mkdirSync(appname);
+    // }
 
     log(chalk.gray("create files..."));
 
