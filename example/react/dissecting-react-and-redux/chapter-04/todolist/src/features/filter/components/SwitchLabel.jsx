@@ -1,6 +1,10 @@
 import React from "react";
-import "SwitchLabel.css";
+import "./SwitchLabel.css";
 
-export default ({ text }) => {
-  return <div className="swtich-label">{text}</div>;
+export default ({ text, onClick }) => {
+  return (
+    <div className="swtich-label" onClick={onClick}>
+      {text}
+    </div>
+  );
 };
