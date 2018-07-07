@@ -1,7 +1,7 @@
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import TodoList from "../components/TodoList";
-// import { switchCompleted } from "../actions";
+import { switchCompleted, becomeEditable, saveTodo, newTodo } from "../actions";
 
 export default connect(
   function mapStateToProps(state) {
@@ -9,17 +9,19 @@ export default connect(
 
     return {
       data: state.todolist.todos.filter(
-        todo => (showCompleted ? true : !todo.data.completed)
+        todo => (showCompleted ? true : !todo.completed)
       )
     };
   },
   function mapDispatchToProps(dispatch) {
-    // return bindActionCreators(
-    //   {
-    //     onClick: switchCompleted
-    //   },
-    //   dispatch
-    // );
-    return {};
+    return bindActionCreators(
+      {
+        onSwitchCompleted: switchCompleted,
+        onEditable: becomeEditable,
+        onEditCompleted: saveTodo,
+        onCreateCompleted: newTodo
+      },
+      dispatch
+    );
   }
 )(TodoList);

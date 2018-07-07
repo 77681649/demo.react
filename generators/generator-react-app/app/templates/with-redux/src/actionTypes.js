@@ -1,3 +1,3 @@
 export default {
-  INCREMENT: "increment"
+  SWITCH_TODO_COMPLETED: "SWITCH_TODO_COMPLETED"
 };
