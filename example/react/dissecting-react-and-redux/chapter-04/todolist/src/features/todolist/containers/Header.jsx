@@ -7,7 +7,7 @@ export default connect(
   function mapStateToProps({ todolist: state }) {
     return {
       mainTitle: state.title,
-      subTitle: state.todos.length,
+      subTitle: state.todos.filter(todo => !todo.completed).length,
       showEditButton: state.todos.length > 0
     };
   },
