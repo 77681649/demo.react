@@ -1,0 +1,3 @@
+export default {
+  SWITCH_TODO_COMPLETED: "SWITCH_TODO_COMPLETED"
+};
