@@ -12,6 +12,9 @@ class ConnectedRouter extends Component {
     isSSR: PropTypes.bool
   };
 
+  /**
+   * 上下文对象结构
+   */
   static contextTypes = {
     store: PropTypes.object
   };
@@ -26,13 +29,16 @@ class ConnectedRouter extends Component {
     });
   };
 
+  /**
+   * 监听路由变化, 当路由变化时发布 "LOCATION_CHANGE" action
+   */
   componentWillMount() {
     const { store: propsStore, history, isSSR } = this.props;
     this.store = propsStore || this.context.store;
 
     if (!isSSR)
       this.unsubscribeFromHistory = history.listen(this.handleLocationChange);
-
+    
     this.handleLocationChange(history.location);
   }
 

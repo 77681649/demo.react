@@ -1,20 +1,43 @@
 import React, { Component } from "react";
-import { Provider } from "react-redux";
-import { Link, Switch, Router, Route } from "react-router-dom";
+import { Provider, connect } from "react-redux";
+import { Link, Switch, Route } from "react-router-dom";
 import IndexPage from "./containers/IndexPage";
 import ListPage from "./containers/ListPage";
 import AboutPage from "./containers/AboutPage";
 import store, { history } from "./appStore";
-import { ConnectedRouter, push } from "react-router-redux";
+import { ConnectedRouter, goForward, goBack } from "connected-react-router";
+import Counter from "./components/Counter";
 
-store.subscribe(() => {
-  console.log("Current Router State", store.getState().location);
+const ConnectedCounter = connect(
+  ({ counter }) => ({ value: counter }),
+  dispatch => ({ onClick: () => dispatch({ type: "INCREMENT" }) })
+)(Counter);
+
+const ConnectedHistory = connect(
+  null,
+  dispatch => {
+    return {
+      goForward: () => dispatch(goForward()),
+      goBack: () => dispatch(goBack())
+    };
+  }
+)(function Navigator({ goForward, goBack }) {
+  return (
+    <ul>
+      <li>
+        <a onClick={goForward}>goForward</a>
+      </li>
+      <li>
+        <a onClick={goBack}>goBack</a>
+      </li>
+    </ul>
+  );
 });
 
 export default () => (
   <Provider store={store}>
     <ConnectedRouter history={history}>
-      <React.Fragment>
+      <div>
         <header>
           <nav>
             <ul>
@@ -29,6 +52,8 @@ export default () => (
               </li>
             </ul>
           </nav>
+          <ConnectedCounter />
+          <ConnectedHistory />
         </header>
         <main>
           <Switch>
@@ -37,7 +62,7 @@ export default () => (
             <Route path="/about" component={AboutPage} />
           </Switch>
         </main>
-      </React.Fragment>
+      </div>
     </ConnectedRouter>
   </Provider>
 );
