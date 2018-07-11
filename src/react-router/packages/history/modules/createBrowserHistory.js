@@ -1,3 +1,8 @@
+/**
+ * createBrowserHistory
+ * 负责创建基于HTML History API的history API
+ */
+
 import warning from 'warning'
 import invariant from 'invariant'
 import { createLocation } from './LocationUtils'
@@ -22,6 +27,9 @@ import {
 const PopStateEvent = 'popstate'
 const HashChangeEvent = 'hashchange'
 
+/**
+ * 获得history state
+ */
 const getHistoryState = () => {
   try {
     return window.history.state || {}
@@ -32,7 +40,7 @@ const getHistoryState = () => {
   }
 }
 
-/**
+/**``
  * Creates a history object that uses the HTML5 history API including
  * pushState, replaceState, and the popstate event.
  */
@@ -42,8 +50,19 @@ const createBrowserHistory = (props = {}) => {
     'Browser history needs a DOM'
   )
 
+  /**
+   * BOM history 
+   */
   const globalHistory = window.history
+
+  /**
+   * 是否支持HTML5 History API
+   */
   const canUseHistory = supportsHistory()
+
+  /**
+   * 
+   */
   const needsHashChangeListener = !supportsPopStateOnHashChange()
 
   const {
@@ -51,8 +70,17 @@ const createBrowserHistory = (props = {}) => {
     getUserConfirmation = getConfirmation,
     keyLength = 6
   } = props
-  const basename = props.basename ? stripTrailingSlash(addLeadingSlash(props.basename)) : ''
 
+  // 格式化basename: "/<basename>"
+  const basename = props.basename 
+    ? stripTrailingSlash(addLeadingSlash(props.basename)) 
+    : ''
+
+  /**
+   * 创建基于window.location的location
+   * @params {Object} historyState history状态
+   * @returns {Location}
+   */
   const getDOMLocation = (historyState) => {
     const { key, state } = (historyState || {})
     const { pathname, search, hash } = window.location
@@ -71,11 +99,22 @@ const createBrowserHistory = (props = {}) => {
     return createLocation(path, state, key)
   }
 
+  /**
+   * 创建key
+   * @returns {String}
+   */
   const createKey = () =>
     Math.random().toString(36).substr(2, keyLength)
 
+  /**
+   * 
+   */
   const transitionManager = createTransitionManager()
 
+  /**
+   * 
+   * @param {Object} nextState 
+   */
   const setState = (nextState) => {
     Object.assign(history, nextState)
 
@@ -87,6 +126,10 @@ const createBrowserHistory = (props = {}) => {
     )
   }
 
+  /**
+   * 
+   * @param {*} event 
+   */
   const handlePopState = (event) => {
     // Ignore extraneous popstate events in WebKit.
     if (isExtraneousPopstateEvent(event))
@@ -95,12 +138,21 @@ const createBrowserHistory = (props = {}) => {
     handlePop(getDOMLocation(event.state))
   }
 
+  /**
+   * 
+   */
   const handleHashChange = () => {
     handlePop(getDOMLocation(getHistoryState()))
   }
 
+  /**
+   * 
+   */
   let forceNextPop = false
 
+  /**
+   * 
+   */
   const handlePop = (location) => {
     if (forceNextPop) {
       forceNextPop = false
@@ -118,6 +170,10 @@ const createBrowserHistory = (props = {}) => {
     }
   }
 
+  /**
+   * 
+   * @param {*} fromLocation 
+   */
   const revertPop = (fromLocation) => {
     const toLocation = history.location
 
@@ -143,14 +199,38 @@ const createBrowserHistory = (props = {}) => {
     }
   }
 
+  /**
+   * 初始化的Location - 基于当前页面的window.location生成
+   */
   const initialLocation = getDOMLocation(getHistoryState())
+
+  /**
+   * 
+   */
   let allKeys = [ initialLocation.key ]
 
   // Public interface
 
+  /**
+   * 根据location,创建一个对应的超链接 basepath + toString(location)
+   * 
+   * @example
+   * 
+   * // basename: "flight"
+   * // -> "/flight/user/list?order_key=id&order_dir=asc#tag"
+   * createHref({pathname:"/user/list" , search:"order_key=id&order_dir=asc" , hash:"tag" })
+   * 
+   * @params {Location} location
+   * @returns {String}
+   */
   const createHref = (location) =>
     basename + createPath(location)
 
+  /**
+   * 
+   * @params {String}
+   * @params {Object} state
+   */
   const push = (path, state) => {
     warning(
       !(typeof path === 'object' && path.state !== undefined && state !== undefined),
@@ -193,6 +273,9 @@ const createBrowserHistory = (props = {}) => {
     })
   }
 
+  /**
+   * 
+   */
   const replace = (path, state) => {
     warning(
       !(typeof path === 'object' && path.state !== undefined && state !== undefined),
@@ -234,18 +317,33 @@ const createBrowserHistory = (props = {}) => {
     })
   }
 
+  /**
+   * 
+   */
   const go = (n) => {
     globalHistory.go(n)
   }
 
+  /**
+   * 
+   */
   const goBack = () =>
     go(-1)
 
+  /**
+   * 
+   */
   const goForward = () =>
     go(1)
 
+  /**
+   * 
+   */
   let listenerCount = 0
 
+  /**
+   * 
+   */
   const checkDOMListeners = (delta) => {
     listenerCount += delta
 
@@ -262,8 +360,14 @@ const createBrowserHistory = (props = {}) => {
     }
   }
 
+  /**
+   * 
+   */
   let isBlocked = false
 
+  /**
+   * 
+   */
   const block = (prompt = false) => {
     const unblock = transitionManager.setPrompt(prompt)
 
@@ -282,6 +386,10 @@ const createBrowserHistory = (props = {}) => {
     }
   }
 
+  /**
+   * 
+   * @param {*} listener 
+   */
   const listen = (listener) => {
     const unlisten = transitionManager.appendListener(listener)
     checkDOMListeners(1)

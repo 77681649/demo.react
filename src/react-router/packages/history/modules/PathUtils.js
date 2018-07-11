@@ -1,18 +1,70 @@
+/**
+ * 补全 头部"/" 
+ * 
+ * @example
+ * addLeadingSlash('home') -> '/home'
+ * addLeadingSlash('/home') -> '/home'
+ * 
+ * @param {String} path 
+ * @retuns {String}
+ */
 export const addLeadingSlash = (path) =>
   path.charAt(0) === '/' ? path : '/' + path
 
+/**
+ * 去掉 头部"/"
+ * 
+ * @example
+ * stripLeadingSlash('home') -> 'home'
+ * stripLeadingSlash('/home') -> 'home'
+ * 
+ * @param {String} path 
+ * @retuns {String}
+ */
 export const stripLeadingSlash = (path) =>
   path.charAt(0) === '/' ? path.substr(1) : path
 
+/**
+ * 
+ * @param {String} path 
+ * @param {String} prefix 
+ * @returns {Boolean}
+ */
 export const hasBasename = (path, prefix) => 
   (new RegExp('^' + prefix + '(\\/|\\?|#|$)', 'i')).test(path)
 
+/**
+ * 去掉 basename
+ * 
+ * @example
+ * stripBasename('/flight/home',"/flight") -> '/home'
+ * stripBasename('/home',"/flight") -> '/home'
+ * 
+ * @param {String} path 
+ * @param {String} prefix basename
+ * @retuns {String} 
+ */
 export const stripBasename = (path, prefix) =>
   hasBasename(path, prefix) ? path.substr(prefix.length) : path
 
+/**
+ * 去掉 尾部"/" 
+ * 
+ * @example
+ * addLeadingSlash('home') -> 'home'
+ * addLeadingSlash('home/') -> 'home'
+ * 
+ * @param {String} path 
+ * @retuns {String}
+ */
 export const stripTrailingSlash = (path) =>
   path.charAt(path.length - 1) === '/' ? path.slice(0, -1) : path
 
+/**
+ * 解析path
+ * @param {String} path 路径字符串 
+ * @returns {Object} 返回一个{pathname,search,hash}对象
+ */
 export const parsePath = (path) => {
   let pathname = path || '/'
   let search = ''
@@ -37,6 +89,17 @@ export const parsePath = (path) => {
   }
 }
 
+/**
+ * 基于location的信息,创建出对应的path
+ * 
+ * @example
+ * 
+ * // -> "/user/list?order_key=id&order_dir=asc#tag"
+ * createPath({pathname:"/user/list" , search:"order_key=id&order_dir=asc" , hash:"tag" })
+ * 
+ * @param {Location} location 浏览位置信息
+ * @returns {String} 返回创建好的路径
+ */
 export const createPath = (location) => {
   const { pathname, search, hash } = location
 

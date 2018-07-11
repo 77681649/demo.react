@@ -1,21 +1,46 @@
+/**
+ * 提供DOM相关的工具方法
+ */
+
+/**
+ * 判断当前环境下, DOM API是否可用
+ */
 export const canUseDOM = !!(
   typeof window !== 'undefined' && window.document && window.document.createElement
 )
 
+/**
+ * 
+ * @param {Node} node 
+ * @param {String} event 
+ * @param {Function} listener 
+ */
 export const addEventListener = (node, event, listener) =>
   node.addEventListener
     ? node.addEventListener(event, listener, false)
     : node.attachEvent('on' + event, listener)
 
+/**
+ * 
+ * @param {Node} node 
+ * @param {String} event 
+ * @param {Function} listener 
+ */
 export const removeEventListener = (node, event, listener) =>
   node.removeEventListener
     ? node.removeEventListener(event, listener, false)
     : node.detachEvent('on' + event, listener)
 
+/**
+ * 
+ * @param {String} message 
+ * @param {Function} callback 
+ */
 export const getConfirmation = (message, callback) =>
   callback(window.confirm(message)) // eslint-disable-line no-alert
 
 /**
+ * 判断是否支持HTML history API
  * Returns true if the HTML5 history API is supported. Taken from Modernizr.
  *
  * https://github.com/Modernizr/Modernizr/blob/master/LICENSE

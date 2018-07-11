@@ -2,6 +2,14 @@ import resolvePathname from 'resolve-pathname'
 import valueEqual from 'value-equal'
 import { parsePath } from './PathUtils'
 
+/**
+ * 创建location对象
+ * @param {String|Object} path 路径
+ * @param {Object} state 
+ * @param {String} key 
+ * @param {} currentLocation 
+ * @returns {Location} 返回创建的location对象
+ */
 export const createLocation = (path, state, key, currentLocation) => {
   let location
   if (typeof path === 'string') {
@@ -66,6 +74,11 @@ export const createLocation = (path, state, key, currentLocation) => {
   return location
 }
 
+/**
+ * 
+ * @param {*} a 
+ * @param {*} b 
+ */
 export const locationsAreEqual = (a, b) =>
   a.pathname === b.pathname &&
   a.search === b.search &&
