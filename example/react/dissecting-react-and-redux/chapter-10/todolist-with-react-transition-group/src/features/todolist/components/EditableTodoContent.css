@@ -1,0 +1,15 @@
+.editable-todo-content {
+  font-size: 22px;
+
+  width: 100%;
+  margin-right: 10px;
+  border: none;
+
+  /* 取消高亮 */
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  outline: none;
+
+  /* 禁止拖动 */
+  resize: none;
+}

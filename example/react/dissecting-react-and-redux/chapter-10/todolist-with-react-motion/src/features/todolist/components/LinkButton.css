@@ -1,0 +1,9 @@
+.lbtn,
+.lbtn:link,
+.lbtn:visited,
+.lbtn:hover,
+.lbtn:active {
+  font-size:18px;
+  color: #278bf8;
+  text-decoration: none;
+}

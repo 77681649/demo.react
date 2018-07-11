@@ -1,0 +1,22 @@
+.header {
+  display: flex;
+  height: 100%;
+
+  border-bottom: solid 1px #ccc;
+  padding: 10px 0 10px 17px;
+
+  color: #fe4b7d;
+  font-size: 26px;
+}
+
+.header .main-title {
+  flex: 1;
+}
+
+.header .sub-title {
+  width: 60px;
+  padding-right: 16px;
+
+  font-size: 21px;
+  text-align: right;
+}

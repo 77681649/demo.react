@@ -1,0 +1,41 @@
+.checkbox {
+  user-select: none;
+}
+
+/* display:none 会失去tab顺序 */
+
+.checkbox .raw {
+  position: absolute;
+  /* 移除正常文档流 */
+  clip: rect(0, 0, 0, 0);
+}
+
+.checkbox .raw + label::before {
+  content: "\a0";
+  display: inline-block;
+
+  margin-right: 3px;
+  padding: 1px;
+  width: 25px;
+  height: 25px;
+
+  text-indent: 6px;
+  line-height: 25px;
+  border: solid 1px #c3c3c3;
+}
+
+/* 伪类 + 伪元素 实现不同状态的样式变化 */
+.checkbox .raw:checked + label::before {
+  /* outline: 1px solid blue; */
+  content: "\2713";
+  border: none;
+  background: #fe4b7d;
+}
+
+.checkbox .raw:checked + label::before {
+  /* box-shadow: 2px 2px 2px #58a; */
+}
+
+.checkbox .raw:disabled + label::before {
+  background: gray;
+}
