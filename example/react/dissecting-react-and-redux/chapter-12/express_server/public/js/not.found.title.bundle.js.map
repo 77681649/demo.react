@@ -1,0 +1,1 @@
+{"version":3,"sources":["webpack:///./src/components/NotFoundTitle.jsx"],"names":[],"mappings":";;;;;;;;;;;;;;;;AAAA;;;;;;kBAEe;AAAA,SAAM;AAAA;AAAA;AAAA;AAAA,GAAN;AAAA,C","file":"not.found.title.bundle.js","sourcesContent":["import React from \"react\";\r\n\r\nexport default () => <h4>404 Not Found</h4>;\r\n"],"sourceRoot":""}

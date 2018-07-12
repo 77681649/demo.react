@@ -1,0 +1,1 @@
+{"version":3,"sources":["webpack:///./src/components/HomeTitle.jsx"],"names":[],"mappings":";;;;;;;;;;;;;;;;AAAA;;;;;;kBAEe;AAAA,SAAM;AAAA;AAAA;AAAA;AAAA,GAAN;AAAA,C","file":"home.title.bundle.js","sourcesContent":["import React from \"react\";\r\n\r\nexport default () => <h4>Home</h4>;\r\n"],"sourceRoot":""}

@@ -1,0 +1,1 @@
+{"version":3,"sources":["webpack:///./src/components/AboutTitle.jsx"],"names":[],"mappings":";;;;;;;;;;;;;;;;AAAA;;;;AACA;;;;;;kBAEe;AAAA,SAAM;AAAA;AAAA;AAAA;AAAA,GAAN;AAAA,C","file":"about.title.bundle.js","sourcesContent":["import React from \"react\";\r\nimport Bundle from \"../components/Bundle\";\r\n\r\nexport default () => <h4>About Page</h4>;\r\n"],"sourceRoot":""}
