@@ -4,10 +4,16 @@ import { parsePath } from './PathUtils'
 
 /**
  * 创建location对象
- * @param {String|Object} path 路径
- * @param {Object} state 
- * @param {String} key 
- * @param {} currentLocation 
+ * 
+ * @example
+ * 
+ * // -> { pathname:'/haha' , search:'?a=1' , hash: '#tag' }
+ * createLocation(/haha?a=1#tag)
+ * 
+ * @param {String|Object} path 路径 - 包含pathname,search,hash三部分
+ * @param {Object} state 额外的状态
+ * @param {String} key key location唯一标识
+ * @param {Location} currentLocation 当前的location
  * @returns {Location} 返回创建的location对象
  */
 export const createLocation = (path, state, key, currentLocation) => {
@@ -57,11 +63,19 @@ export const createLocation = (path, state, key, currentLocation) => {
   if (key)
     location.key = key
 
+  // resolvePathname('about', '/company/jobs') // /company/about
+  // resolvePathname('../jobs', '/company/team/ceo') // /company/jobs
+  // resolvePathname('about') // /about
+  // resolvePathname('/about') // /about
   if (currentLocation) {
     // Resolve incomplete/relative pathname relative to current location.
     if (!location.pathname) {
+      // 为空, 使用currentLocation.pathname
       location.pathname = currentLocation.pathname
     } else if (location.pathname.charAt(0) !== '/') {
+      // location.pathname = '1'
+      // currentLocation.pathname = '/ticket/detail/2'
+      // -> location.pathname = '/ticket/detail/1'
       location.pathname = resolvePathname(location.pathname, currentLocation.pathname)
     }
   } else {

@@ -6,7 +6,7 @@ const ReactDOMServer = require("react-dom/server");
 const Home = require("./src/components/HomeTitle");
 const About = require("./src/components/AboutTitle");
 const NotFound = require("./src/components/NotFoundTitle");
-const App = require("./src/ServerApp");
+// const App = require("./src/ServerApp");
 
 const app = express();
 
@@ -17,7 +17,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.get("/", (req, res) => {
   res.render("index", {
     content: ReactDOMServer.renderToString(
-      React.createElement(App.default, {
+      React.createElement(Home.default, {
         path: "/"
       })
     )
@@ -27,7 +27,7 @@ app.get("/", (req, res) => {
 app.get("/about", (req, res) => {
   res.render("index", {
     content: ReactDOMServer.renderToString(
-      React.createElement(App.default, {
+      React.createElement(About.default, {
         path: "/about"
       })
     )
@@ -37,7 +37,7 @@ app.get("/about", (req, res) => {
 app.use(function(req, res, next) {
   res.render("index", {
     content: ReactDOMServer.renderToString(
-      React.createElement(App.default, {
+      React.createElement(NotFound.default, {
         path: "/not-found"
       })
     )

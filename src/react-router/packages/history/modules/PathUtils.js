@@ -61,9 +61,14 @@ export const stripTrailingSlash = (path) =>
   path.charAt(path.length - 1) === '/' ? path.slice(0, -1) : path
 
 /**
- * 解析path
+ * 解析path - 将path字符串解析为location对象
+ * 
+ * @example
+ * // {pathname:"/user/list" , search:"?order_key=id&order_dir=asc" , hash:"#tag" }
+ * parsePath('/user/list?order_key=id&order_dir=asc#tag')
+ * 
  * @param {String} path 路径字符串 
- * @returns {Object} 返回一个{pathname,search,hash}对象
+ * @returns {Location} 返回一个{pathname,search,hash}对象
  */
 export const parsePath = (path) => {
   let pathname = path || '/'
@@ -90,10 +95,9 @@ export const parsePath = (path) => {
 }
 
 /**
- * 基于location的信息,创建出对应的path
+ * 创建path - 将location还原为path字符串
  * 
  * @example
- * 
  * // -> "/user/list?order_key=id&order_dir=asc#tag"
  * createPath({pathname:"/user/list" , search:"order_key=id&order_dir=asc" , hash:"tag" })
  * 

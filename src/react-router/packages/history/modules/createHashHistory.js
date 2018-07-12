@@ -20,32 +20,67 @@ import {
 
 const HashChangeEvent = 'hashchange'
 
+/**
+ * hash path 编码/解码器
+ */
 const HashPathCoders = {
+  // hash = #!/home
   hashbang: {
     encodePath: (path) => path.charAt(0) === '!' ? path : '!/' + stripLeadingSlash(path),
     decodePath: (path) => path.charAt(0) === '!' ? path.substr(1) : path
   },
+
+  // hash = #home
   noslash: {
     encodePath: stripLeadingSlash,
     decodePath: addLeadingSlash
   },
+
+  // hash = #/home
   slash: {
     encodePath: addLeadingSlash,
     decodePath: addLeadingSlash
   }
 }
 
+/**
+ * 获得location.hash
+ * 
+ * @example
+ * window.location.href = "baidu.com/1#tag"
+ * 
+ * // -> tag
+ * getHashPath()
+ * 
+ * @returns {String}
+ */
 const getHashPath = () => {
   // We can't use window.location.hash here because it's not
   // consistent across browsers - Firefox will pre-decode it!
   const href = window.location.href
   const hashIndex = href.indexOf('#')
+  
   return hashIndex === -1 ? '' : href.substring(hashIndex + 1)
 }
 
+/**
+ * 
+ * @param {*} path 
+ */
 const pushHashPath = (path) =>
   window.location.hash = path
 
+/**
+ * 用path替换window.location.href.hash
+ * 
+ * @example
+ * window.location.href = "baidu.com/1#tag"
+ * 
+ * // -> window.location.href = "baidu.com/1#hello"
+ * replaceHashPath('hello')
+ * 
+ * @param {String} path 
+ */
 const replaceHashPath = (path) => {
   const hashIndex = window.location.href.indexOf('#')
 
@@ -54,24 +89,54 @@ const replaceHashPath = (path) => {
   )
 }
 
+/**
+ * 创建 hash history
+ * @param {*} props 
+ */
 const createHashHistory = (props = {}) => {
   invariant(
     canUseDOM,
     'Hash history needs a DOM'
   )
 
+  /**
+   * global history 
+   */
   const globalHistory = window.history
+
+  /**
+   * go(n) 支持无刷新跳转
+   */
   const canGoWithoutReload = supportsGoWithoutReloadUsingHash()
 
   const {
     getUserConfirmation = getConfirmation,
     hashType = 'slash'
   } = props
+
+  /**
+   * basename, 格式: /<basename>
+   */
   const basename = props.basename ? stripTrailingSlash(addLeadingSlash(props.basename)) : ''
 
-  const { encodePath, decodePath } = HashPathCoders[hashType]
+  const { 
+    encodePath, 
+    decodePath 
+  } = HashPathCoders[hashType]
 
+  /** 
+   * DOMLocation - 根据location.hash,创建的location对象
+   * 
+   * @example
+   * http://baidu.com/1/t?a=1#tag
+   * 
+   * // -> { hash: '#hash' }
+   * getDOMLocation()
+   * 
+   * @returns {Location} 返回location对象
+   */
   const getDOMLocation = () => {
+    // hash path
     let path = decodePath(getHashPath())
 
     warning(
@@ -86,8 +151,15 @@ const createHashHistory = (props = {}) => {
     return createLocation(path)
   }
 
+  /** 
+   * 
+   */
   const transitionManager = createTransitionManager()
 
+  /**
+   * 
+   * @param {*} nextState 
+   */
   const setState = (nextState) => {
     Object.assign(history, nextState)
 
@@ -102,6 +174,9 @@ const createHashHistory = (props = {}) => {
   let forceNextPop = false
   let ignorePath = null
 
+  /**
+   * 
+   */
   const handleHashChange = () => {
     const path = getHashPath()
     const encodedPath = encodePath(path)
@@ -125,6 +200,9 @@ const createHashHistory = (props = {}) => {
     }
   }
 
+  /**
+   * 
+   */
   const handlePop = (location) => {
     if (forceNextPop) {
       forceNextPop = false
@@ -142,6 +220,9 @@ const createHashHistory = (props = {}) => {
     }
   }
 
+  /**
+   * 
+   */
   const revertPop = (fromLocation) => {
     const toLocation = history.location
 
@@ -167,30 +248,67 @@ const createHashHistory = (props = {}) => {
     }
   }
 
-  // Ensure the hash is encoded properly before doing anything else.
-  const path = getHashPath()
-  const encodedPath = encodePath(path)
 
+  //
+  // ------------------------------------------------------------------ init
+  //
+  // Ensure the hash is encoded properly before doing anything else.
+  // unencode
+  const path = getHashPath()
+  // encode
+  const encodedPath = encodePath(path)
   if (path !== encodedPath)
     replaceHashPath(encodedPath)
 
+  /**
+   * 初始的location
+   */
   const initialLocation = getDOMLocation()
+
+  /** 
+   * history stack
+   */
   let allPaths = [ createPath(initialLocation) ]
 
-  // Public interface
 
+
+  //
+  // ------------------------------------------------------------------ implementation Public interface
+  //
+
+  /**
+   * 创建location对应的超链接
+   * 
+   * @example
+   * basename = '/flight'
+   * 
+   * // -> #/flight/#tag
+   * createHref({ hash:'#hash' })
+   * 
+   * @param {Object} location location
+   * @returns {String}
+   */
   const createHref = (location) =>
     '#' + encodePath(basename + createPath(location))
 
+  /**
+   * push location to history
+   * @param {String} path 
+   * @param {Object} [state] 
+   */
   const push = (path, state) => {
     warning(
       state === undefined,
       'Hash history cannot push state; it is ignored'
     )
 
+    // 1. 新的action
     const action = 'PUSH'
+
+    // 2. 新的location
     const location = createLocation(path, undefined, undefined, history.location)
 
+    // 3. 提交location变换
     transitionManager.confirmTransitionTo(location, action, getUserConfirmation, (ok) => {
       if (!ok)
         return
@@ -275,6 +393,10 @@ const createHashHistory = (props = {}) => {
 
   let listenerCount = 0
 
+  /**
+   * 
+   * @param {*} delta 
+   */
   const checkDOMListeners = (delta) => {
     listenerCount += delta
 
@@ -287,6 +409,10 @@ const createHashHistory = (props = {}) => {
 
   let isBlocked = false
 
+  /**
+   * 
+   * @param {*} prompt 
+   */
   const block = (prompt = false) => {
     const unblock = transitionManager.setPrompt(prompt)
 
@@ -304,7 +430,10 @@ const createHashHistory = (props = {}) => {
       return unblock()
     }
   }
-
+  
+  /**
+   * 
+   */
   const listen = (listener) => {
     const unlisten = transitionManager.appendListener(listener)
     checkDOMListeners(1)

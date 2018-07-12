@@ -5,6 +5,7 @@ import { hot } from "react-hot-loader";
 import { Provider } from "react-redux";
 import { ConnectedRouter } from "connected-react-router";
 import store, { history } from "./app-store";
+import HomeTitle from "./components/HomeTitle";
 
 // const Main = hot(module)(() => (
 //   <React.Fragment>
@@ -20,14 +21,18 @@ const Main = () => (
   </React.Fragment>
 );
 
+// const App = () => {
+//   return (
+//     <Provider store={store}>
+//       <ConnectedRouter history={history}>
+//         <Main />
+//       </ConnectedRouter>
+//     </Provider>
+//   );
+// };
+
 const App = () => {
-  return (
-    <Provider store={store}>
-      <ConnectedRouter history={history}>
-        <Main />
-      </ConnectedRouter>
-    </Provider>
-  );
+  return <HomeTitle />;
 };
 
 export default App;

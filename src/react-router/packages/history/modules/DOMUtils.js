@@ -2,6 +2,8 @@
  * 提供DOM相关的工具方法
  */
 
+
+
 /**
  * 判断当前环境下, DOM API是否可用
  */
@@ -32,9 +34,9 @@ export const removeEventListener = (node, event, listener) =>
     : node.detachEvent('on' + event, listener)
 
 /**
- * 
- * @param {String} message 
- * @param {Function} callback 
+ * 获得用户的确认( 默认是通过弹出确认框实现 )
+ * @param {String} message 消息
+ * @param {Function} callback 回调函数 - 收到通知之后调用
  */
 export const getConfirmation = (message, callback) =>
   callback(window.confirm(message)) // eslint-disable-line no-alert
@@ -69,6 +71,8 @@ export const supportsPopStateOnHashChange = () =>
 
 /**
  * Returns false if using go(n) with hash history causes a full page reload.
+ * 执行go(n)时, 是否支持无刷新
+ * @returns {Boolean} true - 无刷新; false - 有刷新
  */
 export const supportsGoWithoutReloadUsingHash = () =>
   window.navigator.userAgent.indexOf('Firefox') === -1

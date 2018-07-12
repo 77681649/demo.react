@@ -113,7 +113,7 @@
 /******/
 /******/ 	var hotApplyOnUpdate = true;
 /******/ 	// eslint-disable-next-line no-unused-vars
-/******/ 	var hotCurrentHash = "0ee6bb668f951292b053";
+/******/ 	var hotCurrentHash = "4f85164e920d9c4ac271";
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule;
@@ -764,7 +764,7 @@
 /******/
 /******/ 	// script path function
 /******/ 	function jsonpScriptSrc(chunkId) {
-/******/ 		return __webpack_require__.p + "" + ({"about.title":"about.title","home.title":"home.title","not.found.title":"not.found.title"}[chunkId]||chunkId) + ".bundle.js"
+/******/ 		return __webpack_require__.p + "" + ({"about.title":"about.title","not.found.title":"not.found.title"}[chunkId]||chunkId) + ".bundle.js"
 /******/ 	}
 /******/
 /******/ 	// The require function
@@ -964,6 +964,10 @@ var _appStore = __webpack_require__(/*! ./app-store */ "./src/app-store.js");
 
 var _appStore2 = _interopRequireDefault(_appStore);
 
+var _HomeTitle = __webpack_require__(/*! ./components/HomeTitle */ "./src/components/HomeTitle.jsx");
+
+var _HomeTitle2 = _interopRequireDefault(_HomeTitle);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // const Main = hot(module)(() => (
@@ -982,16 +986,18 @@ var Main = function Main() {
   );
 };
 
+// const App = () => {
+//   return (
+//     <Provider store={store}>
+//       <ConnectedRouter history={history}>
+//         <Main />
+//       </ConnectedRouter>
+//     </Provider>
+//   );
+// };
+
 var App = function App() {
-  return _react2.default.createElement(
-    _reactRedux.Provider,
-    { store: _appStore2.default },
-    _react2.default.createElement(
-      _connectedReactRouter.ConnectedRouter,
-      { history: _appStore.history },
-      _react2.default.createElement(Main, null)
-    )
-  );
+  return _react2.default.createElement(_HomeTitle2.default, null);
 };
 
 exports.default = App;
@@ -1175,6 +1181,36 @@ exports.default = Bundle;
 
 /***/ }),
 
+/***/ "./src/components/HomeTitle.jsx":
+/*!**************************************!*\
+  !*** ./src/components/HomeTitle.jsx ***!
+  \**************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = function () {
+  return _react2.default.createElement(
+    "h4",
+    null,
+    "Home"
+  );
+};
+
+/***/ }),
+
 /***/ "./src/components/NavBar.jsx":
 /*!***********************************!*\
   !*** ./src/components/NavBar.jsx ***!
@@ -1259,7 +1295,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var render =  true ? _reactDom2.default.render : undefined;
 
-// render(<App />, document.getElementById("root"));
+debugger;
+render(_react2.default.createElement(_App2.default, null), document.getElementById("root"));
 
 /***/ }),
 
@@ -1334,7 +1371,7 @@ exports.default = function (props) {
     _Bundle2.default,
     {
       load: function load() {
-        return __webpack_require__.e(/*! import() | home.title */ "home.title").then(__webpack_require__.t.bind(null, /*! ../components/HomeTitle */ "./src/components/HomeTitle.jsx", 7));
+        return Promise.resolve(/*! import() */).then(__webpack_require__.t.bind(null, /*! ../components/HomeTitle */ "./src/components/HomeTitle.jsx", 7));
       }
     },
     function (Title) {
