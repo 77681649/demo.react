@@ -24,19 +24,19 @@ const HashChangeEvent = 'hashchange'
  * hash path 编码/解码器
  */
 const HashPathCoders = {
-  // hash = #!/home
+  // hash = !/home
   hashbang: {
     encodePath: (path) => path.charAt(0) === '!' ? path : '!/' + stripLeadingSlash(path),
     decodePath: (path) => path.charAt(0) === '!' ? path.substr(1) : path
   },
 
-  // hash = #home
+  // hash = home
   noslash: {
     encodePath: stripLeadingSlash,
     decodePath: addLeadingSlash
   },
 
-  // hash = #/home
+  // hash = /home
   slash: {
     encodePath: addLeadingSlash,
     decodePath: addLeadingSlash
@@ -64,8 +64,9 @@ const getHashPath = () => {
 }
 
 /**
- * 
- * @param {*} path 
+ * 新增访问记录
+ * 对window.location的都会导致history stack 增加
+ * @param {String} path 
  */
 const pushHashPath = (path) =>
   window.location.hash = path
@@ -161,36 +162,55 @@ const createHashHistory = (props = {}) => {
    * @param {*} nextState 
    */
   const setState = (nextState) => {
+    // 更新状态
     Object.assign(history, nextState)
 
+    // 更新状态
     history.length = globalHistory.length
 
+    // 通知订阅者,访问位置有变换
     transitionManager.notifyListeners(
       history.location,
       history.action
     )
   }
 
-  let forceNextPop = false
-  let ignorePath = null
-
   /**
    * 
    */
+  let forceNextPop = false
+
+  /**
+   * 记录被忽略的path - 为了避免 push(path) 的path被处理多次
+   * location.replace() 会触发 hashchange
+   */
+  let ignorePath = null
+
+  /**
+   * 处理 hashchange 事件 - 当hash发生变化时触发 ( 浏览器端发生变化 )
+   */
   const handleHashChange = () => {
+    // hash path: tag
     const path = getHashPath()
+
+    // encode: /tag
     const encodedPath = encodePath(path)
 
     if (path !== encodedPath) {
       // Ensure we always have a properly-encoded hash.
       replaceHashPath(encodedPath)
     } else {
+      // 新的location - 来自浏览器的location
       const location = getDOMLocation()
+
+      // 旧的location
       const prevLocation = history.location
 
+      // 判断location是否发生变化
       if (!forceNextPop && locationsAreEqual(prevLocation, location))
         return // A hashchange doesn't always == location change.
 
+      // 判断是否被忽略的path
       if (ignorePath === createPath(location))
         return // Ignore this change; we already setState in push/replace.
 
@@ -201,7 +221,8 @@ const createHashHistory = (props = {}) => {
   }
 
   /**
-   * 
+   * 处理"POP"
+   * @param {Location} location
    */
   const handlePop = (location) => {
     if (forceNextPop) {
@@ -292,11 +313,12 @@ const createHashHistory = (props = {}) => {
     '#' + encodePath(basename + createPath(location))
 
   /**
-   * push location to history
-   * @param {String} path 
-   * @param {Object} [state] 
+   * push location
+   * @param {String} path 新的路径
+   * @param {Object} [state] 状态
    */
   const push = (path, state) => {
+    // warning state被忽略
     warning(
       state === undefined,
       'Hash history cannot push state; it is ignored'
@@ -313,15 +335,24 @@ const createHashHistory = (props = {}) => {
       if (!ok)
         return
 
+      // 创建path
       const path = createPath(location)
+
+      // 编码后的path
       const encodedPath = encodePath(basename + path)
+
+      // 检查hash是否变化
       const hashChanged = getHashPath() !== encodedPath
 
+      // 发生变化
       if (hashChanged) {
         // We cannot tell if a hashchange was caused by a PUSH, so we'd
         // rather setState here and ignore the hashchange. The caveat here
         // is that other hash histories in the page will consider it a POP.
+        // 将path标记未忽略的path, 从而避免hashchange中多次处理相同的path
         ignorePath = path
+
+        // 新增访问记录
         pushHashPath(encodedPath)
 
         const prevIndex = allPaths.lastIndexOf(createPath(history.location))
@@ -330,6 +361,7 @@ const createHashHistory = (props = {}) => {
         nextPaths.push(path)
         allPaths = nextPaths
 
+        // 保存最新的状态
         setState({ action, location })
       } else {
         warning(
@@ -342,21 +374,35 @@ const createHashHistory = (props = {}) => {
     })
   }
 
+  /**
+   * replace location
+   * @param {String} path 新的路径
+   * @param {Object} [state] 状态
+   */
   const replace = (path, state) => {
     warning(
       state === undefined,
       'Hash history cannot replace state; it is ignored'
     )
 
+    // 1. 新的action
     const action = 'REPLACE'
+
+    // 2. 新的location
     const location = createLocation(path, undefined, undefined, history.location)
 
+    // 3. 提交location变换
     transitionManager.confirmTransitionTo(location, action, getUserConfirmation, (ok) => {
       if (!ok)
         return
 
+      // 创建path
       const path = createPath(location)
+
+      // 编码后的path
       const encodedPath = encodePath(basename + path)
+
+      // 是否发生变化
       const hashChanged = getHashPath() !== encodedPath
 
       if (hashChanged) {
@@ -364,6 +410,8 @@ const createHashHistory = (props = {}) => {
         // rather setState here and ignore the hashchange. The caveat here
         // is that other hash histories in the page will consider it a POP.
         ignorePath = path
+
+        // 替换path
         replaceHashPath(encodedPath)
       }
 
@@ -376,6 +424,10 @@ const createHashHistory = (props = {}) => {
     })
   }
 
+  /**
+   * go(n)
+   * @param {Number} n index
+   */
   const go = (n) => {
     warning(
       canGoWithoutReload,
@@ -385,17 +437,27 @@ const createHashHistory = (props = {}) => {
     globalHistory.go(n)
   }
 
+  /**
+   * 回退
+   */
   const goBack = () =>
     go(-1)
 
+  /**
+   * 前进
+   */
   const goForward = () =>
     go(1)
 
   let listenerCount = 0
 
   /**
+   * 检查DOM hashchange 确保同一时刻只有一个listener  ( 方便处理,节约内存 )
+   * delta > 1: 无需订阅多次
+   * delta = 1: 出现首个消费者, 订阅一次
+   * delta = 0: 没有消费者, 取消订阅
    * 
-   * @param {*} delta 
+   * @param {Number} delta 消费者 - 为了确保同一时刻只有一个 hashchange listener
    */
   const checkDOMListeners = (delta) => {
     listenerCount += delta
@@ -407,39 +469,53 @@ const createHashHistory = (props = {}) => {
     }
   }
 
+  /**
+   * 是否正在中断
+   */
   let isBlocked = false
 
   /**
-   * 
-   * @param {*} prompt 
+   * 中断变换,等待用户确认
+   * @param {Boolean|String|Function} prompt 
+   * @returns {Function} 返回取消函数
    */
   const block = (prompt = false) => {
     const unblock = transitionManager.setPrompt(prompt)
 
+    // 没有在中断, 添加监听函数, 确保无法通过改变URL来改变hash
     if (!isBlocked) {
       checkDOMListeners(1)
       isBlocked = true
     }
 
     return () => {
+      // 取消监听
       if (isBlocked) {
         isBlocked = false
         checkDOMListeners(-1)
       }
 
+      // 解锁
       return unblock()
     }
   }
   
   /**
-   * 
+   * 订阅location change
+   * @param {Function} listener
    */
   const listen = (listener) => {
+    // 追加订阅者
     const unlisten = transitionManager.appendListener(listener)
+
+    // 确保hashchange 被监听
     checkDOMListeners(1)
 
     return () => {
+      // 确保hashchange 在没有listener的情况下, 取消监听
       checkDOMListeners(-1)
+
+      // 取消订阅
       unlisten()
     }
   }

@@ -1,0 +1,73 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>API</title>
+</head>
+
+<body>
+  <div>
+    <div>
+      <input id="push-path" />
+      <button id="push">push</button>
+    </div>
+
+    <div>
+      <input id="replace-path" />
+      <button id="replace">replace</button>
+    </div>
+
+    <div>
+      <input id="go-n" />
+      <button id="go">go</button>
+    </div>
+
+    <div>
+      <button id="go-back">goBack</button>
+    </div>
+
+    <div>
+      <button id="go-forward">goForward</button>
+    </div>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      let history = History.createHashHistory()
+
+      // 禁止改变路由
+      history.block(false)
+
+      history.listen((location, action) => {
+        console.log('---------------------- history change:')
+        console.log('history length', history.length)
+        console.log('next location', location)
+        console.log('current action', action)
+      })
+
+      document.getElementById('push').addEventListener('click', () => {
+        history.push(document.getElementById('push-path').value)
+      })
+
+      document.getElementById('replace').addEventListener('click', () => {
+        history.replace(document.getElementById('replace-path').value)
+      })
+
+      document.getElementById('go').addEventListener('click', () => {
+        history.go(document.getElementById('go-n').value)
+      })
+
+      document.getElementById('go-back').addEventListener('click', () => {
+        history.goBack()
+      })
+
+      document.getElementById('go-forward').addEventListener('click', () => {
+        history.goForward()
+      })
+    })
+  </script>
+  <script src="./history.js"></script>
+</body>
+
+</html>
