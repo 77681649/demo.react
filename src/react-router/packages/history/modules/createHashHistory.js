@@ -137,7 +137,8 @@ const createHashHistory = (props = {}) => {
    * @returns {Location} 返回location对象
    */
   const getDOMLocation = () => {
-    // hash path
+    // getHashPath() -> /flight/list
+    // decodePath() ->  /flight/list
     let path = decodePath(getHashPath())
 
     warning(
@@ -146,9 +147,11 @@ const createHashHistory = (props = {}) => {
       'with the basename. Expected path "' + path + '" to begin with "' + basename + '".'
     )
 
+    // stripBasename() -> /list
     if (basename)
       path = stripBasename(path, basename)
 
+    // { pathname: "/list" }
     return createLocation(path)
   }
 
@@ -190,7 +193,7 @@ const createHashHistory = (props = {}) => {
    * 处理 hashchange 事件 - 当hash发生变化时触发 ( 浏览器端发生变化 )
    */
   const handleHashChange = () => {
-    // hash path: tag
+    // hash path: /tag
     const path = getHashPath()
 
     // encode: /tag
@@ -206,11 +209,11 @@ const createHashHistory = (props = {}) => {
       // 旧的location
       const prevLocation = history.location
 
-      // 判断location是否发生变化
+      // 2. 判断location是否发生变化
       if (!forceNextPop && locationsAreEqual(prevLocation, location))
         return // A hashchange doesn't always == location change.
 
-      // 判断是否被忽略的path
+      // 3. 判断是否被忽略的path
       if (ignorePath === createPath(location))
         return // Ignore this change; we already setState in push/replace.
 
@@ -221,7 +224,7 @@ const createHashHistory = (props = {}) => {
   }
 
   /**
-   * 处理"POP"
+   * 处理 "POP" - go, goBack, goForward, hashchange
    * @param {Location} location
    */
   const handlePop = (location) => {
@@ -231,10 +234,13 @@ const createHashHistory = (props = {}) => {
     } else {
       const action = 'POP'
 
+      // 3. 得到确认,之后再执行操作
       transitionManager.confirmTransitionTo(location, action, getUserConfirmation, (ok) => {
         if (ok) {
+          // 更新状态
           setState({ action, location })
         } else {
+          // 还原POP
           revertPop(location)
         }
       })
@@ -242,7 +248,8 @@ const createHashHistory = (props = {}) => {
   }
 
   /**
-   * 
+   * 还原 POP 操作
+   * @param {Location} fromLocation
    */
   const revertPop = (fromLocation) => {
     const toLocation = history.location
@@ -278,6 +285,8 @@ const createHashHistory = (props = {}) => {
   const path = getHashPath()
   // encode
   const encodedPath = encodePath(path)
+  
+  // 保证location与window.location.replace一致
   if (path !== encodedPath)
     replaceHashPath(encodedPath)
 
@@ -287,7 +296,7 @@ const createHashHistory = (props = {}) => {
   const initialLocation = getDOMLocation()
 
   /** 
-   * history stack
+   * path轨迹 - 用于还原POP操作
    */
   let allPaths = [ createPath(initialLocation) ]
 
@@ -335,33 +344,37 @@ const createHashHistory = (props = {}) => {
       if (!ok)
         return
 
-      // 创建path
+      // 创建path 
+      // path = { pathname: "/list" } -> /list
       const path = createPath(location)
 
       // 编码后的path
+      // encodedPath = /flight/list
       const encodedPath = encodePath(basename + path)
 
       // 检查hash是否变化
       const hashChanged = getHashPath() !== encodedPath
 
-      // 发生变化
+      // 发生变化, 过滤掉相同路径的push请求
       if (hashChanged) {
         // We cannot tell if a hashchange was caused by a PUSH, so we'd
         // rather setState here and ignore the hashchange. The caveat here
         // is that other hash histories in the page will consider it a POP.
-        // 将path标记未忽略的path, 从而避免hashchange中多次处理相同的path
+        
+        // 1. 将path标记未忽略的path, 从而避免hashchange中多次处理相同的path
         ignorePath = path
 
-        // 新增访问记录
+        // 2. push history - 修改window.location.hash && 增加一个history location
         pushHashPath(encodedPath)
-
+        
+        // 3. 记录轨迹
         const prevIndex = allPaths.lastIndexOf(createPath(history.location))
         const nextPaths = allPaths.slice(0, prevIndex === -1 ? 0 : prevIndex + 1)
 
         nextPaths.push(path)
         allPaths = nextPaths
 
-        // 保存最新的状态
+        // 4. 保存当前状态
         setState({ action, location })
       } else {
         warning(
@@ -411,15 +424,19 @@ const createHashHistory = (props = {}) => {
         // is that other hash histories in the page will consider it a POP.
         ignorePath = path
 
-        // 替换path
+        // 替换当前的path
         replaceHashPath(encodedPath)
       }
 
+      // 更新轨迹
+      // 找到旧location在history stack的位置
       const prevIndex = allPaths.indexOf(createPath(history.location))
 
+      // 如果找到, 用新的location替换旧的location
       if (prevIndex !== -1)
         allPaths[prevIndex] = path
 
+      // 更新状态
       setState({ action, location })
     })
   }
@@ -449,13 +466,16 @@ const createHashHistory = (props = {}) => {
   const goForward = () =>
     go(1)
 
+  /**
+   * 订阅者的数量
+   */
   let listenerCount = 0
 
   /**
    * 检查DOM hashchange 确保同一时刻只有一个listener  ( 方便处理,节约内存 )
-   * delta > 1: 无需订阅多次
-   * delta = 1: 出现首个消费者, 订阅一次
-   * delta = 0: 没有消费者, 取消订阅
+   * listenerCount > 1: 无需订阅多次
+   * listenerCount = 1: 出现首个消费者, 订阅一次
+   * listenerCount = 0: 没有消费者, 取消订阅
    * 
    * @param {Number} delta 消费者 - 为了确保同一时刻只有一个 hashchange listener
    */
@@ -470,7 +490,7 @@ const createHashHistory = (props = {}) => {
   }
 
   /**
-   * 是否正在中断
+   * 是否处于中断过程
    */
   let isBlocked = false
 
@@ -480,14 +500,16 @@ const createHashHistory = (props = {}) => {
    * @returns {Function} 返回取消函数
    */
   const block = (prompt = false) => {
+    // 1. 设置 prompt - 确保同一时刻只能有一个prompty出现
     const unblock = transitionManager.setPrompt(prompt)
 
-    // 没有在中断, 添加监听函数, 确保无法通过改变URL来改变hash
+    // 2. 没有处于中断过程, 添加监听函数 - 以便确保无法通过改变URL来改变hash
     if (!isBlocked) {
       checkDOMListeners(1)
       isBlocked = true
     }
 
+    // 返回取消block的函数
     return () => {
       // 取消监听
       if (isBlocked) {

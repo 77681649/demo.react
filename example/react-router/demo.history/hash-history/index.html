@@ -1,0 +1,34 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+
+<body>
+
+  <div id="message"></div>
+
+  <script src="../history.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      let $message = document.getElementById('message')
+      let message = []
+
+      let history = History.createHashHistory({
+        basename: 'flight'
+      })
+
+      message.push(history.createHref({
+        hash: '#tag'
+      }))
+
+
+      $message.innerHTML = message.join('<br/>')
+    })
+  </script>
+</body>
+
+</html>
