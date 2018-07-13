@@ -4,6 +4,11 @@ const patternCache = {};
 const cacheLimit = 10000;
 let cacheCount = 0;
 
+/**
+ * 
+ * @param {String} pattern 模式
+ * @param {Object} options 选项 
+ */
 const compilePath = (pattern, options) => {
   const cacheKey = `${options.end}${options.strict}${options.sensitive}`;
   const cache = patternCache[cacheKey] || (patternCache[cacheKey] = {});
@@ -24,6 +29,10 @@ const compilePath = (pattern, options) => {
 
 /**
  * Public API for matching a URL pathname to a path pattern.
+ * 
+ * @param {String} pathname 路径
+ * @param {Object} option 选项
+ * @param {Object} parent
  */
 const matchPath = (pathname, options = {}, parent) => {
   if (typeof options === "string") options = { path: options };

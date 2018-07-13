@@ -44,6 +44,8 @@ class Switch extends React.Component {
     const location = this.props.location || route.location;
 
     let match, child;
+    
+    // 找到匹配路径对应的组件
     React.Children.forEach(children, element => {
       if (match == null && React.isValidElement(element)) {
         const {
