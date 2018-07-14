@@ -37,6 +37,10 @@ class Router extends React.Component {
     match: this.computeMatch(this.props.history.location.pathname)
   };
 
+  /**
+   * 
+   * @param {*} pathname 
+   */
   computeMatch(pathname) {
     return {
       path: "/",
