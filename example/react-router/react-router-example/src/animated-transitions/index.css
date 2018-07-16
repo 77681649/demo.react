@@ -1,0 +1,79 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  position: absolute;
+  left: 0;
+  right: 0;
+}
+
+main {
+}
+
+.bg {
+  position: absolute;
+  top: 40px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  text-align: center;
+}
+
+.bg div {
+  padding-top: 20px;
+  color: white;
+  font-size: 36px;
+  font-weight: bold;
+}
+
+.navbar {
+  display: flex;
+  background: #eee;
+  text-align: center;
+  height: 40px;
+  line-height: 40px;
+}
+
+.nav-item {
+  flex: 1;
+  display: inline-block;
+}
+
+.nav-item a:link,
+.nav-item a:active,
+.nav-item a:visited {
+  color: #555;
+}
+
+.nav-item a:hover {
+  color: black;
+}
+
+.fade-appear {
+  opacity: 0;
+}
+
+.fade-appear-active {
+  transition: opacity 300ms ease-in;
+  opacity: 1;
+}
+
+.fade-enter {
+  opacity: 0;
+}
+
+.fade-enter-active {
+  transition: opacity 300ms ease-in;
+  opacity: 1;
+}
+
+.fade-exit {
+  opacity: 1;
+}
+
+.fade-exit-active {
+  transition: opacity 300ms ease-out;
+  opacity: 0;
+}
