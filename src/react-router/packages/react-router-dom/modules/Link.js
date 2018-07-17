@@ -22,6 +22,9 @@ class Link extends React.Component {
     replace: false
   };
 
+  /**
+   * 定义 context 结构
+   */
   static contextTypes = {
     router: PropTypes.shape({
       history: PropTypes.shape({
@@ -46,6 +49,7 @@ class Link extends React.Component {
       const { history } = this.context.router;
       const { replace, to } = this.props;
 
+      // 过渡到新的URL
       if (replace) {
         history.replace(to);
       } else {
@@ -65,12 +69,17 @@ class Link extends React.Component {
     invariant(to !== undefined, 'You must specify the "to" property');
 
     const { history } = this.context.router;
+
+    // 1. 创建location
     const location =
       typeof to === "string"
         ? createLocation(to, null, null, history.location)
         : to;
 
+    // 2. 创建href
     const href = history.createHref(location);
+
+    // 3. 渲染a标签
     return (
       <a {...props} onClick={this.handleClick} href={href} ref={innerRef} />
     );

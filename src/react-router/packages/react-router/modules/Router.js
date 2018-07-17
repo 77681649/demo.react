@@ -39,7 +39,7 @@ class Router extends React.Component {
 
   /**
    * 
-   * @param {*} pathname 
+   * @param {String} pathname 
    */
   computeMatch(pathname) {
     return {
@@ -62,6 +62,7 @@ class Router extends React.Component {
     // location in componentWillMount. This happens e.g. when doing
     // server rendering using a <StaticRouter>.
     this.unlisten = history.listen(() => {
+      // 当location变化时, 实现组件重绘
       this.setState({
         match: this.computeMatch(history.location.pathname)
       });
@@ -81,6 +82,10 @@ class Router extends React.Component {
 
   render() {
     const { children } = this.props;
+
+    /**
+     * 渲染子组件
+     */
     return children ? React.Children.only(children) : null;
   }
 }
