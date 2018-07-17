@@ -115,10 +115,13 @@ class Route extends React.Component {
     const location = this.props.location || route.location;
     const props = { match, location, history, staticContext };
 
+    // 匹配渲染组件
     if (component) return match ? React.createElement(component, props) : null;
 
+    // 匹配执行render函数
     if (render) return match ? render(props) : null;
 
+    // 无需匹配,直接渲染
     if (typeof children === "function") return children(props);
 
     if (children && !isEmptyChildren(children))

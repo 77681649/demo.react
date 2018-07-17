@@ -8,9 +8,9 @@
       "type": "node",
       "request": "launch",
       "name": "Launch Program",
-      "program": "${workspaceFolder}/example/react/dissecting-react-and-redux/chapter-12/express_server/index.js",
-      "cwd":
-        "${workspaceFolder}/example/react/dissecting-react-and-redux/chapter-12/express_server/"
+      "program":
+        "${workspaceFolder}/example/react-router/react-router-ssr/server.js",
+      "cwd": "${workspaceFolder}/example/react-router/react-router-ssr/"
     }
   ]
 }

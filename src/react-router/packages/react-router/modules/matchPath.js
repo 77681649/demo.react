@@ -36,13 +36,15 @@ const compilePath = (pattern, options) => {
  * @param {Boolean} option.exact 是否精确匹配
  * @param {Boolean} option.strict 是否严格匹配
  * @param {Boolean} option.sensitive 是否区分大小
- * @param {Object} parent
+ * @param {Object} parent 
  */
 const matchPath = (pathname, options = {}, parent) => {
   if (typeof options === "string") options = { path: options };
 
   const { path, exact = false, strict = false, sensitive = false } = options;
 
+  // 如果没有设置path
+  // 返回父级匹配
   if (path == null) return parent;
 
   const { re, keys } = compilePath(path, { end: exact, strict, sensitive });

@@ -4,6 +4,7 @@ import {
   BrowserRouter as Router,
   Route,
   Switch,
+  Link,
   NavLink
 } from "react-router-dom";
 import "./index.css";
@@ -14,9 +15,26 @@ const withLog = WrapedComponent => ({ match, location, ...rest }) => {
 
   return <WrapedComponent match={match} location={location} {...rest} />;
 };
-const Home = () => withLog(<h4>Home</h4>);
-const Contacts = () => withLog(<h4>Contacts</h4>);
-const About = () => withLog(<h4>About</h4>);
+const Home = withLog(() => <h4>Home</h4>);
+const Articles = withLog(() => (
+  <div>
+    <h4>Articles</h4>
+    <ul>
+      <li>
+        <Link to="/post/1">深入浅出React</Link>
+      </li>
+      <li>
+        <Link to="/post/2">深入浅出React-Router</Link>
+      </li>
+      <li>
+        <Link to="/post/3">深入浅出Redux</Link>
+      </li>
+    </ul>
+  </div>
+));
+const Post = withLog(({ match }) => <h4>Post ID:{match.params.id}</h4>);
+const About = withLog(() => <h4>About</h4>);
+const NotFound = withLog(() => <h4>Not Found</h4>);
 
 const Menu = ({ children }) => <ul className="menu">{children}</ul>;
 const MenuItem = ({ to, children }) => (
@@ -33,15 +51,19 @@ const App = () => (
       <nav>
         <Menu>
           <MenuItem to="/">Home</MenuItem>
-          <MenuItem to="/contacts">Contacts</MenuItem>
+          <MenuItem to="/articles">Articles</MenuItem>
           <MenuItem to="/about">About</MenuItem>
+          <MenuItem to="/contacts">Contacts</MenuItem>
         </Menu>
       </nav>
       <Switch>
         <Route path="/" exact component={Home} />
-        <Route path="/contacts" component={Contacts} />
+        <Route path="/articles" component={Articles} />
+        <Route path="/post/:id" component={Post} />
         <Route path="/about" component={About} />
+        <Route component={NotFound} />
       </Switch>
+      <Route path="xxx">{() => <h4>hahaha</h4>}</Route>
     </React.Fragment>
   </Router>
 );

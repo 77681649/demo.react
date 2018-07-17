@@ -22,4 +22,5 @@ npm start static-router-context
 npm start nav-link
 npm start prompt
 npm start redirect
+npm start switch
 ```

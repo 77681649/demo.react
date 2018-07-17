@@ -18,7 +18,7 @@ class Switch extends React.Component {
     children: PropTypes.node,
     location: PropTypes.object
   };
-
+ 
   componentWillMount() {
     // <Switch> 必须被Router包裹
     invariant(
@@ -62,7 +62,7 @@ class Switch extends React.Component {
 
         child = element;
 
-        // 匹配路径
+        // 匹配路径, 如果没有匹配到 返回 route.match
         match = matchPath(
           location.pathname,
           { path, exact, strict, sensitive },
