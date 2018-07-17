@@ -30,8 +30,12 @@ const compilePath = (pattern, options) => {
 /**
  * Public API for matching a URL pathname to a path pattern.
  * 
- * @param {String} pathname 路径
+ * @param {String} pathname 待匹配路径
  * @param {Object} option 选项
+ * @param {String} option.path 匹配模式
+ * @param {Boolean} option.exact 是否精确匹配
+ * @param {Boolean} option.strict 是否严格匹配
+ * @param {Boolean} option.sensitive 是否区分大小
  * @param {Object} parent
  */
 const matchPath = (pathname, options = {}, parent) => {

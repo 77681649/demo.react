@@ -1,0 +1,23 @@
+.menu {
+  list-style: none;
+}
+
+.menu-item {
+  display: inline-block;
+  padding: 10px;
+}
+
+.menu-item a {
+  text-decoration: none;
+}
+
+.menu-item a:hover,
+.menu-item a:active,
+.menu-item a:visited,
+.menu-item a:link {
+  color: inherit;
+}
+
+.menu-item .active {
+  border-bottom: solid 1px #1890ff;
+}

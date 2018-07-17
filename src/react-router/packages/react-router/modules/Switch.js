@@ -20,6 +20,7 @@ class Switch extends React.Component {
   };
 
   componentWillMount() {
+    // <Switch> 必须被Router包裹
     invariant(
       this.context.router,
       "You should not use <Switch> outside a <Router>"
@@ -41,11 +42,13 @@ class Switch extends React.Component {
   render() {
     const { route } = this.context.router;
     const { children } = this.props;
+
+    // 1. 优先使用router.route.location
     const location = this.props.location || route.location;
 
     let match, child;
     
-    // 找到匹配路径对应的组件
+    // 2. 遍历子元素, 找出首次匹配location的元素, 将它渲染出来
     React.Children.forEach(children, element => {
       if (match == null && React.isValidElement(element)) {
         const {
@@ -58,6 +61,8 @@ class Switch extends React.Component {
         const path = pathProp || from;
 
         child = element;
+
+        // 匹配路径
         match = matchPath(
           location.pathname,
           { path, exact, strict, sensitive },
@@ -66,6 +71,7 @@ class Switch extends React.Component {
       }
     });
 
+    // 3. 渲染子元素 - 附加 locaiton, match属性
     return match
       ? React.cloneElement(child, { location, computedMatch: match })
       : null;
