@@ -1,0 +1,93 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+.menu {
+  list-style: none;
+}
+
+.menu-item {
+  display: inline-block;
+  padding: 10px;
+}
+
+.menu-item a {
+  text-decoration: none;
+}
+
+.menu-item a:hover,
+.menu-item a:active,
+.menu-item a:visited,
+.menu-item a:link {
+  color: inherit;
+}
+
+.menu-item .active {
+  border-bottom: solid 1px #1890ff;
+}
+
+.dialog-container {
+}
+
+.dialog {
+  z-index: 1000;
+
+  position: fixed;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  display: flex;
+  flex-direction: column;
+
+  width: 240px;
+  height: 120px;
+
+  background: white;
+  border-radius: 10px;
+}
+
+.dialog-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #333;
+}
+
+.dialog-buttons {
+  height: 40px;
+}
+
+.dialog-buttons button {
+  border: none;
+  width: 50%;
+  height: 100%;
+
+  background: white;
+  color: #17a1dd;
+  border-top: solid 1px #aaa;
+}
+
+.dialog-buttons button:first-child {
+  border-right: solid 1px #aaa;
+  border-bottom-left-radius: 10px;
+}
+
+.dialog-buttons button:last-child {
+  border-right: solid 1px #aaa;
+  border-bottom-right-radius: 10px;
+}
+
+.mask-layer {
+  z-index: 999;
+
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+
+  background: rgba(0, 0, 0, 0.3);
+}

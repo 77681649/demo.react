@@ -20,4 +20,5 @@ npm start route-config
 npm start modal-gallery
 npm start static-router-context
 npm start nav-link
+npm start prompt
 ```
