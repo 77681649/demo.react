@@ -5,10 +5,10 @@ import "./Menu.css";
 export default class Menu extends Component {
   constructor(props) {
     super(props);
+    this.handleClick = this.handleClick.bind(this);
   }
 
   static propTypes = {
-    selectKey: types.string,
     onClick: types.func,
     children: types.node
   };
@@ -16,7 +16,17 @@ export default class Menu extends Component {
   render() {
     let { children } = this.props;
 
-    return <ul className="menu">{children}</ul>;
+    return (
+      <ul className="menu">
+        {React.Children.map(children, c => {
+          return React.cloneElement(c, {
+            keyProp: c.key,
+            selected: c.key === this.props.selectedKey,
+            onClick: this.handleClick
+          });
+        })}
+      </ul>
+    );
   }
 
   handleClick(e) {

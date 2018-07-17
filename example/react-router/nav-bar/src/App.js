@@ -1,13 +1,14 @@
 import React, { Component } from "react";
-
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Menu from "./components/Menu";
 
-const SubMenu = Menu.SubMenu;
-const MenuItemGroup = Menu.ItemGroup;
+const Home = () => <h4>Home</h4>;
+const Contacts = () => <h4>Contacts</h4>;
+const About = () => <h4>About</h4>;
 
 export default class App extends Component {
   state = {
-    current: "mail"
+    current: ""
   };
 
   handleClick = e => {
@@ -19,37 +20,31 @@ export default class App extends Component {
 
   render() {
     return (
-      <Menu onClick={this.handleClick} selectedKeys={[this.state.current]}>
-        <Menu.Item key="mail">Navigation One</Menu.Item>
-        <Menu.Item key="app" disabled>
-          Navigation Two
-        </Menu.Item>
-        <SubMenu
-          title={
-            <span className="submenu-title-wrapper">
-              Navigation Three - Submenu
-            </span>
-          }
-        >
-          <MenuItemGroup title="Item 1">
-            <Menu.Item key="setting:1">Option 1</Menu.Item>
-            <Menu.Item key="setting:2">Option 2</Menu.Item>
-          </MenuItemGroup>
-          <MenuItemGroup title="Item 2">
-            <Menu.Item key="setting:3">Option 3</Menu.Item>
-            <Menu.Item key="setting:4">Option 4</Menu.Item>
-          </MenuItemGroup>
-        </SubMenu>
-        <Menu.Item key="alipay">
-          <a
-            href="https://ant.design"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Navigation Four - Link
-          </a>
-        </Menu.Item>
-      </Menu>
+      <Router>
+        <Route>
+          {({ location }) => (
+            <React.Fragment>
+              <Menu onClick={this.handleClick} selectedKey={this.state.current || location.pathname}>
+                <Menu.Item key="/" to="/">
+                  Home
+                </Menu.Item>
+                <Menu.Item key="/contacts" to="/contacts">
+                  Contacts
+                </Menu.Item>
+                <Menu.Item key="/about" to="/about">
+                  About
+                </Menu.Item>
+              </Menu>
+
+              <Switch>
+                <Route path="/" exact component={Home} />
+                <Route path="/contacts" component={Contacts} />
+                <Route path="/about" component={About} />
+              </Switch>
+            </React.Fragment>
+          )}
+        </Route>
+      </Router>
     );
   }
 }

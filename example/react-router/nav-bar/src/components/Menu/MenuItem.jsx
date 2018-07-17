@@ -1,10 +1,12 @@
 import React, { Component } from "react";
+import { Link } from "react-router-dom";
 import types from "prop-types";
 import classNames from "class-names";
 import "./MenuItem.css";
 
 export default class MenuItem extends Component {
   static propTypes = {
+    keyProp: types.string,
     active: types.bool,
     selected: types.bool,
     disabled: types.bool,
@@ -28,17 +30,16 @@ export default class MenuItem extends Component {
   }
 
   state = {
-    active: this.props.active,
-    selected: this.props.selected
+    active: this.props.active
   };
 
   render() {
-    let { disabled, children } = this.props;
-    let { active, selected } = this.state;
+    let { selected, disabled, children, to } = this.props;
+    let { active } = this.state;
     let className = classNames("menu-item", {
       "menu-item-disabled": disabled,
       "menu-item-active": !disabled && active,
-      "menu-item-active": !disabled && selected
+      "menu-item-selected": !disabled && selected
     });
 
     return (
@@ -48,13 +49,19 @@ export default class MenuItem extends Component {
         onMouseOver={this.handleMouseOver}
         onMouseLeave={this.handleMouseLeave}
       >
-        {children}
+        <Link to={to}>{children}</Link>
       </li>
     );
   }
 
-  handleClick() {
-    this.props.onClick && this.props.onClick();
+  handleClick(e) {
+    const item = {
+      key: this.props.keyProp,
+      item: this,
+      domEvent: e.nativeEvent
+    };
+
+    this.props.onClick && this.props.onClick(item);
   }
 
   handleMouseOver() {

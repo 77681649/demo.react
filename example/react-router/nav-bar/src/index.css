@@ -3,3 +3,13 @@ body {
   padding: 0;
   font-family: sans-serif;
 }
+
+ul,
+menu,
+dir {
+  -webkit-padding-start: 0;
+}
+
+dd {
+  -webkit-margin-start: 0;
+}

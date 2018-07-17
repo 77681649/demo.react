@@ -7,11 +7,21 @@
   cursor: pointer;
 }
 
+.menu-item a {
+  text-decoration: none;
+}
+
+.menu-item a:hover,
+.menu-item a:active,
+.menu-item a:visited,
+.menu-item a:link {
+  color: inherit;
+}
+
 .menu-item-active,
 .menu-item-selected {
   border-bottom: solid 2px #1890ff;
   color: #1890ff;
-  font-weight: bold;
 }
 
 .menu-item-disabled {
