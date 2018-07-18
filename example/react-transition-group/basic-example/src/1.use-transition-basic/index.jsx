@@ -1,5 +1,5 @@
 /**
- * 1.use-transition-add-enter-and-leave-animation
+ * 1.use-transition-basic
  * 使用Transition 组件实现 enter,leave的动画
  */
 import React, { Component } from "react";

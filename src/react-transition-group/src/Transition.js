@@ -115,6 +115,7 @@ class Transition extends React.Component {
   static contextTypes = {
     transitionGroup: PropTypes.object,
   }
+
   static childContextTypes = {
     transitionGroup: () => {},
   }
@@ -129,9 +130,16 @@ class Transition extends React.Component {
 
     let initialStatus
 
+    /**
+     * 
+     */
     this.appearStatus = null
 
+    //
+    // 初始化状态
+    //
     if (props.in) {
+      // 进场: 
       if (appear) {
         initialStatus = EXITED
         this.appearStatus = ENTERING
@@ -139,6 +147,8 @@ class Transition extends React.Component {
         initialStatus = ENTERED
       }
     } else {
+      // 离场: 
+
       if (props.unmountOnExit || props.mountOnEnter) {
         initialStatus = UNMOUNTED
       } else {
@@ -148,6 +158,9 @@ class Transition extends React.Component {
 
     this.state = { status: initialStatus }
 
+    /**
+     * 
+     */
     this.nextCallback = null
   }
 
@@ -155,6 +168,11 @@ class Transition extends React.Component {
     return { transitionGroup: null } // allows for nested Transitions
   }
 
+  /**
+   * 
+   * @param {*} param0 
+   * @param {*} prevState 
+   */
   static getDerivedStateFromProps({ in: nextIn }, prevState) {
     if (nextIn && prevState.status === UNMOUNTED) {
       return { status: EXITED }
@@ -208,6 +226,9 @@ class Transition extends React.Component {
     this.cancelNextCallback()
   }
 
+  /**
+   * 
+   */
   getTimeouts() {
     const { timeout } = this.props
     let exit, enter, appear
@@ -222,6 +243,11 @@ class Transition extends React.Component {
     return { exit, enter, appear }
   }
 
+  /**
+   * 更新状态
+   * @param {boolean} mounting 
+   * @param {string} nextStatus 
+   */
   updateStatus(mounting = false, nextStatus) {
     if (nextStatus !== null) {
       // nextStatus will always be ENTERING or EXITING.
@@ -238,6 +264,11 @@ class Transition extends React.Component {
     }
   }
 
+  /**
+   * 
+   * @param {*} node 
+   * @param {*} mounting 
+   */
   performEnter(node, mounting) {
     const { enter } = this.props
     const appearing = this.context.transitionGroup
@@ -269,6 +300,10 @@ class Transition extends React.Component {
     })
   }
 
+  /**
+   * 
+   * @param {*} node 
+   */
   performExit(node) {
     const { exit } = this.props
     const timeouts = this.getTimeouts()
@@ -293,6 +328,9 @@ class Transition extends React.Component {
     })
   }
 
+  /**
+   * 
+   */
   cancelNextCallback() {
     if (this.nextCallback !== null) {
       this.nextCallback.cancel()
@@ -300,6 +338,9 @@ class Transition extends React.Component {
     }
   }
 
+  /**
+   * 
+   */
   safeSetState(nextState, callback) {
     // This shouldn't be necessary, but there are weird race conditions with
     // setState callbacks and unmounting in testing, so always make sure that
@@ -308,6 +349,10 @@ class Transition extends React.Component {
     this.setState(nextState, callback)
   }
 
+  /**
+   * 
+   * @param {*} callback 
+   */
   setNextCallback(callback) {
     let active = true
 
@@ -327,6 +372,9 @@ class Transition extends React.Component {
     return this.nextCallback
   }
 
+  /**
+   * 
+   */
   onTransitionEnd(node, timeout, handler) {
     this.setNextCallback(handler)
 
@@ -342,6 +390,9 @@ class Transition extends React.Component {
     }
   }
 
+  /**
+   * 
+   */
   render() {
     const status = this.state.status
     if (status === UNMOUNTED) {
