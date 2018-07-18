@@ -7,7 +7,6 @@ import ReactDOM from "react-dom";
 import { CSSTransition } from "react-transition-group";
 import "./index.css";
 
-const duration = 300;
 const Banner = () => <div>This is a banner.</div>;
 
 class FadeBanner extends Component {
@@ -17,7 +16,6 @@ class FadeBanner extends Component {
     return (
       <CSSTransition
         in={inProps}
-        timeout={duration}
         classNames={{
           enter: "fade-in",
           enterActive: "fade-in-active",
@@ -26,8 +24,10 @@ class FadeBanner extends Component {
           exitActive: "fade-out-active",
           extDone: "fade-out-done"
         }}
-        mountOnEnter
-        unmountOnExit
+        appear
+        addEndListener={(node, done) => {
+          node.addEventListener("transition-end", done);
+        }}
         onEnter={() => console.log("enter")}
         onEntering={() => console.log("entering")}
         onEntered={() => console.log("entered")}
@@ -58,8 +58,18 @@ class App extends Component {
       <React.Fragment>
         <div>
           <div>Add/Remove banner:</div>
-          <button onClick={this.handleAddClick}>Add</button>
-          <button onClick={this.handleRemoveClick}>Remove</button>
+          <button
+            onClick={this.handleAddClick}
+            disabled={this.state.showBanner}
+          >
+            Add
+          </button>
+          <button
+            onClick={this.handleRemoveClick}
+            disabled={!this.state.showBanner}
+          >
+            Remove
+          </button>
         </div>
         <div>
           <FadeBanner in={this.state.showBanner} />

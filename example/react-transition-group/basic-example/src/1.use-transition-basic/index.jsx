@@ -7,14 +7,12 @@ import ReactDOM from "react-dom";
 import { Transition } from "react-transition-group";
 
 const duration = 300;
-const defaultStyle = {
-  transition: `opacity ${duration}ms ease-in-out`
-};
 
 const transitionStyle = {
-  entering: { opacity: 0 },
+  entering: { opacity: 1, transition: `opacity ${duration}ms ease-in-out` },
   entered: { opacity: 1 },
-  exiting: { opacity: 0 }
+  exiting: { opacity: 0, transition: `opacity ${duration}ms ease-in-out` },
+  exited: { opacity: 0 }
 };
 
 const Banner = ({ style }) => <div style={style}>This is a banner.</div>;
@@ -27,8 +25,9 @@ class FadeBanner extends Component {
       <Transition
         in={inProps}
         timeout={duration}
+        appear
         mountOnEnter
-        unmountOnExit
+        // unmountOnExit
         onEnter={() => console.log("enter")}
         onEntering={() => console.log("entering")}
         onEntered={() => console.log("entered")}
@@ -42,8 +41,7 @@ class FadeBanner extends Component {
           let currentTransitionstyle = transitionStyle[state];
           let style = currentTransitionstyle
             ? {
-                ...currentTransitionstyle,
-                ...defaultStyle
+                ...currentTransitionstyle
               }
             : null;
 
@@ -63,7 +61,7 @@ class App extends Component {
   }
 
   state = {
-    showBanner: false
+    showBanner: true
   };
 
   render() {

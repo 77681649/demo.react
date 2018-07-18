@@ -206,19 +206,26 @@ class Transition extends React.Component {
 
   componentDidUpdate(prevProps) {
     let nextStatus = null
+
+    //
+    // props 变换 - 改变状态
+    //
     if (prevProps !== this.props) {
       const { status } = this.state
 
       if (this.props.in) {
+        // 如果还没有"进场" , 那么重新进场
         if (status !== ENTERING && status !== ENTERED) {
           nextStatus = ENTERING
         }
       } else {
+        // 如果"正在进场"或"已经进场", 那么开始退场
         if (status === ENTERING || status === ENTERED) {
           nextStatus = EXITING
         }
       }
     }
+
     this.updateStatus(false, nextStatus)
   }
 
@@ -246,12 +253,14 @@ class Transition extends React.Component {
   /**
    * 更新状态
    * @param {boolean} mounting 
-   * @param {string} nextStatus 
+   * @param {string} nextStatus 下一个状态
    */
   updateStatus(mounting = false, nextStatus) {
     if (nextStatus !== null) {
       // nextStatus will always be ENTERING or EXITING.
       this.cancelNextCallback()
+
+      // 找到children DOM
       const node = ReactDOM.findDOMNode(this)
 
       if (nextStatus === ENTERING) {
@@ -260,23 +269,28 @@ class Transition extends React.Component {
         this.performExit(node)
       }
     } else if (this.props.unmountOnExit && this.state.status === EXITED) {
+      // 在 "exited"的情况下, 销毁子组件
       this.setState({ status: UNMOUNTED })
     }
   }
 
   /**
-   * 
-   * @param {*} node 
-   * @param {*} mounting 
+   * 执行 "enter" 
+   * @param {HTMLElement} node 渲染元素
+   * @param {Boolean} mounting 是否正在mount
    */
   performEnter(node, mounting) {
     const { enter } = this.props
+
+    // 1. 渲染元素是否正在mount
     const appearing = this.context.transitionGroup
       ? this.context.transitionGroup.isMounting
       : mounting
 
+    // 2. 获得过渡时长
     const timeouts = this.getTimeouts()
 
+    // 3. 不满足触发过渡的条件, 跳过动画, 将状态直接设置为"entered"
     // no enter animation skip right to ENTERED
     // if we are mounting and running this it means appear _must_ be set
     if (!mounting && !enter) {
@@ -286,6 +300,7 @@ class Transition extends React.Component {
       return
     }
 
+    // 4. emit onEnter
     this.props.onEnter(node, appearing)
 
     this.safeSetState({ status: ENTERING }, () => {
@@ -301,13 +316,14 @@ class Transition extends React.Component {
   }
 
   /**
-   * 
-   * @param {*} node 
+   * 执行 "exit"
+   * @param {Boolean} mounting 是否正在mount
    */
   performExit(node) {
     const { exit } = this.props
     const timeouts = this.getTimeouts()
 
+    // 跳过动画
     // no exit animation skip right to EXITED
     if (!exit) {
       this.safeSetState({ status: EXITED }, () => {
@@ -315,6 +331,7 @@ class Transition extends React.Component {
       })
       return
     }
+
     this.props.onExit(node)
 
     this.safeSetState({ status: EXITING }, () => {
@@ -329,7 +346,7 @@ class Transition extends React.Component {
   }
 
   /**
-   * 
+   * 取消回调函数
    */
   cancelNextCallback() {
     if (this.nextCallback !== null) {
@@ -338,9 +355,11 @@ class Transition extends React.Component {
     }
   }
 
-  /**
-   * 
-   */
+  /** 
+   * 用安全的方式 更新组件状态
+   * @param {String} nextState 新的状态
+   * @param {Function} callback 回调函数
+   */ 
   safeSetState(nextState, callback) {
     // This shouldn't be necessary, but there are weird race conditions with
     // setState callbacks and unmounting in testing, so always make sure that
@@ -350,8 +369,8 @@ class Transition extends React.Component {
   }
 
   /**
-   * 
-   * @param {*} callback 
+   * 设置回调函数, 返回一个允许取消的callback
+   * @param {Function} callback 
    */
   setNextCallback(callback) {
     let active = true
@@ -373,7 +392,7 @@ class Transition extends React.Component {
   }
 
   /**
-   * 
+   * 监听transition-end
    */
   onTransitionEnd(node, timeout, handler) {
     this.setNextCallback(handler)
@@ -390,11 +409,10 @@ class Transition extends React.Component {
     }
   }
 
-  /**
-   * 
-   */
   render() {
     const status = this.state.status
+
+    // status = UNMOUNTED 不渲染子组件
     if (status === UNMOUNTED) {
       return null
     }

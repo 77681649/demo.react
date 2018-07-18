@@ -127,6 +127,9 @@ const propTypes = {
  * <iframe src="https://codesandbox.io/embed/m77l2vp00x?fontsize=14" style="width:100%; height:500px; border:0; border-radius: 4px; overflow:hidden;" sandbox="allow-modals allow-forms allow-popups allow-scripts allow-same-origin"></iframe>
  */
 class CSSTransition extends React.Component {
+  /**
+   * 
+   */
   onEnter = (node, appearing) => {
     const { className } = this.getClassNames(appearing ? 'appear' : 'enter')
 
@@ -138,6 +141,9 @@ class CSSTransition extends React.Component {
     }
   }
 
+  /**
+   * 
+   */
   onEntering = (node, appearing) => {
     const { activeClassName } = this.getClassNames(
       appearing ? 'appear' : 'enter'
@@ -150,6 +156,9 @@ class CSSTransition extends React.Component {
     }
   }
 
+  /**
+   * 
+   */
   onEntered = (node, appearing) => {
     const { doneClassName } = this.getClassNames('enter');
 
@@ -161,6 +170,9 @@ class CSSTransition extends React.Component {
     }
   }
 
+  /**
+   * 
+   */
   onExit = (node) => {
     const { className } = this.getClassNames('exit')
 
@@ -173,6 +185,9 @@ class CSSTransition extends React.Component {
     }
   }
 
+  /**
+   * 
+   */
   onExiting = (node) => {
     const { activeClassName } = this.getClassNames('exit')
 
@@ -183,6 +198,9 @@ class CSSTransition extends React.Component {
     }
   }
 
+  /**
+   * 
+   */
   onExited = (node) => {
     const { doneClassName } = this.getClassNames('exit');
 
@@ -194,6 +212,11 @@ class CSSTransition extends React.Component {
     }
   }
 
+  /**
+   * 创建指定类型的样式
+   * @param {String} type 样式类类型
+   * @returns {Object}
+   */
   getClassNames = (type) => {
     const { classNames } = this.props;
 
@@ -213,6 +236,11 @@ class CSSTransition extends React.Component {
     };
   }
 
+  /**
+   * 移除指定类型的样式
+   * @param {HTMLElement} node 元素
+   * @param {String} type 样式类类型
+   */
   removeClasses(node, type) {
     const { className, activeClassName, doneClassName } = this.getClassNames(type)
     className && removeClass(node, className);
@@ -220,6 +248,9 @@ class CSSTransition extends React.Component {
     doneClassName && removeClass(node, doneClassName);
   }
 
+  /**
+   * 回流 - 确保变换样式有序进行 && 添加样式
+   */
   reflowAndAddClass(node, className) {
     // This is for to force a repaint,
     // which is necessary in order to transition styles when adding a class name.

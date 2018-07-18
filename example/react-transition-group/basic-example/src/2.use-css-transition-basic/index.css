@@ -1,20 +1,30 @@
+/** enter **/
 .fade-in {
   opacity: 0;
 }
 
+/** entering **/
 .fade-in-active {
   transition: opacity 300ms ease-in;
   opacity: 1;
 }
 
+/** entered **/
 .fade-in-done {
   opacity: 1;
 }
 
+/** exit **/
 .fade-out {
   transition: opacity 300ms ease-out;
 }
 
+/** exiting **/
 .fade-out-active {
+  opacity: 0;
+}
+
+/** exited **/
+.fade-out-done{
   opacity: 0;
 }
