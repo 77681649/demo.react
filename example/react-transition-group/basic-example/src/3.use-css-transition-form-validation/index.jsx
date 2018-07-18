@@ -25,7 +25,43 @@ class FadeForm extends Component {
     showValidationButton: true
   };
 
+  UNSAFE_componentWillMount() {
+    console.log("componentWillMount", arguments);
+  }
+
+  componentDidMount() {
+    console.log("componentDidMount", arguments);
+  }
+
+  static getDerivedStateFromProps() {
+    console.log("getDerivedStateFromProps", arguments);
+    return null;
+  }
+
+  UNSAFE_componentWillReceiveProps() {
+    console.log("componentWillReceiveProps", arguments);
+  }
+
+  shouldComponentUpdate() {
+    console.log("componentWillReceiveProps", arguments);
+    return true;
+  }
+
+  UNSAFE_componentWillUpdate() {
+    console.log("componentWillUpdate", arguments);
+  }
+
+  getSnapshotBeforeUpdate() {
+    console.log("getSnapshotBeforeUpdate", arguments);
+    return {};
+  }
+
+  componentDidUpdate() {
+    console.log("componentDidUpdate", arguments);
+  }
+
   render() {
+    console.log("render");
     return (
       <form className="form" onSubmit={e => e.preventDefault()}>
         <div className={`form-control ${this.state.success ? "success" : ""}`}>

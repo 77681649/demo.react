@@ -169,14 +169,17 @@ class Transition extends React.Component {
   }
 
   /**
-   * 
-   * @param {*} param0 
-   * @param {*} prevState 
+   * 基于props更新状态
+   * @param {Object} nextProps 新接收到的props 
+   * @param {Object} prevState 旧的state
+   * @returns {Object} 返回新的state
    */
   static getDerivedStateFromProps({ in: nextIn }, prevState) {
+    // in = true UNMOUNTED -> EXITED
     if (nextIn && prevState.status === UNMOUNTED) {
       return { status: EXITED }
     }
+
     return null
   }
 

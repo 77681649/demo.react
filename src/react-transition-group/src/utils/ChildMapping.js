@@ -85,6 +85,12 @@ function getProp(child, prop, props) {
   return props[prop] != null ? props[prop] : child.props[prop]
 }
 
+/**
+ * 创建初始化的子组件Map, 以cloneElement的方式, 将属性附加给每个子组件
+ * @param {Object} props 属性
+ * @param {Function} onExited 
+ * @retruns {Object} 
+ */
 export function getInitialChildMapping(props, onExited) {
   return getChildMapping(props.children, child => {
     return cloneElement(child, {
@@ -97,8 +103,17 @@ export function getInitialChildMapping(props, onExited) {
   })
 }
 
+/**
+ * 获得新的children
+ * @param {Object} nextProps 新的属性
+ * @param {Object} prevChildMapping 旧的children
+ * @param {Function} onExited 
+ * @retruns {Object}
+ */
 export function getNextChildMapping(nextProps, prevChildMapping, onExited) {
   let nextChildMapping = getChildMapping(nextProps.children)
+
+  // 合并
   let children = mergeChildMappings(prevChildMapping, nextChildMapping)
 
   Object.keys(children).forEach(key => {

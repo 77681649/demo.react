@@ -1,0 +1,93 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+.main {
+  width: 260px;
+  margin: 100px auto;
+}
+.todos {
+  padding: 20px;
+  border: solid 1px #aaa;
+  border-radius: 10px;
+}
+
+.todo-list {
+  border: solid 1px #aaa;
+  border-radius: 6px;
+}
+
+.todo-list:empty {
+  border: none;
+}
+
+.todo {
+  display: flex;
+  align-items: center;
+  height: 40px;
+
+  list-style: none;
+  border-bottom: solid 1px #aaa;
+}
+
+.todo:last-child {
+  border-bottom: none;
+}
+
+.todo .del-btn {
+  display: inline-block;
+  margin: 0px 10px;
+  width: 20px;
+  height: 20px;
+
+  background: #d9534f;
+  color: white;
+
+  border-radius: 4px;
+
+  text-align: center;
+  line-height: 20px;
+}
+
+.todo content {
+  flex: 1;
+}
+
+.btn {
+  margin-top: 20px;
+  padding: 6px 10px;
+  border: solid 1px #aaa;
+  border-radius: 4px;
+}
+
+/** enter **/
+.fade-in {
+  opacity: 0;
+}
+
+/** entering **/
+.fade-in-active {
+  transition: opacity 300ms ease-in;
+  opacity: 1;
+}
+
+/** entered **/
+.fade-in-done {
+  opacity: 1;
+}
+
+/** exit **/
+.fade-out {
+  transition: opacity 300ms ease-out;
+}
+
+/** exiting **/
+.fade-out-active {
+  opacity: 0;
+}
+
+/** exited **/
+.fade-out-done {
+  opacity: 0;
+}

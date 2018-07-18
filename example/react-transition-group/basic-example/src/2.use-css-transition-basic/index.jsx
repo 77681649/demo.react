@@ -17,6 +17,9 @@ class FadeBanner extends Component {
       <CSSTransition
         in={inProps}
         classNames={{
+          appear: "fade-in",
+          appearActive: "fade-in-active",
+          appearDone: "fade-in-done",
           enter: "fade-in",
           enterActive: "fade-in-active",
           enterDone: "fade-in-done",
@@ -24,6 +27,7 @@ class FadeBanner extends Component {
           exitActive: "fade-out-active",
           extDone: "fade-out-done"
         }}
+        mountOnEnter
         appear
         addEndListener={(node, done) => {
           node.addEventListener("transition-end", done);
@@ -50,7 +54,7 @@ class App extends Component {
   }
 
   state = {
-    showBanner: false
+    showBanner: true
   };
 
   render() {

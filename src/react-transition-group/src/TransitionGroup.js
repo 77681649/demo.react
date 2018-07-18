@@ -104,45 +104,73 @@ class TransitionGroup extends React.Component {
 
   getChildContext() {
     return {
+      /**
+       * transitionGroup的状态
+       * isMounting - 标记是不是所有的子组件都已经mount, true - yes; false - no
+       */
       transitionGroup: { isMounting: !this.appeared },
     }
   }
 
   componentDidMount() {
+    // 标记未 appeared 结束
     this.appeared = true
   }
 
+  /**
+   * 基于props更新状态
+   * @param {Object} nextProps 新接收到的props 
+   * @param {Object} prevState 旧的state
+   * @returns {Object} 返回新的state
+   */
   static getDerivedStateFromProps(
     nextProps,
     { children: prevChildMapping, handleExited, firstRender }
   ) {
     return {
       children: firstRender
+        // 初始化所有子组件
         ? getInitialChildMapping(nextProps, handleExited)
+
+        // 更新children
         : getNextChildMapping(nextProps, prevChildMapping, handleExited),
       firstRender: false,
     }
   }
 
+  /**
+   * 当"exited"时触发
+   * @param {ReactElement} child 子元素的组件实例
+   * @param {HTMLElement} node 子元素
+   */
   handleExited(child, node) {
     let currentChildMapping = getChildMapping(this.props.children)
 
+    // 如果 被exited的子组件在children中
+    // 那么 结束处理
     if (child.key in currentChildMapping) return
 
+    // emit onExited
     if (child.props.onExited) {
       child.props.onExited(node)
     }
 
+    // 更新状态
     this.setState(state => {
       let children = { ...state.children }
 
+      // 从children删除"exited"的children
       delete children[child.key]
+
+      // 更新children
       return { children }
     })
   }
 
   render() {
     const { component: Component, childFactory, ...props } = this.props
+
+    // state.childrend: Map<key,React>
     const children = values(this.state.children).map(childFactory)
 
     delete props.appear
@@ -152,6 +180,7 @@ class TransitionGroup extends React.Component {
     if (Component === null) {
       return children
     }
+
     return <Component {...props}>{children}</Component>
   }
 }
