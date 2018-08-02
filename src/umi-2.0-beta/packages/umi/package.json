@@ -1,0 +1,52 @@
+{
+  "name": "umi",
+  "version": "2.0.0-beta.2",
+  "description": "Blazing-fast next.js-like framework for React apps.",
+  "dependencies": {
+    "@babel/runtime": "7.0.0-beta.46",
+    "@types/react": "^16.1.0",
+    "atool-monitor": "^0.4.4",
+    "babel-preset-umi": "^0.3.0",
+    "chai": "^4.1.2",
+    "cross-spawn": "^6.0.5",
+    "ejs": "^2.5.7",
+    "is-windows": "^1.0.2",
+    "path-is-absolute": "^1.0.1",
+    "query-string": "^5.0.0",
+    "slash2": "^2.0.0",
+    "umi-build-dev": "^1.0.0-beta.2",
+    "update-notifier": "^2.3.0",
+    "uppercamelcase": "^3.0.0",
+    "url": "^0.11.0",
+    "yargs-parser": "^9.0.2"
+  },
+  "bin": {
+    "umi": "./bin/umi.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/umijs/umi/tree/master/packages/umi"
+  },
+  "homepage": "https://github.com/umijs/umi/tree/master/packages/umi",
+  "authors": [
+    "chencheng <sorrycc@gmail.com> (https://github.com/sorrycc)"
+  ],
+  "bugs": {
+    "url": "https://github.com/umijs/umi/issues"
+  },
+  "files": [
+    "lib",
+    "src",
+    "bin",
+    "babel.js",
+    "dynamic.d.ts",
+    "link.d.ts",
+    "navlink.d.ts",
+    "redirect.d.ts",
+    "router.d.ts",
+    "withRouter.d.ts"
+  ],
+  "devDependencies": {
+    "glob": "^7.1.2"
+  }
+}
