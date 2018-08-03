@@ -28,13 +28,15 @@ const dvaModel = {
 /**
  * Create dva-core instance.
  *
- * @param hooksAndOpts
- * @param createOpts
+ * @param hooksAndOpts {Object}
+ * @param createOpts {Object}
  */
 export function create(hooksAndOpts = {}, createOpts = {}) {
   const { initialReducer, setupApp = noop } = createOpts;
 
   const plugin = new Plugin();
+  
+  // 应用插件
   plugin.use(filterHooks(hooksAndOpts));
 
   const app = {
@@ -45,10 +47,12 @@ export function create(hooksAndOpts = {}, createOpts = {}) {
     model,
     start,
   };
+
   return app;
 
   /**
    * Register model before app is started.
+   * 在app启动之前,注册Model
    *
    * @param m {Object} model to register
    */
@@ -56,14 +60,18 @@ export function create(hooksAndOpts = {}, createOpts = {}) {
     if (process.env.NODE_ENV !== 'production') {
       checkModel(m, app._models);
     }
+
+    // 添加命名空间
     const prefixedModel = prefixNamespace({ ...m });
+
     app._models.push(prefixedModel);
+
     return prefixedModel;
   }
 
   /**
    * Inject model after app is started.
-   *
+   * 在app启动之后, 注入model
    * @param createReducer
    * @param onError
    * @param unlisteners
@@ -134,27 +142,43 @@ export function create(hooksAndOpts = {}, createOpts = {}) {
     const onError = (err, extension) => {
       if (err) {
         if (typeof err === 'string') err = new Error(err);
+       
         err.preventDefault = () => {
           err._dontReject = true;
         };
+
         plugin.apply('onError', err => {
           throw new Error(err.stack || err);
-        })(err, app._store.dispatch, extension);
+        })(
+          err, 
+          app._store.dispatch, 
+          extension
+        );
       }
     };
 
+    // 创建saga-middleware
     const sagaMiddleware = createSagaMiddleware();
+
+    // 创建promise-middlware
     const promiseMiddleware = createPromiseMiddleware(app);
+
     app._getSaga = getSaga.bind(null);
 
     const sagas = [];
     const reducers = { ...initialReducer };
+
+    /**
+     * 遍历model
+     * 
+     */
     for (const m of app._models) {
       reducers[m.namespace] = getReducer(
         m.reducers,
         m.state,
         plugin._handleActions
       );
+
       if (m.effects)
         sagas.push(app._getSaga(m.effects, m, onError, plugin.get('onEffect')));
     }

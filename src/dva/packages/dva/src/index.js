@@ -8,10 +8,12 @@ import * as core from "dva-core";
 import { isFunction } from "dva-core/lib/utils";
 
 /**
+ * 创建app
  * @params {Object} options 选项
  */
 export default function(opts = {}) {
   const history = opts.history || createHashHistory();
+
   const createOpts = {
     initialReducer: {
       routing
@@ -24,9 +26,15 @@ export default function(opts = {}) {
     }
   };
 
+  // 创建dva实例
   const app = core.create(opts, createOpts);
+
   const oldAppStart = app.start;
+
+  // 生成路由
   app.router = router;
+
+  // 启动应用
   app.start = start;
 
   return app;
@@ -44,8 +52,8 @@ export default function(opts = {}) {
   }
 
   /**
-   *
-   * @param {*} container
+   * 启动应用
+   * @param {String|HTMLElement} container
    */
   function start(container) {
     // 允许 container 是字符串，然后用 querySelector 找元素
@@ -69,6 +77,7 @@ export default function(opts = {}) {
     if (!app._store) {
       oldAppStart.call(app);
     }
+
     const store = app._store;
 
     // export _getProvider for HMR
@@ -103,10 +112,11 @@ function isString(str) {
 }
 
 /**
- *
+ * 创建App组件
  * @param {*} store
  * @param {*} app
  * @param {*} router
+ * @returns {ReactComponent} 返回一个App组件
  */
 function getProvider(store, app, router) {
   const DvaRoot = extraProps => (
@@ -114,14 +124,16 @@ function getProvider(store, app, router) {
       {router({ app, history: app._history, ...extraProps })}
     </Provider>
   );
+
   return DvaRoot;
 }
 
 /**
- *
+ * 渲染
  */
 function render(container, store, app, router) {
   const ReactDOM = require("react-dom"); // eslint-disable-line
+  
   ReactDOM.render(
     React.createElement(getProvider(store, app, router)),
     container
@@ -129,13 +141,15 @@ function render(container, store, app, router) {
 }
 
 /**
- *
+ * 
  */
 function patchHistory(history) {
   const oldListen = history.listen;
+  
   history.listen = callback => {
     callback(history.location);
     return oldListen.call(history, callback);
   };
+
   return history;
 }

@@ -9,6 +9,9 @@ import {
 import { NAMESPACE_SEP } from './constants';
 import prefixType from './prefixType';
 
+/**
+ * 
+ */
 export default function getSaga(effects, model, onError, onEffect) {
   return function*() {
     for (const key in effects) {
@@ -24,6 +27,9 @@ export default function getSaga(effects, model, onError, onEffect) {
   };
 }
 
+/**
+ * 
+ */
 function getWatcher(key, _effect, model, onError, onEffect) {
   let effect = _effect;
   let type = 'takeEvery';
@@ -89,6 +95,9 @@ function getWatcher(key, _effect, model, onError, onEffect) {
   }
 }
 
+/**
+ * 
+ */
 function createEffects(model) {
   function assertAction(type, name) {
     invariant(type, 'dispatch: action should be a plain Object with type');
@@ -141,6 +150,9 @@ function createEffects(model) {
   return { ...sagaEffects, put, take };
 }
 
+/**
+ * 
+ */
 function applyOnEffect(fns, effect, model, key) {
   for (const fn of fns) {
     effect = fn(effect, sagaEffects, model, key);

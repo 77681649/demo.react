@@ -2,6 +2,12 @@ import warning from 'warning';
 import { isArray } from './utils';
 import { NAMESPACE_SEP } from './constants';
 
+/**
+ * 前缀 namespace/key
+ * @param {Object} obj 
+ * @param {String} namespace 
+ * @param {String} type 
+ */
 function prefix(obj, namespace, type) {
   return Object.keys(obj).reduce((memo, key) => {
     warning(
@@ -14,6 +20,11 @@ function prefix(obj, namespace, type) {
   }, {});
 }
 
+/**
+ * 为model,添加前缀
+ * @param {Model} model 
+ * @returns {Model}
+ */
 export default function prefixNamespace(model) {
   const {
     namespace,
@@ -28,8 +39,10 @@ export default function prefixNamespace(model) {
       model.reducers = prefix(reducers, namespace, 'reducer');
     }
   }
+
   if (effects) {
     model.effects = prefix(effects, namespace, 'effect');
   }
+
   return model;
 }

@@ -1,5 +1,11 @@
 import defaultHandleActions from './handleActions';
 
+/**
+ *
+ * @param {*} reducers 
+ * @param {*} state 
+ * @param {*} handleActions
+ */
 export default function getReducer(reducers, state, handleActions) {
   // Support reducer enhancer
   // e.g. reducers: [realReducers, enhancer]
