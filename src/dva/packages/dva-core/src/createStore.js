@@ -9,9 +9,9 @@ import { returnSelf, isArray } from './utils';
  * @param {Object} options 选项
  * @param {Function} options.reducers rootReducer
  * @param {any} options.initialState 默认的初始状态
- * @param {Function} options.sagaMiddleware 
- * @param {Function} options.promiseMiddleware 
- * @param {Function} options.createOpts 
+ * @param {Function} options.sagaMiddleware saga中间件
+ * @param {Function} options.promiseMiddleware promise中间件
+ * @param {Function} options.createOpts 创建选项
  * @returns {redux.Store} 返回创建的store
  */
 export default function({

@@ -1,3 +1,6 @@
+/**
+ * 
+ */
 import invariant from 'invariant';
 import * as sagaEffects from 'redux-saga/lib/effects';
 import warning from 'warning';
@@ -21,7 +24,7 @@ export default function getSaga(effects, model, onError, onEffect) {
   return function*() {
     for (const key in effects) {
       if (Object.prototype.hasOwnProperty.call(effects, key)) {
-        // 创建一个worker
+        // 创建 watcher
         const watcher = getWatcher(key, effects[key], model, onError, onEffect);
 
         // fork worker
@@ -45,21 +48,21 @@ export default function getSaga(effects, model, onError, onEffect) {
  * @param {String} key wacther.key (action.type)
  * @param {GeneratorFunction|Array} _effect 
  * @param {dva.Model} model model对象
- * @param {Function} onError 当发生错误时触发
+ * @param {Function} onError 当执行
  * @param {Function} onEffect 
- * @returns {GeneratorFunction} 返回一个Genrator函数
+ * @returns {GeneratorFunction} 返回一个用于监听指定action.type redux-saga watcher
  */
 function getWatcher(key, _effect, model, onError, onEffect) {
   let effect = _effect;
   let type = 'takeEvery';
   let ms;
 
-  //
-  // 解析effect tuple
-  //
+  // 1. 解析effect tuple
   if (Array.isArray(_effect)) {
     effect = _effect[0];
+    
     const opts = _effect[1];
+
     if (opts && opts.type) {
       type = opts.type;
       if (type === 'throttle') {
@@ -82,7 +85,7 @@ function getWatcher(key, _effect, model, onError, onEffect) {
   function noop() {}
 
   /**
-   * 创建一个saga
+   * 创建一个saga watcher
    * @param {any[]} ...args 
    */
   function* sagaWithCatch(...args) {
@@ -117,10 +120,10 @@ function getWatcher(key, _effect, model, onError, onEffect) {
     }
   }
 
-  // 执行onEffect
+  // 2. 执行onEffect
   const sagaWithOnEffect = applyOnEffect(onEffect, sagaWithCatch, model, key);
 
-  // 根据watcher type, 创建saga watcher
+  // 3. 根据watcher type, 创建saga watcher
   switch (type) {
     case 'watcher':
       return sagaWithCatch;
@@ -140,9 +143,11 @@ function getWatcher(key, _effect, model, onError, onEffect) {
 }
 
 /**
- * 根据model, 创建wrap effects
+ * 创建effects
+ *  1. 包装take, put, put.resolve
+ *  2. 提供effects
  * @param {dva.Model} model model实例
- * @returns {Object} 返回提供的effects
+ * @returns {Object} 返回包装之后的effects
  */
 function createEffects(model) {
   /**
@@ -161,11 +166,13 @@ function createEffects(model) {
   }
 
   /**
-   * wrap action
+   * wrap put - 为type添加namespace前缀
+   * 
    * @param {Object} action 
    */
   function put(action) {
     const { type } = action;
+
     assertAction(type, 'sagaEffects.put');
 
     return sagaEffects.put({ ...action, type: prefixType(type, model) });
@@ -189,7 +196,7 @@ function createEffects(model) {
   put.resolve = putResolve;
 
   /**
-   * wrap take
+   * wrap take - 为pattern添加namespace前缀
    * @param {String|String[]|Function} type 
    */
   function take(type) {

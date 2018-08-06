@@ -57,7 +57,8 @@
     "comma-dangle": "off",
     "no-trailing-spaces": "off",
     "prefer-destructuring": "off",
-    "curly": "off"
+    "curly": "off",
+    "no-multi-assign": "off"
   },
   "parserOptions": {
     "ecmaFeatures": {

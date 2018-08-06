@@ -1,22 +1,30 @@
-import { NAMESPACE_SEP } from './constants';
+import { NAMESPACE_SEP } from "./constants";
 
 /**
- * 为action.type, 添加namespace前缀
- * 如果 namespace/type 在model中存在, 返回 namespace/type
- * 否则 返回type
- * 
- * @param {string} type action.type
+ * 尝试为action.type添加前缀namespace
+ *  
+ * if action.type is reducer or effect
+ *  -> namespace/action.type
+ * else
+ *  -> action.type
+ *
+ * @param {string} type action.type 原始的action.type
  * @param {dva.Model} model model实例
- * @returns {String}
+ * @returns {String} 返回action.type
  */
 export default function prefixType(type, model) {
-  // namespace/effect
+  // 有前缀的action.type namespace/action.type
   const prefixedType = `${model.namespace}${NAMESPACE_SEP}${type}`;
-  
-  const typeWithoutAffix = prefixedType.replace(/\/@@[^/]+?$/, '');
 
-  if ((model.reducers && model.reducers[typeWithoutAffix])
-    || (model.effects && model.effects[typeWithoutAffix])) {
+  // 去掉后缀"@@..."
+  const typeWithoutAffix = prefixedType.replace(/\/@@[^/]+?$/, "");
+
+  const { reducers, effects } = model;
+
+  if (
+    (reducers && reducers[typeWithoutAffix]) ||
+    (effects && effects[typeWithoutAffix])
+  ) {
     return prefixedType;
   }
 

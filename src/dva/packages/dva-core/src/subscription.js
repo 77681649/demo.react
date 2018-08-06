@@ -3,11 +3,12 @@ import { isFunction } from './utils';
 import prefixedDispatch from './prefixedDispatch';
 
 /**
- * @param {Object} subs
+ * 运行 subscription
+ * @param {Object} subs model.subscriptions
  * @param {dva.Model} model model对象
- * @param {dva.Application} app对象
+ * @param {dva.Application} app app对象
  * @param {Function} onError 当发生错误时, 调用的函数
- * @returns {Object} 
+ * @returns {Object} 返回subscription的unscribe
  */
 export function run(subs, model, app, onError) {
   const funcs = [];
@@ -34,8 +35,9 @@ export function run(subs, model, app, onError) {
 }
 
 /**
- * @param {} unlisteners
- * @param {} namespace
+ * 取消监听
+ * @param {Ojbect} unlisteners unscribes
+ * @param {String} namespace 命名空间
  */
 export function unlisten(unlisteners, namespace) {
   if (!unlisteners[namespace]) return;

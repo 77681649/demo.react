@@ -1,28 +1,28 @@
-import { combineReducers } from 'redux';
-import createSagaMiddleware from 'redux-saga/lib/internal/middleware';
-import invariant from 'invariant';
-import checkModel from './checkModel';
-import prefixNamespace from './prefixNamespace';
-import Plugin, { filterHooks } from './Plugin';
-import createStore from './createStore';
-import getSaga from './getSaga';
-import getReducer from './getReducer';
-import createPromiseMiddleware from './createPromiseMiddleware';
+import { combineReducers } from "redux";
+import createSagaMiddleware from "redux-saga/lib/internal/middleware";
+import invariant from "invariant";
+import checkModel from "./checkModel";
+import prefixNamespace from "./prefixNamespace";
+import Plugin, { filterHooks } from "./Plugin";
+import createStore from "./createStore";
+import getSaga from "./getSaga";
+import getReducer from "./getReducer";
+import createPromiseMiddleware from "./createPromiseMiddleware";
 import {
   run as runSubscription,
-  unlisten as unlistenSubscription,
-} from './subscription';
-import { noop } from './utils';
+  unlisten as unlistenSubscription
+} from "./subscription";
+import { noop } from "./utils";
 
 // Internal model to update global state when do unmodel
 const dvaModel = {
-  namespace: '@@dva',
+  namespace: "@@dva",
   state: 0,
   reducers: {
     UPDATE(state) {
       return state + 1;
-    },
-  },
+    }
+  }
 };
 
 /**
@@ -38,7 +38,7 @@ export function create(hooksAndOpts = {}, createOpts = {}) {
 
   // 创建插件系统
   const plugin = new Plugin();
-  
+
   // 应用插件
   plugin.use(filterHooks(hooksAndOpts));
 
@@ -49,7 +49,7 @@ export function create(hooksAndOpts = {}, createOpts = {}) {
     _plugin: plugin,
     use: plugin.use.bind(plugin),
     model,
-    start,
+    start
   };
 
   return app;
@@ -62,7 +62,7 @@ export function create(hooksAndOpts = {}, createOpts = {}) {
    * @returns {Object} 返回注册的model
    */
   function model(m) {
-    if (process.env.NODE_ENV !== 'production') {
+    if (process.env.NODE_ENV !== "production") {
       checkModel(m, app._models);
     }
 
@@ -78,30 +78,34 @@ export function create(hooksAndOpts = {}, createOpts = {}) {
   /**
    * Inject model after app is started.
    * 在app启动之后, 注入model
-   * @param createReducer
-   * @param onError
-   * @param unlisteners
-   * @param m
+   * @param {Function} createReducer reducer创建函数
+   * @param {Function} onError 错误处理函数
+   * @param {Object} unlisteners subscription subscribe
+   * @param {Model} m model配置
    */
   function injectModel(createReducer, onError, unlisteners, m) {
     m = model(m);
 
     const store = app._store;
-    
+
+    // 创建async reducer
     store.asyncReducers[m.namespace] = getReducer(
       m.reducers,
       m.state,
       plugin._handleActions
     );
 
+    // 用新的reducers替换
     store.replaceReducer(createReducer(store.asyncReducers));
 
+    // 创建 && 执行 saga
     if (m.effects) {
       store.runSaga(
-        app._getSaga(m.effects, m, onError, plugin.get('onEffect'))
+        app._getSaga(m.effects, m, onError, plugin.get("onEffect"))
       );
     }
 
+    // run subscription
     if (m.subscriptions) {
       unlisteners[m.namespace] = runSubscription(
         m.subscriptions,
@@ -129,8 +133,12 @@ export function create(hooksAndOpts = {}, createOpts = {}) {
     // Delete reducers
     delete store.asyncReducers[namespace];
     delete reducers[namespace];
+
+    // 替换reducer
     store.replaceReducer(createReducer());
-    store.dispatch({ type: '@@dva/UPDATE' });
+
+    // 发送
+    store.dispatch({ type: "@@dva/UPDATE" });
 
     // Cancel effects
     store.dispatch({ type: `${namespace}/@@CANCEL_EFFECTS` });
@@ -155,19 +163,15 @@ export function create(hooksAndOpts = {}, createOpts = {}) {
      */
     const onError = (err, extension) => {
       if (err) {
-        if (typeof err === 'string') err = new Error(err);
-       
+        if (typeof err === "string") err = new Error(err);
+
         err.preventDefault = () => {
           err._dontReject = true;
         };
 
-        plugin.apply('onError', err => {
+        plugin.apply("onError", err => {
           throw new Error(err.stack || err);
-        })(
-          err, 
-          app._store.dispatch, 
-          extension
-        );
+        })(err, app._store.dispatch, extension);
       }
     };
 
@@ -178,6 +182,7 @@ export function create(hooksAndOpts = {}, createOpts = {}) {
     const promiseMiddleware = createPromiseMiddleware(app);
 
     // 暴露getSaga
+    // .bind 避免污染getSaga
     app._getSaga = getSaga.bind(null);
 
     // 存储sagas
@@ -186,9 +191,14 @@ export function create(hooksAndOpts = {}, createOpts = {}) {
     // 存储app reducers
     const reducers = { ...initialReducer };
 
+    //
+    // 遍历model
+    // 1. 生成model.reducer
+    // 2. model.saga
+    //
     for (const m of app._models) {
       /**
-       * 生成model的sync reducer 
+       * 生成model的sync reducer
        */
       reducers[m.namespace] = getReducer(
         m.reducers,
@@ -200,39 +210,40 @@ export function create(hooksAndOpts = {}, createOpts = {}) {
        * 生成model的async reducer
        */
       if (m.effects)
-        sagas.push(app._getSaga(m.effects, m, onError, plugin.get('onEffect')));
+        sagas.push(app._getSaga(m.effects, m, onError, plugin.get("onEffect")));
     }
 
     // 获得 reducerEnhancer
-    const reducerEnhancer = plugin.get('onReducer');
+    const reducerEnhancer = plugin.get("onReducer");
 
     // 获得 额外的reducers
-    const extraReducers = plugin.get('extraReducers');
-    
+    const extraReducers = plugin.get("extraReducers");
+
     invariant(
       Object.keys(extraReducers).every(key => !(key in reducers)),
       `[app.start] extraReducers is conflict with other reducers, reducers list: ${Object.keys(
         reducers
-      ).join(', ')}`
+      ).join(", ")}`
     );
 
     // Create store
-    const store = (app._store = createStore({
-      // eslint-disable-line
+    const reduxStore = createStore({
       reducers: createReducer(),
       initialState: hooksAndOpts.initialState || {},
       plugin,
       createOpts,
       sagaMiddleware,
-      promiseMiddleware,
-    }));
+      promiseMiddleware
+    });
+
+    const store = (app._store = reduxStore);
 
     // Extend store
     store.runSaga = sagaMiddleware.run;
     store.asyncReducers = {};
 
     // Execute listeners when state is changed
-    const listeners = plugin.get('onStateChange');
+    const listeners = plugin.get("onStateChange");
     for (const listener of listeners) {
       store.subscribe(() => {
         listener(store.getState());
@@ -247,6 +258,7 @@ export function create(hooksAndOpts = {}, createOpts = {}) {
 
     // Run subscriptions
     const unlisteners = {};
+
     for (const model of this._models) {
       if (model.subscriptions) {
         unlisteners[model.namespace] = runSubscription(
@@ -265,14 +277,14 @@ export function create(hooksAndOpts = {}, createOpts = {}) {
     /**
      * Create global reducer for redux.
      *
-     * @returns {Object}
+     * @returns {Function} 返回一个reducer
      */
     function createReducer() {
       return reducerEnhancer(
         combineReducers({
           ...reducers,
           ...extraReducers,
-          ...(app._store ? app._store.asyncReducers : {}),
+          ...(app._store ? app._store.asyncReducers : {})
         })
       );
     }

@@ -1,7 +1,7 @@
 import defaultHandleActions from './handleActions';
 
 /**
- * 创建reducer
+ * 创建model.reducer
  * @param {Object|Array} reducers reducer片段
  * @param {Any} state reducer的默认状态
  * @param {Function} handleActions 生成reducer的逻辑

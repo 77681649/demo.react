@@ -16,14 +16,17 @@ function prefix(obj, namespace, type) {
       key.indexOf(`${namespace}${NAMESPACE_SEP}`) !== 0,
       `[prefixNamespace]: ${type} ${key} should not be prefixed with namespace ${namespace}`,
     );
+
+    // 格式: namespace/key
     const newKey = `${namespace}${NAMESPACE_SEP}${key}`;
     memo[newKey] = obj[key];
+    
     return memo;
   }, {});
 }
 
 /**
- * 为model的reducres,effects添加namespace前缀
+ * 为model的reducers,effects中的action.type,添加namespace前缀
  * 
  * @example
  * model({
@@ -47,8 +50,8 @@ function prefix(obj, namespace, type) {
  *  }
  * })
  * 
- * @param {Model} model 
- * @returns {Model} 返回model
+ * @param {dva.Model} model model对象
+ * @returns {dva.Model} 返回model对象
  */
 export default function prefixNamespace(model) {
   const {
