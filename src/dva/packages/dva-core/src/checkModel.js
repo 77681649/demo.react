@@ -1,6 +1,11 @@
 import invariant from 'invariant';
 import { isArray, isFunction, isPlainObject } from './utils';
 
+/**
+ * 检查model的有效性
+ * @param {Model} model model
+ * @param {Model[]} existModels 已存在的models
+ */
 export default function checkModel(model, existModels) {
   const {
     namespace,
@@ -19,6 +24,7 @@ export default function checkModel(model, existModels) {
     typeof namespace === 'string',
     `[app.model] namespace should be string, but got ${typeof namespace}`,
   );
+  
   // 并且唯一
   invariant(
     !existModels.some(model => model.namespace === namespace),

@@ -4,6 +4,16 @@ import invariant from 'invariant';
 import window from 'global/window';
 import { returnSelf, isArray } from './utils';
 
+/**
+ * 创建dva.store
+ * @param {Object} options 选项
+ * @param {Function} options.reducers rootReducer
+ * @param {any} options.initialState 默认的初始状态
+ * @param {Function} options.sagaMiddleware 
+ * @param {Function} options.promiseMiddleware 
+ * @param {Function} options.createOpts 
+ * @returns {redux.Store} 返回创建的store
+ */
 export default function({
   reducers,
   initialState,
@@ -19,13 +29,17 @@ export default function({
     `[app.start] extraEnhancers should be array, but got ${typeof extraEnhancers}`
   );
 
+  // 额外的中间件
   const extraMiddlewares = plugin.get('onAction');
+
+  // 注册 中间件
   const middlewares = setupMiddlewares([
     promiseMiddleware,
     sagaMiddleware,
     ...flatten(extraMiddlewares),
   ]);
 
+  // 添加 dev tools
   let devtools = () => noop => noop;
   if (
     process.env.NODE_ENV !== 'production' &&
@@ -33,7 +47,7 @@ export default function({
   ) {
     devtools = window.__REDUX_DEVTOOLS_EXTENSION__;
   }
-
+  
   const enhancers = [
     applyMiddleware(...middlewares),
     ...extraEnhancers,

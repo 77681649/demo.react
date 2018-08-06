@@ -14,8 +14,9 @@ const hooks = [
 ];
 
 /**
- * 从obj中筛选出hook
- * @param {*} obj
+ * 从obj中筛选出有效的hooks
+ * @param {Object} obj 选项
+ * @returns {Object} 返回筛选出的hooks
  */
 export function filterHooks(obj) {
   return Object.keys(obj).reduce((memo, key) => {
@@ -39,8 +40,8 @@ export default class Plugin {
   }
 
   /**
-   * 加载插件
-   * @param {Object} plugin 插件
+   * 安装插件
+   * @param {Object} plugin hooks集合
    */
   use(plugin) {
     invariant(
@@ -56,6 +57,7 @@ export default class Plugin {
         invariant(hooks[key], `plugin.use: unknown plugin property: ${key}`);
 
         if (key === "_handleActions") {
+          // 值允许有一个
           this._handleActions = plugin[key];
         } else if (key === "extraEnhancers") {
           // 值允许有一个
@@ -69,14 +71,18 @@ export default class Plugin {
   }
 
   /**
-   * 执行插件
-   * @param {String} key key
-   * @param {Function} defaultHandler 默认的处理器
+   * 执行 指定插件
+   * @param {String} key 插件名
+   * @param {Function} [defaultHandler] 默认的处理器, 如果没有注册对应的插件, 那么使用默认的处理器
+   * @returns {Function} 返回一个wrap, 负责执行对应的处理器
    */
   apply(key, defaultHandler) {
+    // 插件集合
     const hooks = this.hooks;
+    // 可执行的插件
     const validApplyHooks = ["onError", "onHmr"];
 
+    // 确保hook可执行
     invariant(
       validApplyHooks.indexOf(key) > -1,
       `plugin.apply: hook ${key} cannot be applied`
@@ -86,6 +92,7 @@ export default class Plugin {
 
     return (...args) => {
       if (fns.length) {
+        // 依次执行
         for (const fn of fns) {
           fn(...args);
         }
@@ -96,8 +103,9 @@ export default class Plugin {
   }
 
   /**
-   *
-   * @param {*} key
+   * 执行指定的hook getter, 返回得到的值
+   * @param {String} key hook key
+   * @returns {any} 返回得到的值
    */
   get(key) {
     const hooks = this.hooks;
@@ -114,19 +122,23 @@ export default class Plugin {
 }
 
 /**
- *
- * @param {*} hook
+ * 获得 额外配置的reducer
+ * @param {Object} hook 
+ * @returns {Object}
  */
 function getExtraReducers(hook) {
   let ret = {};
+  
   for (const reducerObj of hook) {
     ret = { ...ret, ...reducerObj };
   }
+
   return ret;
 }
 
 /**
- *
+ * @param {Object} hook
+ * @returns {Function}
  */
 function getOnReducer(hook) {
   return function(reducer) {

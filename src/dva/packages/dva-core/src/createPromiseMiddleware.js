@@ -1,15 +1,16 @@
 import { NAMESPACE_SEP } from './constants';
 
 /**
- * 创建 redux-promise 中间件
- * @param {Dva} app 
+ * 创建 redux-promise 中间件 - 处理effect
+ * @param {Dva} app app实例
+ * @returns {redux.Middleware} 返回一个redux中间件
  */
 export default function createPromiseMiddleware(app) {
   return () => next => action => {
     const { type } = action;
     
     if (isEffect(type)) {
-      // 包装为promise
+      // 包装一个Pormise, 处理effect
       return new Promise((resolve, reject) => {
         next({
           __dva_resolve: resolve,
@@ -33,11 +34,11 @@ export default function createPromiseMiddleware(app) {
     // 获得namespace
     const [namespace] = type.split(NAMESPACE_SEP);
 
-    // 获得model
+    // 找到namespace对应的model
     const model = app._models.filter(m => m.namespace === namespace)[0];
-    
+
+    // 判断model中是否有指定的effect
     if (model) {
-      // 如果找到, 说明是effect
       if (model.effects && model.effects[type]) {
         return true;
       }

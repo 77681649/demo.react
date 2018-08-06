@@ -1,3 +1,11 @@
+/**
+ * dva
+ * 创建application -- 提供application级别API
+ *  start  - 负责渲染出App
+ *  router - 负责添加Router
+ *  model  - 负责添加Model
+ *  use    - 负责添加hook
+ */
 import React from "react";
 import invariant from "invariant";
 import createHashHistory from "history/createHashHistory";
@@ -12,15 +20,21 @@ import { isFunction } from "dva-core/lib/utils";
  * @params {Object} options 选项
  */
 export default function(opts = {}) {
+  // 创建history
   const history = opts.history || createHashHistory();
 
   const createOpts = {
+    // react-router-redux 需要的reducer
     initialReducer: {
       routing
     },
+
+    // 初始化createStore时, 安装的插件
     setupMiddlewares(middlewares) {
       return [routerMiddleware(history), ...middlewares];
     },
+
+    // 
     setupApp(app) {
       app._history = patchHistory(history);
     }
@@ -29,19 +43,20 @@ export default function(opts = {}) {
   // 创建dva实例
   const app = core.create(opts, createOpts);
 
+  // dva start
   const oldAppStart = app.start;
 
-  // 生成路由
+  // router API
   app.router = router;
 
-  // 启动应用
+  // start API
   app.start = start;
 
   return app;
 
   /**
-   *
-   * @param {*} router
+   * 
+   * @param {Function} router 一个函数, 返回一个Router对象
    */
   function router(router) {
     invariant(
@@ -52,8 +67,9 @@ export default function(opts = {}) {
   }
 
   /**
-   * 启动应用
-   * @param {String|HTMLElement} container
+   * wrap 启动应用
+   * @param {String|HTMLElement} container App组件的容器
+   * @returns {ReactElement|undefined} 
    */
   function start(container) {
     // 允许 container 是字符串，然后用 querySelector 找元素
@@ -74,6 +90,7 @@ export default function(opts = {}) {
       `[app.start] router must be registered before app.start()`
     );
 
+    // 
     if (!app._store) {
       oldAppStart.call(app);
     }
@@ -95,7 +112,7 @@ export default function(opts = {}) {
 }
 
 /**
- *
+ * 
  */
 function isHTMLElement(node) {
   return (
@@ -113,9 +130,9 @@ function isString(str) {
 
 /**
  * 创建App组件
- * @param {*} store
- * @param {*} app
- * @param {*} router
+ * @param {redux.Store} store
+ * @param {Dva} app
+ * @param {Function} router
  * @returns {ReactComponent} 返回一个App组件
  */
 function getProvider(store, app, router) {

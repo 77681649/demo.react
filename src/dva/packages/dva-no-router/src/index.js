@@ -8,7 +8,7 @@ import { isFunction } from 'dva-core/lib/utils';
 export default function (opts = {}) {
   const app = core.create(opts);
   const oldAppStart = app.start;
-  app.router = router;
+  app.router = router;                         
   app.start = start;
   return app;
 

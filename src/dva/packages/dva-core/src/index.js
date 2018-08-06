@@ -27,18 +27,22 @@ const dvaModel = {
 
 /**
  * Create dva-core instance.
- *
- * @param hooksAndOpts {Object}
- * @param createOpts {Object}
+ *  1. 创建Plugin
+ *  2. add prefix for model
+ * @param hooksAndOpts {Object} hooks和其他选项
+ * @param createOpts {Object} 创建时的选项
+ * @returns {DvaCore} 返回一个dva-core实例
  */
 export function create(hooksAndOpts = {}, createOpts = {}) {
   const { initialReducer, setupApp = noop } = createOpts;
 
+  // 创建插件系统
   const plugin = new Plugin();
   
   // 应用插件
   plugin.use(filterHooks(hooksAndOpts));
 
+  // 创建app对象
   const app = {
     _models: [prefixNamespace({ ...dvaModel })],
     _store: null,
@@ -55,15 +59,17 @@ export function create(hooksAndOpts = {}, createOpts = {}) {
    * 在app启动之前,注册Model
    *
    * @param m {Object} model to register
+   * @returns {Object} 返回注册的model
    */
   function model(m) {
     if (process.env.NODE_ENV !== 'production') {
       checkModel(m, app._models);
     }
 
-    // 添加命名空间
+    // add prefix
     const prefixedModel = prefixNamespace({ ...m });
 
+    // add model list
     app._models.push(prefixedModel);
 
     return prefixedModel;
@@ -81,17 +87,21 @@ export function create(hooksAndOpts = {}, createOpts = {}) {
     m = model(m);
 
     const store = app._store;
+    
     store.asyncReducers[m.namespace] = getReducer(
       m.reducers,
       m.state,
       plugin._handleActions
     );
+
     store.replaceReducer(createReducer(store.asyncReducers));
+
     if (m.effects) {
       store.runSaga(
         app._getSaga(m.effects, m, onError, plugin.get('onEffect'))
       );
     }
+
     if (m.subscriptions) {
       unlisteners[m.namespace] = runSubscription(
         m.subscriptions,
@@ -138,7 +148,11 @@ export function create(hooksAndOpts = {}, createOpts = {}) {
    * @returns void
    */
   function start() {
-    // Global error handler
+    /**
+     * Global error handler
+     * @param {Error|String} err 错误对象或错误消息
+     * @param {Any[]} extension 额外的参数
+     */
     const onError = (err, extension) => {
       if (err) {
         if (typeof err === 'string') err = new Error(err);
@@ -157,33 +171,44 @@ export function create(hooksAndOpts = {}, createOpts = {}) {
       }
     };
 
-    // 创建saga-middleware
+    // 创建redux-saga saga-middleware
     const sagaMiddleware = createSagaMiddleware();
 
     // 创建promise-middlware
     const promiseMiddleware = createPromiseMiddleware(app);
 
+    // 暴露getSaga
     app._getSaga = getSaga.bind(null);
 
+    // 存储sagas
     const sagas = [];
+
+    // 存储app reducers
     const reducers = { ...initialReducer };
 
-    /**
-     * 遍历model
-     * 
-     */
     for (const m of app._models) {
+      /**
+       * 生成model的sync reducer 
+       */
       reducers[m.namespace] = getReducer(
         m.reducers,
         m.state,
         plugin._handleActions
       );
 
+      /**
+       * 生成model的async reducer
+       */
       if (m.effects)
         sagas.push(app._getSaga(m.effects, m, onError, plugin.get('onEffect')));
     }
+
+    // 获得 reducerEnhancer
     const reducerEnhancer = plugin.get('onReducer');
+
+    // 获得 额外的reducers
     const extraReducers = plugin.get('extraReducers');
+    
     invariant(
       Object.keys(extraReducers).every(key => !(key in reducers)),
       `[app.start] extraReducers is conflict with other reducers, reducers list: ${Object.keys(
