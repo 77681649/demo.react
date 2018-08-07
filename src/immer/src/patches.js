@@ -1,5 +1,8 @@
 import {each} from "./common"
 
+/**
+ * 
+ */
 export function generatePatches(
     state,
     basepath,
@@ -29,6 +32,9 @@ export function generatePatches(
             )
 }
 
+/**
+ * 
+ */
 export function generateArrayPatches(
     state,
     basepath,
@@ -70,6 +76,9 @@ export function generateArrayPatches(
     }
 }
 
+/**
+ * 
+ */
 function generateObjectPatches(
     state,
     basepath,
@@ -97,6 +106,9 @@ function generateObjectPatches(
     })
 }
 
+/**
+ * 
+ */
 export function applyPatches(draft, patches) {
     for (let i = 0; i < patches.length; i++) {
         const patch = patches[i]

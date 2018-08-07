@@ -15,6 +15,9 @@ import {
 
 let proxies = null
 
+/**
+ * 
+ */
 const objectTraps = {
     get,
     has(target, prop) {
@@ -33,6 +36,11 @@ const objectTraps = {
 }
 
 const arrayTraps = {}
+
+
+/**
+ * 
+ */
 each(objectTraps, (key, fn) => {
     arrayTraps[key] = function() {
         arguments[0] = arguments[0][0]
@@ -40,6 +48,9 @@ each(objectTraps, (key, fn) => {
     }
 })
 
+/**
+ * 
+ */
 function createState(parent, base) {
     return {
         modified: false, // this tree is modified (either this object or one of it's children)
@@ -52,6 +63,9 @@ function createState(parent, base) {
     }
 }
 
+/**
+ * 
+ */
 function source(state) {
     return state.modified === true ? state.copy : state.base
 }
@@ -74,6 +88,9 @@ function get(state, prop) {
     }
 }
 
+/**
+ * 
+ */
 function set(state, prop, value) {
     // TODO: optimize
     state.assigned[prop] = true
@@ -89,6 +106,9 @@ function set(state, prop, value) {
     return true
 }
 
+/**
+ * 
+ */
 function deleteProperty(state, prop) {
     state.assigned[prop] = false
     markChanged(state)
@@ -96,6 +116,9 @@ function deleteProperty(state, prop) {
     return true
 }
 
+/**
+ * 
+ */
 function getOwnPropertyDescriptor(state, prop) {
     const owner = state.modified
         ? state.copy
@@ -106,12 +129,19 @@ function getOwnPropertyDescriptor(state, prop) {
     return descriptor
 }
 
+/**
+ * 
+ */
 function defineProperty() {
     throw new Error(
         "Immer does not support defining properties on draft objects."
     )
 }
 
+/**
+ * 
+ * @param {*} state 
+ */
 function markChanged(state) {
     if (!state.modified) {
         state.modified = true
@@ -122,7 +152,9 @@ function markChanged(state) {
     }
 }
 
-// creates a proxy for plain objects / arrays
+/**
+ * creates a proxy for plain objects / arrays
+ */
 function createProxy(parentState, base, key) {
     if (isProxy(base)) throw new Error("Immer bug. Plz report.")
     const state = createState(parentState, base, key)
@@ -133,6 +165,12 @@ function createProxy(parentState, base, key) {
     return proxy.proxy
 }
 
+/**
+ * 
+ * @param {*} baseState 
+ * @param {*} producer 
+ * @param {*} patchListener 
+ */
 export function produceProxy(baseState, producer, patchListener) {
     if (isProxy(baseState)) {
         // See #100, don't nest producers
