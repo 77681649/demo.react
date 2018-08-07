@@ -1,0 +1,16 @@
+{
+  "private": true,
+  "dependencies": {
+    "hypernova": "2.3.0",
+    "hypernova-client": "1.1.0",
+    "hypernova-react": "2.1.0",
+    "react": "16.4.2",
+    "react-dom": "16.4.2",
+    "react-router": "4.3.1"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-preset-react": "^6.24.1",
+    "babel-register": "^6.26.0"
+  }
+}
