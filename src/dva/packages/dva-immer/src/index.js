@@ -1,5 +1,8 @@
 import produce from 'immer';
 
+/**
+ * 
+ */
 export default function() {
   return {
     _handleActions(handlers, defaultState) {
