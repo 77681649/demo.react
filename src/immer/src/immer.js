@@ -6,15 +6,18 @@ import {produceProxy} from "./proxy"
 import {produceEs5} from "./es5"
 
 /**
+ * 
+ * 
+ * 该函数能自由的改变状态, 因为它将创建写入时的副本("写时拷贝").
+ * 这意味着, 原始的状态将保持不变, 一旦函数完成, 则返回修改的状态
+ * 
  * produce takes a state, and runs a function against it.
- * That function can freely mutate the state, as it will create copies-on-write.
- * This means that the original state will stay unchanged, and once the function finishes, the modified state is returned
- *
+ * 
  * @export
- * @param {any} baseState - the state to start with
- * @param {Function} producer - function that receives a proxy of the base state as first argument and which can be freely modified
- * @param {Function} patchListener - optional function that will be called with all the patches produces here
- * @returns {any} a new state, or the base state if nothing was modified
+ * @param {any} baseState - 初始状态
+ * @param {Function} producer - 接受可以自由修改的baseState代理作为第一个参数的函数 (draft) => newState
+ * @param {Function} patchListener - [可选]  optional function that will be called with all the patches produces here
+ * @returns {any} 如果没有修改,则返回baseState,否则返回修改之后的newState
  */
 export function produce(baseState, producer, patchListener) {
     // prettier-ignore
@@ -59,7 +62,8 @@ export function produce(baseState, producer, patchListener) {
         throw new Error(
             `the first argument to an immer producer should be a primitive, plain object or array, got ${typeof baseState}: "${baseState}"`
         )
-    return getUseProxies()
+
+    return !getUseProxies()
         ? produceProxy(baseState, producer, patchListener)
         : produceEs5(baseState, producer, patchListener)
 }

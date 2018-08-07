@@ -19,7 +19,9 @@ function createLoading(opts = {}) {
   const extraReducers = {
     [namespace](state = initialState, { type, payload }) {
       const { namespace, actionType } = payload || {};
+      
       let ret;
+
       switch (type) {
         case SHOW:
           ret = {

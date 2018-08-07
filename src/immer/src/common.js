@@ -1,5 +1,8 @@
 import {generatePatches} from "./patches"
 
+/**
+ * 代理状态名
+ */
 export const PROXY_STATE =
     typeof Symbol !== "undefined"
         ? Symbol("immer-proxy-state")
@@ -37,10 +40,22 @@ export function getUseProxies() {
     return useProxies
 }
 
+/**
+ * 判断value是不是已经被immer代理
+ * @param {Object} value
+ * @returns {Boolean}
+ */
 export function isProxy(value) {
     return !!value && !!value[PROXY_STATE]
 }
 
+/**
+ * 判断value是否是可以被代理的 ( 数组和对象 )
+ *
+ * @export
+ * @param {Any} value
+ * @returns {Boolean} 返回true表示可以被代理
+ */
 export function isProxyable(value) {
     if (!value) return false
     if (typeof value !== "object") return false
@@ -56,6 +71,9 @@ export function freeze(value) {
     return value
 }
 
+/**
+ * Object.assign
+ */
 const assign =
     Object.assign ||
     function assign(target, value) {
@@ -64,15 +82,34 @@ const assign =
                 target[key] = value[key]
             }
         }
+
         return target
     }
 
+/**
+ * 浅拷贝
+ * @param {Object|Array} value 原始值
+ * @returns {Object|Array} 返回value的浅备份
+ */
 export function shallowCopy(value) {
-    if (Array.isArray(value)) return value.slice()
-    const target = value.__proto__ === undefined ? Object.create(null) : {}
+    // 数组 - 实现浅拷贝
+    if (Array.isArray(value)) {
+        return value.slice()
+    }
+    
+    // 对象 - 实现浅拷贝
+    const target = value.__proto__ === undefined 
+        ? Object.create(null) 
+        : {}
+
     return assign(target, value)
 }
 
+/**
+ * 遍历对象或数组
+ * @param {Object|Array} value 对象或数组
+ * @param {Function} cb (index,item)=>.. or (key,value)=> ..
+ */
 export function each(value, cb) {
     if (Array.isArray(value)) {
         for (let i = 0; i < value.length; i++) cb(i, value[i])
@@ -81,6 +118,12 @@ export function each(value, cb) {
     }
 }
 
+/**
+ * hasOwnProperty
+ * @param {Object} thing 
+ * @param {String} prop 
+ * @returns {Boolean}
+ */
 export function has(thing, prop) {
     return Object.prototype.hasOwnProperty.call(thing, prop)
 }
