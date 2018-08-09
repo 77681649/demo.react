@@ -1,14 +1,17 @@
 #!/usr/bin/env node
-
 const spawn = require('cross-spawn');
 const chalk = require('chalk');
 const { join, dirname } = require('path');
 const { existsSync } = require('fs');
+
 const Service = require('umi-build-dev/lib/Service').default;
 
 const script = process.argv[2];
 const args = process.argv.slice(3);
 
+//
+// 1. 检查node 版本
+//
 const nodeVersion = process.versions.node;
 const versions = nodeVersion.split('.');
 const major = versions[0];
@@ -19,18 +22,30 @@ if (major * 10 + minor * 1 < 65) {
   process.exit(1);
 }
 
+//
 // Notify update when process exits
+//
 const updater = require('update-notifier');
 const pkg = require('../package.json');
 updater({ pkg: pkg }).notify({ defer: true });
 
+/**
+ * 运行脚本
+ * @param {String} script 执行脚本名称
+ * @param {Array} args 命令参数
+ * @param {Boolean} isFork 是否启用子进程
+ */
 function runScript(script, args, isFork) {
   if (isFork) {
+
+    // sync spawn process
     const child = spawn.sync(
       'node',
       [require.resolve(`../lib/scripts/${script}`)].concat(args),
       {stdio: 'inherit'} // eslint-disable-line
     );
+
+    // exit process
     process.exit(child.status);
   } else {
     require(`../lib/scripts/${script}`);
@@ -54,7 +69,7 @@ switch (aliasedScript) {
     break;
   case 'build':
   case 'dev':
-    require('atool-monitor').emit();
+    // require('atool-monitor').emit();
     runScript(aliasedScript, args, /* isFork */true);
     break;
   case 'test':

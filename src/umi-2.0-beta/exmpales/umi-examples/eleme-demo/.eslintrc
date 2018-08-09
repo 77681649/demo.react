@@ -1,0 +1,12 @@
+{
+  "extends": "eslint-config-umi",
+  "plugins": [
+    "react",
+    "mocha"
+  ],
+  "env": {
+    "es6": true,
+    "browser": true,
+    "mocha": true,
+  }
+}

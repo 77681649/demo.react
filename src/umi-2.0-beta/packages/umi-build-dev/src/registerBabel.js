@@ -1,3 +1,6 @@
+/**
+ * 注册 babel
+ */
 import { join } from 'path';
 import isAbsolute from 'path-is-absolute';
 import registerBabel from 'af-webpack/registerBabel';
@@ -7,9 +10,14 @@ import { CONFIG_FILES } from './constants';
 
 let files = null;
 
+/**
+ * 初始化文件
+ */
 function initFiles() {
   if (files) return;
+
   const env = process.env.UMI_ENV;
+
   files = [
     ...flatten(
       CONFIG_FILES.map(file => [
@@ -23,18 +31,32 @@ function initFiles() {
   ];
 }
 
+/**
+ * 添加babel-register
+ */
 export function addBabelRegisterFiles(extraFiles) {
   initFiles();
   files.push(...extraFiles);
 }
 
+/**
+ * 注册 register babel
+ * @param {Object} opts 
+ */
 export default function(opts = {}) {
+  
   initFiles();
+  
   const { cwd } = opts;
+  
   const only = files.map(f => {
+    // 获得完整的路径(绝对路径)
     const fullPath = isAbsolute(f) ? f : join(cwd, f);
+    
+    // 返回使用斜杠分割的路径 "/a/b/c"
     return winPath(fullPath);
   });
+  
   registerBabel({
     only: [only.join('|')],
     babelPreset: [

@@ -1,5 +1,11 @@
 const env = process.env.NODE_ENV;
 
+/**
+ * 
+ * @param {Object} context 
+ * @param {Options} opts 选项
+ * @param {Boolean} opts.
+ */
 export default function(context, opts = {}) {
   const plugins = [
     // adds React import declaration if file contains JSX tags
@@ -39,6 +45,7 @@ export default function(context, opts = {}) {
   }
 
   const browsers = opts.browsers || ['last 2 versions'];
+  
   return {
     presets: [
       [

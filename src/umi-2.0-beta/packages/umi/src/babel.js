@@ -1,3 +1,8 @@
+/**
+ * 
+ * @param {*} context 
+ * @param {*} opts 
+ */
 export default function(context, opts = {}) {
   return {
     presets: [

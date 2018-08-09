@@ -8,9 +8,9 @@
       "type": "node",
       "request": "launch",
       "name": "Launch Program",
+      "cwd": "${workspaceFolder}/src/umi-2.0-beta/first-app/exmpales/node_modules/umi/bin",
       "program":
-        "${workspaceFolder}/example/react-router/react-router-ssr/server.js",
-      "cwd": "${workspaceFolder}/example/react-router/react-router-ssr/"
+        "${workspaceFolder}/src/umi-2.0-beta/first-app/exmpales/node_modules/umi/bin/umi.js"
     }
   ]
 }

@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "query-string": "^6.0.0"
+  },
+  "devDependencies": {
+    "umi": "*"
+  },
+  "scripts": {
+    "build": "umi build"
+  }
+}

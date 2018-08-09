@@ -1,3 +1,5 @@
+/**
+ */
 import { join } from 'path';
 import { existsSync } from 'fs';
 import requireindex from 'requireindex';
@@ -10,12 +12,18 @@ import { CONFIG_FILES } from './constants';
 import { watch, unwatch } from './getConfig/watch';
 import { setConfig as setMiddlewareConfig } from './plugins/commands/dev/createRouteMiddleware';
 
+/**
+ * 
+ * @param {String} config 
+ */
 function normalizeConfig(config) {
   config = config.default || config;
 
   if (config.context && config.pages) {
     Object.keys(config.pages).forEach(key => {
       const page = config.pages[key];
+
+      // 合并上下文
       page.context = {
         ...config.context,
         ...page.context,
@@ -52,6 +60,12 @@ function normalizeConfig(config) {
   return config;
 }
 
+/**
+ * 获得配置文件
+ * @param {String} 应用的工作目录
+ * @param {Service} service service实例
+ * @returns {String} 返回配置文件的绝对路径
+ */
 function getConfigFile(cwd, service) {
   const files = CONFIG_FILES.map(file => join(cwd, file)).filter(file =>
     existsSync(file),
@@ -90,15 +104,28 @@ function requireFile(filePath, opts = {}) {
 }
 
 class UserConfig {
+  /**
+   * 获得用户配置
+   * @param {Object} options 选项
+   * @param {String} cwd 应用的工作目录
+   * @param {Service} service dev-service实例
+   * @return {Object} 返回从配置文件中读取的用户配置
+   */
   static getConfig(opts = {}) {
     const { cwd, service } = opts;
+    
+    // 1. 配置文件的绝对路径
     const absConfigPath = getConfigFile(cwd, service);
+
     const env = process.env.UMI_ENV;
     const isDev = process.env.NODE_ENV === 'development';
 
+    // 2. 获得默认配置
     const defaultConfig = service.applyPlugins('modifyDefaultConfig', {
       initialValue: {},
     });
+
+    // 3. 合并 && 格式化配置
     if (absConfigPath) {
       return normalizeConfig({
         ...defaultConfig,
