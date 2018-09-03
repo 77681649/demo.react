@@ -1,0 +1,17 @@
+{
+  "lerna": "2.0.0",
+  "changelog": {
+    "labels": {
+      "enhancement": ":rocket: Enhancement",
+      "bug": ":bug: Bug Fix",
+      "documentation": ":book: Documentation"
+    },
+    "repo": "umijs/umi",
+    "cacheDir": ".changelog"
+  },
+  "packages": [
+    "packages/*"
+  ],
+  "npmClient": "npm",
+  "version": "independent"
+}
