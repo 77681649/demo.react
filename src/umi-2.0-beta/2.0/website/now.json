@@ -1,0 +1,8 @@
+{
+  "alias": [
+    "umijs.org"
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  }
+}
