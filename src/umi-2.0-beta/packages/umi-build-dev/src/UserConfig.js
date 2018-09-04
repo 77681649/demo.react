@@ -13,7 +13,7 @@ import { watch, unwatch } from './getConfig/watch';
 import { setConfig as setMiddlewareConfig } from './plugins/commands/dev/createRouteMiddleware';
 
 /**
- * 
+ * 格式化配置
  * @param {String} config 
  */
 function normalizeConfig(config) {
@@ -40,8 +40,11 @@ function normalizeConfig(config) {
       typeof config.exportStatic === 'object' &&
       config.exportStatic.htmlSuffix
     );
+
     config.pages = Object.keys(config.pages).reduce((memo, key) => {
       let newKey = key;
+
+      // 确保 ".html" 结尾
       if (
         htmlSuffix &&
         newKey.slice(-1) !== '/' &&
@@ -49,9 +52,12 @@ function normalizeConfig(config) {
       ) {
         newKey = `${newKey}.html`;
       }
+
+      // 确保 "/" 开头
       if (newKey.charAt(0) !== '/') {
         newKey = `/${newKey}`;
       }
+
       memo[newKey] = config.pages[key];
       return memo;
     }, {});
@@ -84,6 +90,11 @@ function getConfigFile(cwd, service) {
   return files[0];
 }
 
+/**
+ * 加载指定文件
+ * @param {*} filePath 
+ * @param {*} opts 
+ */
 function requireFile(filePath, opts = {}) {
   if (!existsSync(filePath)) {
     return {};
@@ -175,12 +186,19 @@ class UserConfig {
     }
   }
 
+  /**
+   * 
+   * @param {Object} opts 选项
+   */
   getConfig(opts = {}) {
     const env = process.env.UMI_ENV;
     const isDev = process.env.NODE_ENV === 'development';
     const { paths, cwd } = this.service;
     const { force, setConfig } = opts;
 
+    //
+    //
+    //
     const file = getConfigFile(paths.cwd, this.service);
     this.file = file;
     if (!file) {
@@ -214,10 +232,16 @@ class UserConfig {
       throw new Error(msg);
     }
 
+    //
+    //
+    //
     const defaultConfig = this.service.applyPlugins('modifyDefaultConfig', {
       initialValue: {},
     });
 
+    // 
+    //
+    //
     config = normalizeConfig({
       ...defaultConfig,
       ...requireFile(file, { onError }),
@@ -225,11 +249,16 @@ class UserConfig {
       ...(isDev ? requireFile(file.replace(/\.js$/, '.local.js')) : {}),
     });
 
+    //
+    //
+    //
     config = this.service.applyPlugins('modifyConfig', {
       initialValue: config,
     });
 
-    // Validate
+    //
+    //
+    //
     for (const plugin of this.plugins) {
       const { name, validate } = plugin;
       if (config[name] && validate) {

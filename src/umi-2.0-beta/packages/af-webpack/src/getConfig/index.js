@@ -125,6 +125,7 @@ export default function(opts) {
     ],
     ...babelOptsCommon,
   };
+  
   if (opts.disableDynamicImport) {
     babelOpts.plugins = [
       ...(babelOpts.plugins || []),

@@ -18,9 +18,9 @@ function template(path) {
 }
 
 /**
- * 获得
+ * 返回umi所需的路径
  * @param {Service} service service实例
- * @returns {String} 返回需要用到的路径
+ * @returns {Object} 返回需要用到的路径
  */
 export default function(service) {
   const { cwd, config } = service;
@@ -64,6 +64,7 @@ export default function(service) {
     absLibraryJSPath: join(absTmpDirPath, 'umi.js'),
     absRegisterSWJSPath: join(absTmpDirPath, 'registerServiceWorker.js'),
     absPageDocumentPath: join(absPagesPath, 'document.ejs'),
+    // 默认的模板
     defaultEntryTplPath: template('entry.js.tpl'),
     defaultRouterTplPath: template('router.js.tpl'),
     defaultRegisterSWTplPath: template('registerServiceWorker.js'),

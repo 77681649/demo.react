@@ -1,8 +1,8 @@
 {
   "private": true,
   "scripts": {
-    "start":"umi dev",
-    "build":"umi build"
+    "start": "umi dev",
+    "build": "umi build"
   },
   "dependencies": {
     "umi": "^1.3.18"

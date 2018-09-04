@@ -1,5 +1,6 @@
 /**
- * 注册 babel
+ * babel-register
+ * 注册babel-register插件, 以便提供实时编译的功能
  */
 import { join } from 'path';
 import isAbsolute from 'path-is-absolute';
@@ -11,7 +12,7 @@ import { CONFIG_FILES } from './constants';
 let files = null;
 
 /**
- * 初始化文件
+ * 初始化需要编译的文件
  */
 function initFiles() {
   if (files) return;
@@ -57,6 +58,7 @@ export default function(opts = {}) {
     return winPath(fullPath);
   });
   
+  // 注册babel-register
   registerBabel({
     only: [only.join('|')],
     babelPreset: [

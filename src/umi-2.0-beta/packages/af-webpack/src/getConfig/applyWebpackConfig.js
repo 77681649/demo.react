@@ -17,8 +17,14 @@ export function warnIfExists(cwd) {
   }
 }
 
+/**
+ * 
+ * @param {String} cwd 
+ * @param {Object} config 
+ */
 export function applyWebpackConfig(cwd, config) {
   const filePath = join(cwd, 'webpack.config.js');
+
   if (existsSync(filePath)) {
     let customConfigFn = require(filePath); // eslint-disable-line
     if (customConfigFn.default) {

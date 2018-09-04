@@ -2,6 +2,7 @@ import getConfig from 'af-webpack/getConfig';
 import assert from 'assert';
 
 export default function(service) {
+  // 1. 获得af-webpack option
   const afWebpackOpts = service.applyPlugins('modifyAFWebpackOpts', {
     initialValue: {
       cwd: service.cwd,
@@ -12,6 +13,8 @@ export default function(service) {
     !('chainConfig' in afWebpackOpts),
     `chainConfig should not supplied in modifyAFWebpackOpts`,
   );
+
+  // 2. 使用chainConfig 修改
   afWebpackOpts.chainConfig = webpackConfig => {
     service.applyPlugins('chainWebpackConfig', {
       args: { webpackConfig },

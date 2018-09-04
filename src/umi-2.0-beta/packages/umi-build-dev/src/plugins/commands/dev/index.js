@@ -21,21 +21,35 @@ export default function(api) {
   }
 
   api.registerCommand('dev', {}, (args = {}) => {
+    //
+    // 1. 创建RoutesManager && 
+    // 
     const RoutesManager = getRouteManager(service);
     RoutesManager.fetchRoutes();
 
     const { port } = args;
     process.env.NODE_ENV = 'development';
+
+    //
+    // emit onStart
+    //
     service.applyPlugins('onStart');
 
+    //
+    // 生成文件
+    //
     const filesGenerator = new FilesGenerator(service, RoutesManager);
     filesGenerator.generate();
 
+    //
+    //
+    //
     const userConfig = new UserConfig(service);
     const config = userConfig.getConfig({ force: true });
     mergeConfig(service.config, config);
 
     let server = null;
+
     function restart(why) {
       if (!server) return;
       if (why) {
@@ -48,6 +62,7 @@ export default function(api) {
       server.close();
       process.send({ type: 'RESTART' });
     }
+
     service.dev = {
       restart,
       server: null,

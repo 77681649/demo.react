@@ -1,3 +1,6 @@
+/**
+ * 
+ */
 import deprecate from 'deprecate';
 import remove from 'lodash.remove';
 

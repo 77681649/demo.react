@@ -32,6 +32,7 @@ export default function(opts = {}) {
       }
 
       const [path, opts] = p;
+
       try {
         return [
           resolve.sync(path, {
@@ -56,6 +57,7 @@ Try:
   //
   // 1. 合并多重插件来源
   // 2. require.resolve
+  // Tuple(absolutePath:String, options:Object)
   //
   const pluginPaths = [
     ...pluginToPath(
@@ -70,7 +72,7 @@ Try:
     // 为plugin add babel-register
     addBabelRegisterFiles(pluginPaths.map(p => p[0]));
 
-    // 注册 register babel
+    // 重新注册 register babel
     registerBabel({
       cwd
     });

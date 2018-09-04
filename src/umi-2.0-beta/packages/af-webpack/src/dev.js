@@ -30,6 +30,7 @@ export default function dev({
   port,
 }) {
   assert(webpackConfig, 'webpackConfig must be supplied');
+  
   choosePort(port || DEFAULT_PORT)
     .then(port => {
       if (port === null) {

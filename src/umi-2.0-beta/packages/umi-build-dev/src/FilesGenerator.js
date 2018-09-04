@@ -1,3 +1,7 @@
+/**
+ * FilesGenerator
+ * 文件生成器
+ */
 import { join } from 'path';
 import { existsSync, writeFileSync, readFileSync } from 'fs';
 import assert from 'assert';
@@ -117,6 +121,9 @@ export default class FilesGenerator {
     this.generateEntry();
   }
 
+  /**
+   * 创建入口文件 umi.js
+   */
   generateEntry() {
     const { paths, entryJSTpl } = this.service;
 
@@ -136,15 +143,20 @@ export default class FilesGenerator {
         PLACEHOLDER_RENDER,
         `ReactDOM.render(React.createElement(require('./router').default), document.getElementById('root'));`,
       );
+
     writeFileSync(paths.absLibraryJSPath, entryContent, 'utf-8');
   }
 
+  /**
+   * 创建 RouterJS
+   */
   generateRouterJS() {
     const { paths } = this.service;
     const { absRouterJSPath } = paths;
     this.RoutesManager.fetchRoutes();
 
     const routesContent = this.getRouterJSContent();
+
     // 避免文件写入导致不必要的 webpack 编译
     if (this.routesContent !== routesContent) {
       writeFileSync(absRouterJSPath, routesContent, 'utf-8');
@@ -152,9 +164,13 @@ export default class FilesGenerator {
     }
   }
 
+  /**
+   * 
+   */
   getRouterJSContent() {
     const { routerTpl, paths } = this.service;
     const routerTplPath = routerTpl || paths.defaultRouterTplPath;
+
     assert(
       existsSync(routerTplPath),
       `routerTpl don't exists: ${routerTplPath}`,
@@ -173,6 +189,7 @@ export default class FilesGenerator {
     const routerContent = this.service.applyPlugins('modifyRouterContent', {
       initialValue: this.getRouterContent(),
     });
+    
     return tplContent
       .replace(PLACEHOLDER_IMPORT, '')
       .replace(PLACEHOLDER_ROUTER_MODIFIER, '')
@@ -181,6 +198,9 @@ export default class FilesGenerator {
       .replace(PLACEHOLDER_ROUTER, routerContent);
   }
 
+  /**
+   * 
+   */
   fixHtmlSuffix(routes) {
     routes.forEach(route => {
       if (route.routes) {
@@ -190,11 +210,18 @@ export default class FilesGenerator {
     });
   }
 
+  /**
+   * 
+   * @param {*} opts 
+   */
   getRoutesJSON(opts = {}) {
     const { env } = opts;
     return routesToJSON(this.RoutesManager.routes, this.service, env);
   }
 
+  /**
+   * 
+   */
   getRouterContent() {
     return `
 <Router history={window.g_history}>
