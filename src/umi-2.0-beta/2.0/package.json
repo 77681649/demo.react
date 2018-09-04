@@ -50,5 +50,9 @@
     "through2": "^2.0.3",
     "umi-test": "^1.0.0-beta.7",
     "vinyl-fs": "^3.0.2"
+  },
+  "dependencies": {
+    "create-umi": "^0.3.1",
+    "umi": "^2.0.1"
   }
 }
