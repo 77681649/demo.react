@@ -1,29 +1,29 @@
-import chalk from 'chalk';
-import { join } from 'path';
-import { existsSync, readFileSync } from 'fs';
-import assert from 'assert';
-import clonedeep from 'lodash.clonedeep';
-import assign from 'object-assign';
-import { parse } from 'dotenv';
-import getPaths from './getPaths';
-import getPlugins from './getPlugins';
-import PluginAPI from './PluginAPI';
-import UserConfig from './UserConfig';
-import registerBabel from './registerBabel';
+import chalk from "chalk";
+import { join } from "path";
+import { existsSync, readFileSync } from "fs";
+import assert from "assert";
+import clonedeep from "lodash.clonedeep";
+import assign from "object-assign";
+import { parse } from "dotenv";
+import getPaths from "./getPaths";
+import getPlugins from "./getPlugins";
+import PluginAPI from "./PluginAPI";
+import UserConfig from "./UserConfig";
+import registerBabel from "./registerBabel";
 
-const debug = require('debug')('umi-build-dev:Service');
+const debug = require("debug")("umi-build-dev:Service");
 
 export default class Service {
   constructor({ cwd }) {
     this.cwd = cwd || process.cwd();
     try {
-      this.pkg = require(join(this.cwd, 'package.json')); // eslint-disable-line
+      this.pkg = require(join(this.cwd, "package.json")); // eslint-disable-line
     } catch (e) {
       this.pkg = {};
     }
 
     registerBabel({
-      cwd: this.cwd,
+      cwd: this.cwd
     });
 
     this.commands = {};
@@ -34,14 +34,14 @@ export default class Service {
     // resolve user config
     this.config = UserConfig.getConfig({
       cwd: this.cwd,
-      service: this,
+      service: this
     });
     debug(`user config: ${JSON.stringify(this.config)}`);
 
     // resolve plugins
     this.plugins = this.resolvePlugins();
     this.extraPlugins = [];
-    debug(`plugins: ${this.plugins.map(p => p.id).join(' | ')}`);
+    debug(`plugins: ${this.plugins.map(p => p.id).join(" | ")}`);
 
     // resolve paths
     this.paths = getPaths(this);
@@ -51,7 +51,7 @@ export default class Service {
     try {
       return getPlugins({
         cwd: this.cwd,
-        plugins: this.config.plugins || [],
+        plugins: this.config.plugins || []
       });
     } catch (e) {
       if (process.env.UMI_TEST) {
@@ -67,6 +67,7 @@ export default class Service {
   initPlugin(plugin) {
     const { id, apply, opts } = plugin;
     try {
+      // 创建Plugin API
       const api = new Proxy(new PluginAPI(id, this), {
         get: (target, prop) => {
           if (this.pluginMethods[prop]) {
@@ -75,26 +76,26 @@ export default class Service {
           if (
             [
               // methods
-              'changePluginOption',
-              'applyPlugins',
-              '_applyPluginsAsync',
+              "changePluginOption",
+              "applyPlugins",
+              "_applyPluginsAsync",
               // properties
-              'cwd',
-              'config',
-              'webpackConfig',
-              'pkg',
-              'paths',
-              'routes',
+              "cwd",
+              "config",
+              "webpackConfig",
+              "pkg",
+              "paths",
+              "routes",
               // dev methods
-              'restart',
-              'printError',
-              'printWarn',
-              'refreshBrowser',
-              'rebuildTmpFiles',
-              'rebuildHTML',
+              "restart",
+              "printError",
+              "printWarn",
+              "refreshBrowser",
+              "rebuildTmpFiles",
+              "rebuildHTML"
             ].includes(prop)
           ) {
-            if (typeof this[prop] === 'function') {
+            if (typeof this[prop] === "function") {
               return this[prop].bind(this);
             } else {
               return this[prop];
@@ -102,23 +103,28 @@ export default class Service {
           } else {
             return target[prop];
           }
-        },
+        }
       });
+
+      //
       api.onOptionChange = fn => {
         assert(
-          typeof fn === 'function',
-          `The first argument for api.onOptionChange should be function in ${id}.`,
+          typeof fn === "function",
+          `The first argument for api.onOptionChange should be function in ${id}.`
         );
         plugin.onOptionChange = fn;
       };
+
+      // apply 插件
       apply(api, opts);
+
       plugin._api = api;
     } catch (e) {
       if (process.env.UMI_TEST) {
         throw new Error(e);
       } else {
         console.error(
-          chalk.red(`Plugin ${id} initialize failed, ${e.message}`),
+          chalk.red(`Plugin ${id} initialize failed, ${e.message}`)
         );
         console.error(e);
         process.exit(1);
@@ -146,14 +152,14 @@ export default class Service {
     // Throw error for methods that can't be called after plugins is initialized
     this.plugins.forEach(plugin => {
       [
-        'onOptionChange',
-        'register',
-        'registerMethod',
-        'registerPlugin',
+        "onOptionChange",
+        "register",
+        "registerMethod",
+        "registerPlugin"
       ].forEach(method => {
         plugin._api[method] = () => {
           throw new Error(
-            `api.${method}() should not be called after plugin is initialized.`,
+            `api.${method}() should not be called after plugin is initialized.`
           );
         };
       });
@@ -177,7 +183,7 @@ export default class Service {
       try {
         return fn({
           memo,
-          args: opts.args,
+          args: opts.args
         });
       } catch (e) {
         console.error(chalk.red(`Plugin apply failed: ${e.message}`));
@@ -193,19 +199,19 @@ export default class Service {
       const { fn } = hook;
       memo = await fn({
         memo,
-        args: opts.args,
+        args: opts.args
       });
     }
     return memo;
   }
 
   loadEnv() {
-    const basePath = join(this.cwd, '.env');
+    const basePath = join(this.cwd, ".env");
     const localPath = `${basePath}.local`;
 
     const load = path => {
       if (existsSync(path)) {
-        const parsed = parse(readFileSync(path, 'utf-8'));
+        const parsed = parse(readFileSync(path, "utf-8"));
         Object.keys(parsed).forEach(key => {
           if (!process.env.hasOwnProperty(key)) {
             process.env[key] = parsed[key];
@@ -240,19 +246,19 @@ export default class Service {
   }
 
   registerCommand(name, opts, fn) {
-    if (typeof opts === 'function') {
+    if (typeof opts === "function") {
       fn = opts;
       opts = null;
     }
     opts = opts || {};
     assert(
       !(name in this.commands),
-      `Command ${name} exists, please select another one.`,
+      `Command ${name} exists, please select another one.`
     );
     this.commands[name] = { fn, opts };
   }
 
-  run(name = 'help', args) {
+  run(name = "help", args) {
     this.init();
 
     debug(`run ${name} with args ${args}`);
@@ -266,7 +272,7 @@ export default class Service {
     const { fn, opts } = command;
     if (opts.webpack) {
       // webpack config
-      this.webpackConfig = require('./getWebpackConfig').default(this);
+      this.webpackConfig = require("./getWebpackConfig").default(this);
     }
 
     return fn(args);

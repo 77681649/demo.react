@@ -90,6 +90,7 @@ function getUserPlugins(plugins, { cwd }) {
     });
   }
 
+  // 加载插件
   return pluginPaths.map(p => {
     const [path, opts] = p;
     const apply = require(path); // eslint-disable-line
