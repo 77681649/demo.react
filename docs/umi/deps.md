@@ -3,5 +3,7 @@
 | requireindex | https://github.com/stephenhandley/requireindex |
 | didyoumean | https://github.com/dcporter/didyoumean.js |
 
+
+| [mkdirp](https://github.com/substack/node-mkdirp) | mkdir -p |
 | [esprima-extract-comments](esprima-extract-comments) | 提取代码中的注释 |
 | [js-yaml](https://github.com/nodeca/js-yaml) | Javascript YAML 解析器  |
