@@ -70,9 +70,11 @@ export default class Service {
       // 创建Plugin API
       const api = new Proxy(new PluginAPI(id, this), {
         get: (target, prop) => {
+          // 执行插件方法
           if (this.pluginMethods[prop]) {
             return this.pluginMethods[prop];
           }
+
           if (
             [
               // methods
