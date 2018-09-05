@@ -23,5 +23,6 @@ export default (paths, config = {}, onPatchRoute) => {
     /* isProduction */ process.env.NODE_ENV === 'production',
     onPatchRoute,
   );
+  
   return routes;
 };

@@ -138,7 +138,7 @@ export default class PluginAPI {
       fn,
     });
   }
-
+  
   registerCommand(name, opts, fn) {
     this.service.registerCommand(name, opts, fn);
   }

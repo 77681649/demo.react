@@ -4,6 +4,7 @@ import { Switch, Route, Redirect } from 'react-router-dom';
 function withRoutes(route) {
   const Routes = route.Routes;
   let len = Routes.length - 1;
+  
   let Component = args => {
     const { render, ...props } = args;
     return render(props);

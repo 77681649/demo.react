@@ -12,7 +12,7 @@ export default function getRouteConfigFromDir(paths) {
   const { cwd, absPagesPath, absSrcPath, dirPath = '' } = paths;
   const absPath = join(absPagesPath, dirPath);
   const files = readdirSync(absPath);
-
+  
   const absLayoutFile = findJSFile(absPagesPath, '_layout');
   if (absLayoutFile) {
     throw new Error(
@@ -22,10 +22,11 @@ export default function getRouteConfigFromDir(paths) {
 
   const routes = files
     .filter(file => {
+      // 过滤私有文件 ( .xxxx , _xxxx )
       if (file.charAt(0) === '.' || file.charAt(0) === '_') return false;
       return true;
     })
-    .sort(a => (a.charAt(0) === '$' ? 1 : -1))
+    .sort(a => (a.charAt(0) === '$' ? 1 : -1)) // 优先处理动态路由
     .reduce(handleFile.bind(null, paths, absPath), [])
     .sort((a, b) => {
       if (a.isParamsRoute !== b.isParamsRoute) return a.isParamsRoute ? 1 : -1;
@@ -36,7 +37,8 @@ export default function getRouteConfigFromDir(paths) {
       delete a.isParamsRoute;
       return a;
     });
-
+  
+    // 读取全局layout
   if (dirPath === '' && absSrcPath) {
     const globalLayoutFile =
       findJSFile(absSrcPath, 'layouts/index') ||
@@ -69,12 +71,17 @@ function handleFile(paths, absPath, memo, file) {
 
   if (stats.isDirectory()) {
     const newDirPath = join(dirPath, file);
+    
+    // 处理子routes
     // routes & _layout
     const routes = getRouteConfigFromDir({
       ...paths,
       dirPath: newDirPath,
     });
+
+    // 找到嵌套路由标志 
     const absLayoutFile = findJSFile(join(absPagesPath, newDirPath), '_layout');
+
     if (absLayoutFile) {
       addRoute(
         memo,
@@ -93,8 +100,13 @@ function handleFile(paths, absPath, memo, file) {
       memo = memo.concat(routes);
     }
   } else if (stats.isFile() && isValidJS(file)) {
+    // 文件名
     const bName = basename(file, extname(file));
+
+    // 格式化之后的路径
     const path = normalizePath(join(dirPath, bName));
+
+    // 添加路由
     addRoute(
       memo,
       {
@@ -147,10 +159,13 @@ function findJSFile(baseDir, fileNameWithoutExtname) {
 function addRoute(memo, route, { componentFile }) {
   const code = readFileSync(componentFile, 'utf-8');
   debug(`parse yaml from ${componentFile}`);
+  
+  // 解析代码中的配置
   const config = getYamlConfig(code);
   ['path', 'exact', 'component', 'routes'].forEach(key => {
     assert(!(key in config), `Unexpected key ${key} in file ${componentFile}`);
   });
+
   memo.push({
     ...route,
     ...config,

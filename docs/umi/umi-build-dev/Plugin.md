@@ -3,3 +3,7 @@
 | opts | 传递给插件的选项
 | \_api | PluginAPI | 插件绑定的 Plugin API
 | onOptionChange | | |
+
+
+| fn | Function |  |
+| opts | Object |  |

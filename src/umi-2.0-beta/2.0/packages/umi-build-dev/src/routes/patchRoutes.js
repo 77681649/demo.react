@@ -16,9 +16,13 @@ function patchRoutes(routes, config, isProduction, onPatchRoute) {
 
   routes.forEach((route, index) => {
     patchRoute(route, config, isProduction, onPatchRoute);
+
+    // 找到 404 
     if (route.path === '/404') {
       notFoundIndex = index;
     }
+
+    // 找到 index.html
     if (config.exportStatic && route.path === '/' && route.exact) {
       rootIndex = index;
     }
