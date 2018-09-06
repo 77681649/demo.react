@@ -59,6 +59,7 @@ export default function(api) {
     cwd,
     dirname(require.resolve('react-router-dom/package.json')),
   );
+
   api.chainWebpackConfig(webpackConfig => {
     webpackConfig.resolve.alias
       .set('react', reactDir)
@@ -112,9 +113,11 @@ export default function(api) {
       __dirname,
       '../../template/setPublicPath.js',
     );
+    
     const setPublicPath =
       config.runtimePublicPath ||
       (config.exportStatic && config.exportStatic.dynamicRoot);
+
     const entry = isDev
       ? {
           umi: [

@@ -36,7 +36,7 @@ export default function build(opts = {}) {
     }
 
     console.log('File sizes after gzip:\n');
-    printFileSizesAfterBuild(
+    printFileSizesAfterBuild            (
       stats,
       {
         root: webpackConfig.output.path,

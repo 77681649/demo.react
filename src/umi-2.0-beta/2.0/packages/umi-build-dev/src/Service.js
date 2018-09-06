@@ -180,7 +180,7 @@ export default class Service {
     }
   }
 
-  applyPlugins(key, opts = {}) {
+  applyPlugins(key, optts = {}) {
     return (this.pluginHooks[key] || []).reduce((memo, { fn }) => {
       try {
         return fn({
