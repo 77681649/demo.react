@@ -39,6 +39,9 @@ export default function(api) {
       });
   });
 
+  //
+  // 优先使用cwd下的依赖
+  //
   const reactDir = compatDirname(
     'react/package.json',
     cwd,

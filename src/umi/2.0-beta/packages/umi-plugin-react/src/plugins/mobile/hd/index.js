@@ -2,6 +2,13 @@ import px2rem from 'postcss-plugin-px2rem';
 import { join } from 'path';
 import { findJS, winPath } from 'umi-utils';
 
+/**
+ * 
+ * @param {*} api 
+ * @param {Object} options 
+ * @param {} theme
+ * @param {} px2rem px2rem选项
+ */
 export default function(api, options) {
   const { paths } = api.service;
 

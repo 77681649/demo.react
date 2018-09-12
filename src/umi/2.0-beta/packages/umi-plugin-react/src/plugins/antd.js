@@ -16,6 +16,7 @@ function importPlugin(key) {
 export default function(api) {
   const { cwd } = api.service;
 
+  // 配置antd, antd-mobile 按需加载方案
   api.register('modifyAFWebpackOpts', ({ memo }) => {
     memo.babel.plugins = [
       ...(memo.babel.plugins || []),

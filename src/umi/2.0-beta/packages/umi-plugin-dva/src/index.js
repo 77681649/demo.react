@@ -1,3 +1,7 @@
+/**
+ * @example
+ * 
+ */
 import { readFileSync, writeFileSync } from 'fs';
 import { join, dirname, basename, extname } from 'path';
 import globby from 'globby';

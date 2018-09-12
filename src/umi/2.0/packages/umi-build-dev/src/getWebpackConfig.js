@@ -14,6 +14,7 @@ export default function(service) {
     !('chainConfig' in afWebpackOpts),
     `chainConfig should not supplied in modifyAFWebpackOpts`,
   );
+  
   afWebpackOpts.chainConfig = webpackConfig => {
     service.applyPlugins('chainWebpackConfig', {
       args: webpackConfig,
