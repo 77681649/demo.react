@@ -1,3 +1,8 @@
+/**
+ * eslint-config-umi
+ * 提供eslint config的集成
+ */
+
 import reactAppConfig from 'eslint-config-react-app';
 
 export default {

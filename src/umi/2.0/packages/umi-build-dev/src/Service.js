@@ -135,10 +135,12 @@ export default class Service {
   }
 
   initPlugins() {
+    // 初始化 plugin
     this.plugins.forEach(plugin => {
       this.initPlugin(plugin);
     });
 
+    // 初始化 extraPlugins
     let count = 0;
     while (this.extraPlugins.length) {
       const extraPlugins = clonedeep(this.extraPlugins);

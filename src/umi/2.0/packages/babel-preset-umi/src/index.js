@@ -1,3 +1,8 @@
+/**
+ * babel-preset-umi
+ * 提供babel配置
+ */
+
 export default function(context, opts = {}) {
   const nodeEnv = process.env.NODE_ENV;
   const {
@@ -6,8 +11,10 @@ export default function(context, opts = {}) {
     targets = { browsers: ['last 2 versions'] },
     env = {},
   } = opts;
+
   const transformRuntime =
     'transformRuntime' in opts ? opts.transformRuntime : {};
+    
   const exclude = [
     'transform-typeof-symbol',
     'transform-unicode-regex',

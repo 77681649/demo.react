@@ -1,3 +1,8 @@
+/**
+ * UserConfig
+ * 
+ */
+
 import { join } from "path";
 import { existsSync } from "fs";
 import requireindex from "requireindex";
@@ -98,6 +103,7 @@ class UserConfig {
     const defaultConfig = service.applyPlugins("modifyDefaultConfig", {
       initialValue: {}
     });
+
     if (absConfigPath) {
       return normalizeConfig(
         extend(
@@ -125,12 +131,13 @@ class UserConfig {
   }
 
   initConfigPlugins() {
-    // 导出Config插件整个目录
+    // 加载插件 - 导出Config插件整个目录
     const map = requireindex(join(__dirname, "getConfig/configPlugins"));
-
     let plugins = Object.keys(map).map(key => {
       return map[key].default;
     });
+
+    // 执行插件
     plugins = this.service.applyPlugins("_registerConfig", {
       initialValue: plugins
     });

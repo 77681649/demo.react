@@ -1,6 +1,6 @@
 | resolve | https://github.com/browserify/resolve |
-| dotenv | https://github.com/motdotla/dotenv |
-| [requireindex](https://github.com/stephenhandley/requireindex) | |
+
+| [requireindex](https://github.com/stephenhandley/requireindex) | 读取连接目录 |
 
 | [mkdirp](https://github.com/substack/node-mkdirp) | mkdir -p |
 | [esprima-extract-comments](esprima-extract-comments) | 提取代码中的注释 |
@@ -40,4 +40,15 @@
 
 
 # 
-| [sockjs-client]() | |
+| [sockjs-client](https://github.com/eggjs/extend2) | extend(deep, ...source) |
+
+
+
+| [eslint-config-react-app](https://github.com/facebook/create-react-app/tree/next/packages/eslint-config-react-app) | create-react-app eslint config | 
+
+# utils
+| [extend2]() |  |
+| [resolve](https://github.com/browserify/resolve) | 实现require.resolve |
+
+# fs
+| [dotenv](https://github.com/motdotla/dotenv) | from .env 加载环境变量 |

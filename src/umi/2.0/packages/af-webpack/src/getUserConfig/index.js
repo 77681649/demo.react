@@ -1,3 +1,7 @@
+/**
+ * getUserConfig
+ */
+
 import { existsSync, readFileSync } from 'fs';
 import { join, resolve } from 'path';
 import assert from 'assert';
