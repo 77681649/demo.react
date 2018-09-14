@@ -49,6 +49,7 @@ function patchRoutes(routes, config, isProduction, onPatchRoute) {
 
 function patchRoute(route, config, isProduction, onPatchRoute) {
   const isDynamicRoute = route.path && route.path.indexOf('/:') > -1;
+
   if (config.exportStatic && isDynamicRoute) {
     throw new Error(
       `you should not use exportStatic with dynamic route: ${route.path}`,
@@ -78,6 +79,7 @@ function patchRoute(route, config, isProduction, onPatchRoute) {
   }
 
   if (onPatchRoute) onPatchRoute(route);
+  
   if (route.routes) {
     patchRoutes(route.routes, config, isProduction, onPatchRoute);
   }

@@ -189,11 +189,13 @@ require('umi/_createHistory').default({
   getRouterJSContent() {
     const { paths } = this.service;
     const routerTpl = readFileSync(paths.defaultRouterTplPath, 'utf-8');
+    
     const routes = stripJSONQuote(
       this.getRoutesJSON({
         env: process.env.NODE_ENV,
       }),
     );
+
     const rendererWrappers = this.service
       .applyPlugins('addRendererWrapperWithComponent', {
         initialValue: [],
@@ -206,6 +208,7 @@ require('umi/_createHistory').default({
       });
 
     const routerContent = this.getRouterContent(rendererWrappers);
+    
     return Mustache.render(routerTpl, {
       imports: importsToStr(
         this.service.applyPlugins('addRouterImport', {

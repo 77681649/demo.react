@@ -32,12 +32,16 @@ export default (routes, service) => {
             return value;
           }
 
+          // 
           const [component, webpackChunkName] = value.split('^^');
+
+          // import
           const importPath = isAbsolute(component)
             ? component
             : winPath(relative(paths.tmpDirPath, component));
 
           let ret = `require('${importPath}').default`;
+
           if (applyPlugins) {
             ret = applyPlugins.call(service, 'modifyRouteComponent', {
               initialValue: ret,
@@ -50,6 +54,7 @@ export default (routes, service) => {
           }
 
           return ret;
+
         case 'Routes':
           return `[${value
             .map(
