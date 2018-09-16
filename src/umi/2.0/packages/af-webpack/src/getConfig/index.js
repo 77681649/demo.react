@@ -121,6 +121,7 @@ export default function(opts) {
     ],
     ...babelOptsCommon,
   };
+  
   if (opts.disableDynamicImport) {
     babelOpts.plugins = [
       ...(babelOpts.plugins || []),
@@ -180,6 +181,7 @@ export default function(opts) {
     const pkgPath = getPkgPath(a);
     return shouldTransform(pkgPath);
   });
+  
   extraBabelIncludes.forEach((include, index) => {
     const rule = `extraBabelInclude_${index}`;
     webpackConfig.module

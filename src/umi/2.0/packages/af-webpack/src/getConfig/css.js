@@ -11,13 +11,16 @@ const DEFAULT_BROWSERS = [
 
 export default function(webpackConfig, opts) {
   const isDev = process.env.NODE_ENV === 'development';
+
   const cssOpts = {
     importLoaders: 1,
     sourceMap: !opts.disableCSSSourceMap,
     ...(opts.cssLoaderOptions || {}),
   };
+
   // should pass down opts.cwd
   const theme = normalizeTheme(opts.theme, opts);
+  
   const postcssOptions = {
     // Necessary for external CSS imports to work
     // https://github.com/facebookincubator/create-react-app/issues/2677
@@ -48,6 +51,7 @@ export default function(webpackConfig, opts) {
           ]),
     ],
   };
+
   const cssModulesConfig = {
     modules: true,
     localIdentName:
@@ -56,6 +60,7 @@ export default function(webpackConfig, opts) {
         ? '[name]__[local]___[hash:base64:5]'
         : '[local]___[hash:base64:5]'),
   };
+
   const lessOptions = {
     modifyVars: theme,
     javascriptEnabled: true,
@@ -109,10 +114,13 @@ export default function(webpackConfig, opts) {
   if (opts.cssModulesExcludes) {
     opts.cssModulesExcludes.forEach((exclude, index) => {
       const rule = `cssModulesExcludes_${index}`;
+      
       const config = webpackConfig.module
         .rule(rule)
         .test(filePath => filePath.indexOf(exclude) > -1);
+      
       const ext = extname(exclude).toLowerCase();
+
       applyCSSRules(config, {
         less: ext === '.less',
         sass: ext === '.sass' || ext === '.scss',
@@ -127,6 +135,7 @@ export default function(webpackConfig, opts) {
         cssModules: true,
       },
     );
+
     applyCSSRules(
       webpackConfig.module.rule('.module.less').test(/\.module\.less/),
       {
@@ -134,6 +143,7 @@ export default function(webpackConfig, opts) {
         less: true,
       },
     );
+
     applyCSSRules(
       webpackConfig.module.rule('.module.sass').test(/\.module\.(sass|scss)/),
       {
@@ -168,6 +178,7 @@ export default function(webpackConfig, opts) {
       cssModules: !opts.disableCSSModules,
     },
   );
+
   applyCSSRules(
     webpackConfig.module
       .rule('css-in-node_modules')
@@ -176,6 +187,7 @@ export default function(webpackConfig, opts) {
       .end(),
     {},
   );
+
   applyCSSRules(
     webpackConfig.module
       .rule('less')
@@ -187,6 +199,7 @@ export default function(webpackConfig, opts) {
       less: true,
     },
   );
+
   applyCSSRules(
     webpackConfig.module
       .rule('less-in-node_modules')
@@ -197,6 +210,7 @@ export default function(webpackConfig, opts) {
       less: true,
     },
   );
+
   applyCSSRules(
     webpackConfig.module
       .rule('sass')
@@ -208,6 +222,7 @@ export default function(webpackConfig, opts) {
       sass: true,
     },
   );
+
   applyCSSRules(
     webpackConfig.module
       .rule('sass-in-node_modules')

@@ -1,8 +1,14 @@
 /**
  * babel-preset-umi
  * 提供babel配置
+ * 
+ * @param {Object} opts 选项
+ * @param {Boolean} useBuiltIns @babel/preset-env.useBuiltIns
+ * @param {Boolean} loose @babel/preset-env.loose
+ * @param {Object} targets @babel/preset-env.target
+ * @param {Object} env @babel/preset-env 选项
+ * @param {Object} transformRuntime @babel/plugin-transform-runtime 选项
  */
-
 export default function(context, opts = {}) {
   const nodeEnv = process.env.NODE_ENV;
   const {
@@ -33,7 +39,9 @@ export default function(context, opts = {}) {
       require.resolve('@babel/plugin-proposal-object-rest-spread'),
       { loose, useBuiltIns },
     ],
+
     require.resolve('@babel/plugin-proposal-optional-catch-binding'),
+    
     require.resolve('@babel/plugin-proposal-async-generator-functions'),
 
     // 下面两个的顺序的配置都不能动
