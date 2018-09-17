@@ -23,6 +23,11 @@ function diffPlugins(newOption, oldOption) {
   });
 }
 
+/**
+ * 
+ * @param {umi-build-dev.PluginAPI} api umi提供的Plugin API
+ * @param {Object} option 
+ */
 export default function(api, option) {
   api.onOptionChange(newOption => {
     if (isEqual(getPlugins(newOption), getPlugins(option))) {
@@ -56,6 +61,9 @@ export default function(api, option) {
     title: () => require('./plugins/title').default,
   };
 
+  //
+  // 注册插件
+  //
   Object.keys(plugins).forEach(key => {
     if (option[key]) {
       let opts = option[key];
@@ -65,6 +73,7 @@ export default function(api, option) {
           ...opts,
         };
       }
+
       if (key === 'dva') {
         opts = {
           ...toObject(opts),

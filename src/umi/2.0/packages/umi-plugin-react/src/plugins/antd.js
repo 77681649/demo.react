@@ -15,6 +15,9 @@ function importPlugin(key) {
 export default function(api) {
   const { cwd, compatDirname } = api;
 
+  //
+  // add af-webpack option: 新增 babel-plugin-import 插件
+  // 
   api.modifyAFWebpackOpts(opts => {
     opts.babel.plugins = [
       ...(opts.babel.plugins || []),
@@ -24,6 +27,9 @@ export default function(api) {
     return opts;
   });
 
+  //
+  // add alias - 确保应用正确
+  //
   api.chainWebpackConfig(webpackConfig => {
     webpackConfig.resolve.alias
       .set(
