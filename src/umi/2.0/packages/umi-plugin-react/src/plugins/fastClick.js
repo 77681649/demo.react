@@ -3,6 +3,9 @@ import { relative } from 'path';
 export default function(api, options = {}) {
   const { paths } = api;
 
+  // 
+  // import('fastclick') 
+  // 
   api.addEntryImport(() => {
     return {
       source: relative(
@@ -13,6 +16,9 @@ export default function(api, options = {}) {
     };
   });
 
+  //
+  // add code
+  //
   api.addEntryCodeAhead(
     `
 // Initialize fastclick
