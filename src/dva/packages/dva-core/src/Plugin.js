@@ -123,7 +123,7 @@ export default class Plugin {
 
 /**
  * 获得 额外配置的reducer
- * @param {Object} hook 
+ * @param {Map<>[]} hook 
  * @returns {Object}
  */
 function getExtraReducers(hook) {
@@ -137,7 +137,8 @@ function getExtraReducers(hook) {
 }
 
 /**
- * @param {Object} hook
+ * 获得 
+ * @param {func[]} hook
  * @returns {Function}
  */
 function getOnReducer(hook) {

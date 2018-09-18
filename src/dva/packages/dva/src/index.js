@@ -73,16 +73,16 @@ export default function(opts = {}) {
    */
   function start(container) {
     // 允许 container 是字符串，然后用 querySelector 找元素
-    if (isString(container)) {
-      container = document.querySelector(container);
-      invariant(container, `[app.start] container ${container} not found`);
-    }
+    // if (isString(container)) {
+    //   container = document.querySelector(container);
+    //   invariant(container, `[app.start] container ${container} not found`);
+    // }
 
     // 并且是 HTMLElement
-    invariant(
-      !container || isHTMLElement(container),
-      `[app.start] container should be HTMLElement`
-    );
+    // invariant(
+    //   !container || isHTMLElement(container),
+    //   `[app.start] container should be HTMLElement`
+    // );
 
     // 路由必须提前注册
     invariant(
@@ -149,12 +149,20 @@ function getProvider(store, app, router) {
  * 渲染
  */
 function render(container, store, app, router) {
-  const ReactDOM = require("react-dom"); // eslint-disable-line
-  
-  ReactDOM.render(
-    React.createElement(getProvider(store, app, router)),
-    container
-  );
+  // const ReactDOM = require("react-dom"); // eslint-disable-line
+  // ReactDOM.render(
+  //   React.createElement(getProvider(store, app, router)),
+  //   container
+  // );
+
+  const ReactDOM = require('react-dom-server')
+
+  console.log(
+    ReactDOM.renderToString(
+      React.createElement(getProvider(store, app, router)),
+      container
+    )
+  )
 }
 
 /**

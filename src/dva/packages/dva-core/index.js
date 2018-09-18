@@ -1,1 +1,3 @@
-module.exports = require('./lib');
+require('babel-register')
+
+require('./test/prefixNamespace.test.js')

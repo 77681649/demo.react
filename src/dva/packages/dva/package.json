@@ -35,10 +35,18 @@
     "history": "^4.6.3",
     "invariant": "^2.2.2",
     "isomorphic-fetch": "^2.2.1",
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0",
     "react-redux": "^5.0.5",
     "react-router-dom": "^4.1.2",
     "react-router-redux": "5.0.0-alpha.9",
     "redux": "^3.7.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.1.0",
+    "@babel/register": "^7.0.0",
+    "babel-preset-umi": "^1.0.0",
+    "react-dom-server": "0.0.5"
   },
   "peerDependencies": {
     "react": "15.x || ^16.0.0-0",

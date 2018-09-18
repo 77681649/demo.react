@@ -1,8 +1,11 @@
-import dva from 'dva';
-import './index.css';
+import dva from '../src/index';
+import {createMemoryHistory} from 'history'
+import { StaticRouter } from 'react-router-dom'
 
 // 1. Initialize
-const app = dva();
+const app = dva({
+  history:createMemoryHistory()
+});
 
 // 2. Plugins
 app.use({
@@ -37,7 +40,9 @@ app.use({
 // app.model(require('./models/example').default);
 
 // 4. Router
-app.router(require('./router').default);
+app.router(function ({ history, app, ...props}){
+  return <StaticRouter></StaticRouter>
+});
 
 // 5. Start
 app.start('#root');

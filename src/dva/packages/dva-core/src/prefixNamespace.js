@@ -3,7 +3,7 @@ import { isArray } from './utils';
 import { NAMESPACE_SEP } from './constants';
 
 /**
- * 为对象Obj的属性名添加前缀namespace
+ * 为对象的属性添加前缀namespace
  * @param {Object} obj 对象
  * @param {String} namespace 命名空间
  * @param {String} type 类型 
