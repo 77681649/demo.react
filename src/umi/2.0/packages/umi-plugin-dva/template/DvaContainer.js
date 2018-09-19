@@ -1,6 +1,5 @@
 import { Component } from 'react';
 import dva from 'dva';
-import createLoading from 'dva-loading';
 
 let app = dva({
   history: window.g_history,
@@ -8,7 +7,7 @@ let app = dva({
 });
 <%= EnhanceApp %>
 window.g_app = app;
-app.use(createLoading());
+
 <%= RegisterPlugins %>
 <%= RegisterModels %>
 

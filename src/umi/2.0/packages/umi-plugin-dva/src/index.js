@@ -146,6 +146,9 @@ app.use(require('${winPath(require.resolve('dva-immer'))}').default());
   }
 
   api.onGenerateFiles(() => {
+    //
+    // 生成额外的文件
+    //
     const tpl = join(__dirname, '../template/DvaContainer.js');
     let tplContent = readFileSync(tpl, 'utf-8');
     const dvaJS = getDvaJS();
@@ -157,11 +160,13 @@ app.use(require('${winPath(require.resolve('dva-immer'))}').default());
         `.trim(),
       );
     }
+    
     tplContent = tplContent
       .replace('<%= ExtendDvaConfig %>', '')
       .replace('<%= EnhanceApp %>', '')
       .replace('<%= RegisterPlugins %>', getPluginContent())
       .replace('<%= RegisterModels %>', getGlobalModelContent());
+      
     writeFileSync(dvaContainerPath, tplContent, 'utf-8');
   });
 
