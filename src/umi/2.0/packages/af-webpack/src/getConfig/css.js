@@ -20,7 +20,7 @@ export default function(webpackConfig, opts) {
 
   // should pass down opts.cwd
   const theme = normalizeTheme(opts.theme, opts);
-  
+
   const postcssOptions = {
     // Necessary for external CSS imports to work
     // https://github.com/facebookincubator/create-react-app/issues/2677
@@ -32,10 +32,7 @@ export default function(webpackConfig, opts) {
         flexbox: 'no-2009',
       }),
       ...(opts.extraPostCSSPlugins ? opts.extraPostCSSPlugins : []),
-      ...(isDev ||
-      process.env.CSS_COMPRESS === 'none' ||
-      process.env.COMPRESS === 'none' ||
-      process.env.NO_COMPRESS
+      ...(isDev || process.env.CSS_COMPRESS === 'none' || process.env.COMPRESS === 'none' || process.env.NO_COMPRESS
         ? []
         : [
             require('cssnano')({
@@ -55,10 +52,7 @@ export default function(webpackConfig, opts) {
   const cssModulesConfig = {
     modules: true,
     localIdentName:
-      cssOpts.localIdentName ||
-      (isDev
-        ? '[name]__[local]___[hash:base64:5]'
-        : '[local]___[hash:base64:5]'),
+      cssOpts.localIdentName || (isDev ? '[name]__[local]___[hash:base64:5]' : '[local]___[hash:base64:5]'),
   };
 
   const lessOptions = {
@@ -74,14 +68,117 @@ export default function(webpackConfig, opts) {
     hasSassLoader = false;
   }
 
+  //
+  //
+  //
+  if (opts.cssModulesExcludes) {
+    opts.cssModulesExcludes.forEach((exclude, index) => {
+      const rule = `cssModulesExcludes_${index}`;
+
+      const config = webpackConfig.module
+        .rule(rule)
+        .test(filePath => filePath.indexOf(exclude) > -1);
+
+      const ext = extname(exclude).toLowerCase();
+
+      applyCSSRules(config, {
+        less: ext === '.less',
+        sass: ext === '.sass' || ext === '.scss',
+      });
+    });
+  }
+
+  //
+  //
+  //
+  if (opts.cssModulesWithAffix) {
+    applyCSSRules(webpackConfig.module.rule('.module.css').test(/\.module\.css/), {
+      cssModules: true,
+    });
+
+    applyCSSRules(webpackConfig.module.rule('.module.less').test(/\.module\.less/), {
+      cssModules: true,
+      less: true,
+    });
+
+    applyCSSRules(webpackConfig.module.rule('.module.sass').test(/\.module\.(sass|scss)/), {
+      cssModules: true,
+      sass: true,
+    });
+  }
+
+  applyCSSRules(
+    webpackConfig.module
+      .rule('css')
+      .test(/\.css/)
+      .exclude.add(cssExclude)
+      .end(),
+    {
+      cssModules: !opts.disableCSSModules,
+    }
+  );
+
+  applyCSSRules(
+    webpackConfig.module
+      .rule('css-in-node_modules')
+      .test(/\.css/)
+      .include.add(/node_modules/)
+      .end(),
+    {}
+  );
+
+  applyCSSRules(
+    webpackConfig.module
+      .rule('less')
+      .test(/\.less/)
+      .exclude.add(cssExclude)
+      .end(),
+    {
+      cssModules: !opts.disableCSSModules,
+      less: true,
+    }
+  );
+
+  applyCSSRules(
+    webpackConfig.module
+      .rule('less-in-node_modules')
+      .test(/\.less/)
+      .include.add(/node_modules/)
+      .end(),
+    {
+      less: true,
+    }
+  );
+
+  applyCSSRules(
+    webpackConfig.module
+      .rule('sass')
+      .test(/\.(sass|scss)/)
+      .exclude.add(cssExclude)
+      .end(),
+    {
+      cssModules: !opts.disableCSSModules,
+      sass: true,
+    }
+  );
+
+  applyCSSRules(
+    webpackConfig.module
+      .rule('sass-in-node_modules')
+      .test(/\.(sass|scss)/)
+      .include.add(/node_modules/)
+      .end(),
+    {
+      sass: true,
+    }
+  );
+
   function applyCSSRules(rule, { cssModules, less, sass }) {
     if (isDev) {
       rule.use('css-hot-loader').loader(require.resolve('css-hot-loader'));
     }
 
-    rule
-      .use('extract-css-loader')
-      .loader(require('mini-css-extract-plugin').loader);
+    rule.use('extract-css-loader').loader(require('mini-css-extract-plugin').loader);
 
     rule
       .use('css-loader')
@@ -111,128 +208,28 @@ export default function(webpackConfig, opts) {
     }
   }
 
-  if (opts.cssModulesExcludes) {
-    opts.cssModulesExcludes.forEach((exclude, index) => {
-      const rule = `cssModulesExcludes_${index}`;
-      
-      const config = webpackConfig.module
-        .rule(rule)
-        .test(filePath => filePath.indexOf(exclude) > -1);
-      
-      const ext = extname(exclude).toLowerCase();
-
-      applyCSSRules(config, {
-        less: ext === '.less',
-        sass: ext === '.sass' || ext === '.scss',
-      });
-    });
-  }
-
-  if (opts.cssModulesWithAffix) {
-    applyCSSRules(
-      webpackConfig.module.rule('.module.css').test(/\.module\.css/),
-      {
-        cssModules: true,
-      },
-    );
-
-    applyCSSRules(
-      webpackConfig.module.rule('.module.less').test(/\.module\.less/),
-      {
-        cssModules: true,
-        less: true,
-      },
-    );
-
-    applyCSSRules(
-      webpackConfig.module.rule('.module.sass').test(/\.module\.(sass|scss)/),
-      {
-        cssModules: true,
-        sass: true,
-      },
-    );
-  }
-
+  /**
+   * 排除 exclude
+   * @param {string} filePath
+   * @returns {boolean} 
+   */
   function cssExclude(filePath) {
     if (/node_modules/.test(filePath)) {
       return true;
     }
+
     if (opts.cssModulesWithAffix) {
       if (/\.module\.(css|less|sass|scss)$/.test(filePath)) return true;
     }
+
     if (opts.cssModulesExcludes) {
       for (const exclude of opts.cssModulesExcludes) {
         if (filePath.indexOf(exclude) > -1) return true;
       }
     }
+
     return false;
   }
-
-  applyCSSRules(
-    webpackConfig.module
-      .rule('css')
-      .test(/\.css/)
-      .exclude.add(cssExclude)
-      .end(),
-    {
-      cssModules: !opts.disableCSSModules,
-    },
-  );
-
-  applyCSSRules(
-    webpackConfig.module
-      .rule('css-in-node_modules')
-      .test(/\.css/)
-      .include.add(/node_modules/)
-      .end(),
-    {},
-  );
-
-  applyCSSRules(
-    webpackConfig.module
-      .rule('less')
-      .test(/\.less/)
-      .exclude.add(cssExclude)
-      .end(),
-    {
-      cssModules: !opts.disableCSSModules,
-      less: true,
-    },
-  );
-
-  applyCSSRules(
-    webpackConfig.module
-      .rule('less-in-node_modules')
-      .test(/\.less/)
-      .include.add(/node_modules/)
-      .end(),
-    {
-      less: true,
-    },
-  );
-
-  applyCSSRules(
-    webpackConfig.module
-      .rule('sass')
-      .test(/\.(sass|scss)/)
-      .exclude.add(cssExclude)
-      .end(),
-    {
-      cssModules: !opts.disableCSSModules,
-      sass: true,
-    },
-  );
-
-  applyCSSRules(
-    webpackConfig.module
-      .rule('sass-in-node_modules')
-      .test(/\.(sass|scss)/)
-      .include.add(/node_modules/)
-      .end(),
-    {
-      sass: true,
-    },
-  );
 
   const hash = !isDev && opts.hash ? '.[contenthash:8]' : '';
 
