@@ -15,8 +15,14 @@ export default function(api, options) {
   });
 
   api.modifyRouteComponent((memo, args) => {
-    const { importPath, webpackChunkName } = args;
+    const { 
+      importPath, 
+      webpackChunkName 
+    } = args;
 
+    //
+    // loading
+    //
     let loadingOpts = '';
     if (options.loadingComponent) {
       loadingOpts = `, loading: require('${winPath(
@@ -24,10 +30,14 @@ export default function(api, options) {
       )}').default `;
     }
 
+    //
+    // 
+    //
     let extendStr = '';
     if (options.webpackChunkName) {
       extendStr = `/* webpackChunkName: ^${webpackChunkName}^ */`;
     }
+
     return `dynamic({ loader: () => import(${extendStr}'${importPath}')${loadingOpts} })`;
   });
 }

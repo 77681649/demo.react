@@ -173,11 +173,14 @@ export default function(opts) {
     .loader(require.resolve('babel-loader'))
     .options(babelOpts);
 
+  // 只能添加需要编译的额外模块
   // module -> extraBabelIncludes
   // suport es5ImcompatibleVersions
   const extraBabelIncludes = opts.extraBabelIncludes || [];
   extraBabelIncludes.push(a => {
+    // 如果不在不是node_modules中,直接跳过
     if (a.indexOf('node_modules') === -1) return false;
+
     const pkgPath = getPkgPath(a);
     return shouldTransform(pkgPath);
   });
