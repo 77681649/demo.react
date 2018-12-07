@@ -10,36 +10,51 @@ import formatChunksMap from './formatChunksMap';
 
 export default class HTMLGenerator {
   constructor(opts = {}) {
+    // 设置选项
     Object.keys(opts).forEach(key => {
       this[key] = opts[key];
     });
+    
+    // chunks-map ( key.extname - file )
     if (this.chunksMap) {
       this.chunksMap = formatChunksMap(this.chunksMap);
     }
 
+    // 环境变量
     if (!this.env) {
       this.env = process.env.NODE_ENV;
     }
+
+    // 是否压缩
     if (!('minify' in this)) {
       this.minify =
         this.env === 'production' && process.env.COMPRESS !== 'none';
     }
   }
 
+  /**
+   * 
+   */
   generate() {
     assert(
       this.env === 'production',
       `HtmlGenerator.generate() should only be used in umi build`,
     );
 
+    // 
+    // 扁平化路由
+    //
     const flatRoutes = this.getFlatRoutes(this.routes);
     assert(flatRoutes.length, 'no valid routes found');
 
-    const routes = this.config.exportStatic ? flatRoutes : [{ path: '/' }];
+    const routes = this.config.exportStatic 
+      ? flatRoutes 
+      : [{ path: '/' }]; 
+
     return routes.map(route => {
       return {
-        filePath: this.getHtmlPath(route.path),
-        content: this.getContent(route),
+        filePath: this.getHtmlPath(route.path),   // 创建路由对应的 Html 路径
+        content: this.getContent(route),          // 
       };
     });
   }
@@ -119,9 +134,11 @@ export default class HTMLGenerator {
   getStylesContent(styles) {
     return styles
       .map(({ content, ...attrs }) => {
+        
         attrs = Object.keys(attrs).reduce((memo, key) => {
           return memo.concat(`${key}="${attrs[key]}"`);
         }, []);
+
         return [
           `<style${attrs.length ? ' ' : ''}${attrs.join(' ')}>`,
           content
@@ -163,12 +180,14 @@ export default class HTMLGenerator {
   }
 
   getScriptsContent(scripts) {
+
     return scripts
       .map(({ content, ...attrs }) => {
         if (content && !attrs.src) {
           attrs = Object.keys(attrs).reduce((memo, key) => {
             return memo.concat(`${key}="${attrs[key]}"`);
           }, []);
+
           return [
             `<script${attrs.length ? ' ' : ''}${attrs.join(' ')}>`,
             content
@@ -181,19 +200,27 @@ export default class HTMLGenerator {
           attrs = Object.keys(attrs).reduce((memo, key) => {
             return memo.concat(`${key}="${attrs[key]}"`);
           }, []);
+
           return `<script ${attrs.join(' ')}></script>`;
         }
       })
       .join('\n');
   }
 
+  /**
+   * 返回hashed之后的文件名
+   * @param {String} filename 
+   * @returns {String} 返回hashed之后的文件
+   */
   getHashedFileName(filename) {
     const isProduction = this.env === 'production';
+
     if (isProduction) {
       assert(
         this.chunksMap[filename],
         `file ${filename} don't exists in chunksMap`,
       );
+
       return this.chunksMap[filename];
     } else {
       return filename;
@@ -205,26 +232,31 @@ export default class HTMLGenerator {
     const { exportStatic, runtimePublicPath } = this.config;
 
     let context = {
-      route,
-      config: this.config,
-      ...(this.config.context || {}),
-      env: this.env,
-    };
-    if (this.modifyContext) context = this.modifyContext(context, route);
+      route,                              // 路由配置
+      config: this.config,                // 配置
+      ...(this.config.context || {}),     // 上下文
+      env: this.env,                      // env
+    };  
 
-    const tplPath = this.getDocumentTplPath(route);
-    const relTplPath = relative(cwd, tplPath);
-    const tpl = readFileSync(tplPath, 'utf-8');
+    if (this.modifyContext) {
+      context = this.modifyContext(context, route);
+    }
+
+    const tplPath = this.getDocumentTplPath(route); // document.ejs 绝对路径
+    const relTplPath = relative(cwd, tplPath);      // doucment.ejs 相对路径
+    const tpl = readFileSync(tplPath, 'utf-8');     // document.ejs 内容
 
     assert(
       tpl.includes('<head>') && tpl.includes('</head>'),
       `Document ${relTplPath} must contain <head> and </head>`,
     );
+
     assert(
       tpl.includes('<body') && tpl.includes('</body>'),
       `Document ${relTplPath} must contain <body> and </body>`,
     );
 
+    // 渲染模板
     let html = ejs.render(tpl, context, {
       _with: false,
       localsName: 'context',
@@ -238,11 +270,11 @@ export default class HTMLGenerator {
       }"></div>`,
     );
 
-    let metas = [];
-    let links = [];
-    let scripts = [];
-    let styles = [];
-    let headScripts = [];
+    let metas = [];           // head <meta>
+    let links = [];           // head <link>
+    let scripts = [];         // head <script>
+    let styles = [];          // head <style>
+    let headScripts = [];     // 
 
     let routerBaseStr = JSON.stringify(this.config.base || '/');
     const publicPath = this.publicPath || '/';
@@ -262,14 +294,21 @@ export default class HTMLGenerator {
       publicPathStr = this.modifyPublicPathStr(publicPathStr);
     }
 
-    const setPublicPath =
-      runtimePublicPath || (exportStatic && exportStatic.dynamicRoot);
+    const setPublicPath = runtimePublicPath || (exportStatic && exportStatic.dynamicRoot);
+    
+    //
+    // 设置路径
+    //
     headScripts.push({
       content: [
         `window.routerBase = ${routerBaseStr};`,
         ...(setPublicPath ? [`window.publicPath = ${publicPathStr};`] : []),
       ].join('\n'),
     });
+
+    //
+    // add "umi.js"
+    //
     scripts.push({
       src: `<%= pathToPublicPath %>${this.getHashedFileName('umi.js')}`,
     });
@@ -278,9 +317,11 @@ export default class HTMLGenerator {
     if (this.modifyLinks) links = this.modifyLinks(links);
     if (this.modifyScripts) scripts = this.modifyScripts(scripts);
     if (this.modifyStyles) styles = this.modifyStyles(styles);
-    if (this.modifyHeadScripts)
-      headScripts = this.modifyHeadScripts(headScripts);
+    if (this.modifyHeadScripts) headScripts = this.modifyHeadScripts(headScripts);
 
+    //
+    // add "umi.css"
+    //
     if (this.env === 'development' || this.chunksMap['umi.css']) {
       // umi.css should be the last one stylesheet
       links.push({
@@ -289,7 +330,9 @@ export default class HTMLGenerator {
       });
     }
 
-    // insert tags
+    // 
+    // insert "head tag" to <head>
+    //
     html = html.replace(
       '<head>',
       `
@@ -299,6 +342,10 @@ ${links.length ? this.getLinksContent(links) : ''}
 ${styles.length ? this.getStylesContent(styles) : ''}
     `.trim() + '\n',
     );
+
+    //
+    // insert "head script" to <head>
+    //
     html = html.replace(
       '</head>',
       `
@@ -306,6 +353,10 @@ ${headScripts.length ? this.getScriptsContent(headScripts) : ''}
 </head>
     `.trim(),
     );
+
+    //
+    //
+    //
     html = html.replace(
       '</body>',
       `
@@ -314,16 +365,22 @@ ${scripts.length ? this.getScriptsContent(scripts) : ''}
     `.trim(),
     );
 
+    //
+    // 生成 publicPath
+    //
     const relPathToPublicPath = this.getRelPathToPublicPath(route.path);
+    
     const pathToPublicPath =
       exportStatic && exportStatic.dynamicRoot
         ? relPathToPublicPath
         : publicPath;
+
     html = html.replace(/<%= pathToPublicPath %>/g, pathToPublicPath);
 
     if (this.modifyHTML) {
       html = this.modifyHTML(html, { route });
     }
+
 
     if (this.minify) {
       html = minify(html, {
