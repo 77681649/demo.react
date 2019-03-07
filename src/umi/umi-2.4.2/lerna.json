@@ -1,0 +1,21 @@
+{
+  "changelog": {
+    "labels": {
+      "enhancement": ":rocket: Enhancement",
+      "bug": ":bug: Bug Fix",
+      "documentation": ":book: Documentation"
+    },
+    "repo": "umijs/umi",
+    "cacheDir": ".changelog"
+  },
+  "packages": [
+    "packages/*"
+  ],
+  "command": {
+    "version": {
+      "exact": true
+    }
+  },
+  "npmClient": "yarn",
+  "version": "independent"
+}

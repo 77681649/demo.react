@@ -13,3 +13,12 @@
 | pluginHooks | | 存储注册的Plugin Hook |
 | commands | Map<name, {fn, opts}> | 存储注册的执行命令 |
 | generators | | |
+
+
+
+#### 控制台方法说明
+
+| 方法 | 说明 |
+| --- | --- |
+| printWarn() | |
+| | |
