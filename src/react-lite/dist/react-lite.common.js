@@ -3,11 +3,11 @@
  * (c) 2017 Jade Gu
  * Released under the MIT License.
  */
-'use strict';
+"use strict";
 
-var HTML_KEY = 'dangerouslySetInnerHTML';
-var SVGNamespaceURI = 'http://www.w3.org/2000/svg';
-var COMPONENT_ID = 'liteid';
+var HTML_KEY = "dangerouslySetInnerHTML";
+var SVGNamespaceURI = "http://www.w3.org/2000/svg";
+var COMPONENT_ID = "liteid";
 var VELEMENT = 2;
 var VSTATELESS = 3;
 var VCOMPONENT = 4;
@@ -18,25 +18,25 @@ var DOCUMENT_FRAGMENT_NODE_TYPE = 11;
 
 /**
  * VNode
- * @typedef {Object} 
+ * @typedef {Object}
  * @property {String} [uid] 节点的唯一标识
  * @property {Number} vtype 1 = 文本 , 2 = 元素 , 3 = 无状态组件 , 4 = 有状态的组件 , 5 = 注释
  * @property {String | Component | Function} type [ 2 = 元素名称(标签名称) , 3 = 组件的构造器 , 4 = 组件构造函数]
  * @property {String} key 节点的键
  * @property {Object} props 节点的属性
- * @property {Object} refs 
+ * @property {Object} refs
  * @property {String | Function} ref
  */
 
 /**
  * DOM 节点的附加属性
  * vchildren {VNode[]} 存储该节点的所有子元素 ( 后序遍历树的结果 )
- * cache {Map<uid , Object>} 无状态组件 , 保存无状态组件渲染出来的虚拟接节点树 ; 
+ * cache {Map<uid , Object>} 无状态组件 , 保存无状态组件渲染出来的虚拟接节点树 ;
  */
 
 /**
  * NodeCache
- * @typedef {Object} 
+ * @typedef {Object}
  */
 
 /**
@@ -48,9 +48,9 @@ var refs = null;
 /**
  * 根据虚拟节点 , 创建对应的DOM Tree , 并返回创建的DOM Tree
  * @export
- * @param {VNode} vnode 
- * @param {Object} parentContext 
- * @param {String} namespaceURI 
+ * @param {VNode} vnode
+ * @param {Object} parentContext
+ * @param {String} namespaceURI
  * @returns {HtmlElement}
  */
 function initVnode(vnode, parentContext, namespaceURI) {
@@ -58,9 +58,15 @@ function initVnode(vnode, parentContext, namespaceURI) {
 
   var creator = null;
 
-  if (isTextElement(vtype)) creator = initText;else if (isVElement(vtype)) creator = initVelem;else if (isStateComponent(vtype)) creator = initVcomponent;else if (isStatelessComponent(vtype)) creator = initVstateless;else if (isCommentElement(vtype)) creator = initComment;
+  if (isTextElement(vtype)) creator = initText;
+  else if (isVElement(vtype)) creator = initVelem;
+  else if (isStateComponent(vtype)) creator = initVcomponent;
+  else if (isStatelessComponent(vtype)) creator = initVstateless;
+  else if (isCommentElement(vtype)) creator = initComment;
 
-  return creator ? creator.call(null, vnode, parentContext, namespaceURI) : null;
+  return creator
+    ? creator.call(null, vnode, parentContext, namespaceURI)
+    : null;
 }
 
 function updateVnode(vnode, newVnode, node, parentContext) {
@@ -116,9 +122,19 @@ function applyUpdate(data) {
     } else if (vnode.vtype === VELEMENT) {
       updateVelem(vnode, data.newVnode, newNode, data.parentContext);
     } else if (vnode.vtype === VSTATELESS) {
-      newNode = updateVstateless(vnode, data.newVnode, newNode, data.parentContext);
+      newNode = updateVstateless(
+        vnode,
+        data.newVnode,
+        newNode,
+        data.parentContext
+      );
     } else if (vnode.vtype === VCOMPONENT) {
-      newNode = updateVcomponent(vnode, data.newVnode, newNode, data.parentContext);
+      newNode = updateVcomponent(
+        vnode,
+        data.newVnode,
+        newNode,
+        data.parentContext
+      );
     }
   }
 
@@ -136,7 +152,11 @@ function applyDestroy(data) {
 }
 
 function applyCreate(data) {
-  var node = initVnode(data.vnode, data.parentContext, data.parentNode.namespaceURI);
+  var node = initVnode(
+    data.vnode,
+    data.parentContext,
+    data.parentNode.namespaceURI
+  );
   data.parentNode.insertBefore(node, data.parentNode.childNodes[data.index]);
 }
 
@@ -172,10 +192,10 @@ function initText(vnode) {
 
 /**
  * 根据虚拟元素 , 创建对应的DOM Tree
- * 
- * @param {any} velem 
- * @param {any} parentContext 
- * @param {any} namespaceURI 
+ *
+ * @param {any} velem
+ * @param {any} parentContext
+ * @param {any} namespaceURI
  * @returns {HtmlElement} 返回DOM Tree
  */
 function initVelem(velem, parentContext, namespaceURI) {
@@ -185,11 +205,13 @@ function initVelem(velem, parentContext, namespaceURI) {
   var createElement = function createElement(vnode, namespaceURI) {
     var type = vnode.type;
 
-    return type === 'svg' || namespaceURI === SVGNamespaceURI ? document.createElementNS(SVGNamespaceURI, type) : document.createElement(type);
+    return type === "svg" || namespaceURI === SVGNamespaceURI
+      ? document.createElementNS(SVGNamespaceURI, type)
+      : document.createElement(type);
   };
 
   var setPropsForRootNode = function setPropsForRootNode() {
-    var isCustomComponent = type.indexOf('-') >= 0 || props.is != null;
+    var isCustomComponent = type.indexOf("-") >= 0 || props.is != null;
 
     setProps(rootNode, props, isCustomComponent);
   };
@@ -209,13 +231,13 @@ function initVelem(velem, parentContext, namespaceURI) {
 
 /**
  * 遍历创建虚拟节点的子树
- * 
- * @param {any} velem 
- * @param {any} node 
- * @param {any} parentContext 
+ *
+ * @param {any} velem
+ * @param {any} node
+ * @param {any} parentContext
  */
 function initVchildren(velem, node, parentContext) {
-  var vchildren = node.vchildren = getFlattenChildren(velem);
+  var vchildren = (node.vchildren = getFlattenChildren(velem));
   var namespaceURI = node.namespaceURI;
 
   renderVchildren(node, vchildren, parentContext, namespaceURI);
@@ -223,9 +245,9 @@ function initVchildren(velem, node, parentContext) {
 
 /**
  * 获得vnode的所有子节点 , 返回
- * 
+ *
  * @param {VNode} vnode 虚拟节点
- * @returns {VNode[]} 
+ * @returns {VNode[]}
  */
 function getFlattenChildren(vnode) {
   var children = vnode.props.children;
@@ -238,9 +260,9 @@ function getFlattenChildren(vnode) {
 }
 
 /**
- * 
- * @param {VNode} child 
- * @param {VNode[]} children 
+ *
+ * @param {VNode} child
+ * @param {VNode[]} children
  */
 function collectChild(child, children) {
   if (isInvalidChildNode(child)) {
@@ -265,20 +287,22 @@ function collectChild(child, children) {
 
 /**
  * 后序遍历树 , 返回所有节点 ( 遍历完所有子节点 , 再遍历跟节点 )
- * 
- * @param {VNode} rootNode 
- * @param {Function} iterate 
+ *
+ * @param {VNode} rootNode
+ * @param {Function} iterate
  */
 function treePostOrder(rootNode, iterate, nodes) {
-  isArr(rootNode) ? flatEach(rootNode, iterate, nodes) : iterate(rootNode, nodes);
+  isArr(rootNode)
+    ? flatEach(rootNode, iterate, nodes)
+    : iterate(rootNode, nodes);
 }
 
 function isInvalidChildNode(child) {
-  return child == null || typeof child === 'boolean';
+  return child == null || typeof child === "boolean";
 }
 
 function handleChildText(child) {
-  return '' + child;
+  return "" + child;
 }
 
 function handleChildImmutableData(data, children) {
@@ -288,19 +312,19 @@ function handleChildImmutableData(data, children) {
 }
 
 /**
- * 
- * 
- * @param {any} rootNode 
- * @param {any} vnodes 
- * @param {any} parentContext 
- * @param {any} namespaceURI 
+ *
+ *
+ * @param {any} rootNode
+ * @param {any} vnodes
+ * @param {any} parentContext
+ * @param {any} namespaceURI
  */
 function renderVchildren(rootNode, vnodes, parentContext, namespaceURI) {
   var renderChildNode = function renderChildNode(vnode) {
     return initVnode(vnode, parentContext, namespaceURI);
   };
 
-  vnodes.forEach(function (vnode) {
+  vnodes.forEach(function(vnode) {
     var childNode = renderChildNode(vnode);
 
     rootNode.appendChild(childNode);
@@ -311,7 +335,7 @@ function diffVchildren(patches, vnode, newVnode, node, parentContext) {
   var childNodes = node.childNodes;
   var vchildren = node.vchildren;
 
-  var newVchildren = node.vchildren = getFlattenChildren(newVnode);
+  var newVchildren = (node.vchildren = getFlattenChildren(newVnode));
   var vchildrenLen = vchildren.length;
   var newVchildrenLen = newVchildren.length;
 
@@ -384,7 +408,11 @@ function diffVchildren(patches, vnode, newVnode, node, parentContext) {
         continue;
       }
       var _newVnode2 = newVchildren[j];
-      if (_newVnode2.type === _vnode2.type && _newVnode2.key === _vnode2.key && _newVnode2.refs === _vnode2.refs) {
+      if (
+        _newVnode2.type === _vnode2.type &&
+        _newVnode2.key === _vnode2.key &&
+        _newVnode2.refs === _vnode2.refs
+      ) {
         updates[j] = {
           vnode: _vnode2,
           newVnode: _newVnode2,
@@ -420,7 +448,13 @@ function diffVchildren(patches, vnode, newVnode, node, parentContext) {
         index: i
       });
     } else if (item.vnode.vtype === VELEMENT) {
-      diffVchildren(patches, item.vnode, item.newVnode, item.node, item.parentContext);
+      diffVchildren(
+        patches,
+        item.vnode,
+        item.newVnode,
+        item.node,
+        item.parentContext
+      );
     }
   }
 
@@ -434,7 +468,8 @@ function diffVchildren(patches, vnode, newVnode, node, parentContext) {
 }
 
 function updateVelem(velem, newVelem, node) {
-  var isCustomComponent = velem.type.indexOf('-') >= 0 || velem.props.is != null;
+  var isCustomComponent =
+    velem.type.indexOf("-") >= 0 || velem.props.is != null;
   patchProps(node, velem.props, newVelem.props, isCustomComponent);
   if (velem.ref !== newVelem.ref) {
     detachRef(velem.refs, velem.ref, node);
@@ -463,11 +498,11 @@ function destroyVelem(velem, node) {
 
 /**
  * 根据无状态组件 , 创建对应的DOM Tree
- * 
- * @param {VNode} vstateless 
- * @param {any} parentContext 
- * @param {any} namespaceURI 
- * @returns 
+ *
+ * @param {VNode} vstateless
+ * @param {any} parentContext
+ * @param {any} namespaceURI
+ * @returns
  */
 function initVstateless(vstateless, parentContext, namespaceURI) {
   var vnode = renderVstateless(vstateless, parentContext);
@@ -501,9 +536,9 @@ function destroyVstateless(vstateless, node) {
 
 /**
  * 渲染出无状态组件对应的虚拟节点树
- * 
+ *
  * @param {VNode} vstateless 无状态组件
- * @param {Object} parentContext 
+ * @param {Object} parentContext
  * @returns {VNode}
  */
 function renderVstateless(vstateless, parentContext) {
@@ -520,7 +555,11 @@ function renderVstateless(vstateless, parentContext) {
   if (vnode === null || vnode === false) {
     vnode = createVnode(VCOMMENT);
   } else if (!vnode || !vnode.vtype) {
-    throw new Error('@' + factory.name + '#render:You may have returned undefined, an array or some other invalid object');
+    throw new Error(
+      "@" +
+        factory.name +
+        "#render:You may have returned undefined, an array or some other invalid object"
+    );
   }
 
   return vnode;
@@ -532,10 +571,10 @@ function renderVstateless(vstateless, parentContext) {
 
 /**
  * 根据有状态的组件 , 创建对应的DOM Tree
- * 
+ *
  * @param {VNode} vcomponent 虚拟组件
- * @param {Object} parentContext 
- * @param {any} namespaceURI 
+ * @param {Object} parentContext
+ * @param {any} namespaceURI
  * @returns {HtmlElement}
  */
 function initVcomponent(vcomponent, parentContext, namespaceURI) {
@@ -547,14 +586,18 @@ function initVcomponent(vcomponent, parentContext, namespaceURI) {
   var cache = component.$cache;
 
   var vnode = undefined,
-      node = undefined;
+    node = undefined;
 
   component.pendingUpdater();
 
   component.tryEmitComponentWillMount();
 
   vnode = renderComponent(component);
-  node = initVnode(vnode, getChildContext(component, parentContext), namespaceURI);
+  node = initVnode(
+    vnode,
+    getChildContext(component, parentContext),
+    namespaceURI
+  );
 
   addCache(component, node, uid);
 
@@ -571,7 +614,10 @@ function initVcomponent(vcomponent, parentContext, namespaceURI) {
 }
 
 function createComponentInstance(Component, props, parentContext) {
-  var componentContext = getContextByTypes(parentContext, Component.contextTypes);
+  var componentContext = getContextByTypes(
+    parentContext,
+    Component.contextTypes
+  );
   var component = new Component(props, componentContext);
 
   component.$cache.parentContext = parentContext;
@@ -584,9 +630,9 @@ function createComponentInstance(Component, props, parentContext) {
 
 /**
  * 根据状态组件 , 渲染响应的虚拟节点
- * 
- * @param {VNode} component 
- * @param {Object} parentContext 
+ *
+ * @param {VNode} component
+ * @param {Object} parentContext
  * @returns {VNode}
  */
 function renderComponent(component, parentContext) {
@@ -598,7 +644,11 @@ function renderComponent(component, parentContext) {
   if (vnode === null || vnode === false) {
     vnode = createVnode(VCOMMENT);
   } else if (!vnode || !vnode.vtype) {
-    throw new Error('@' + component.constructor.name + '#render:You may have returned undefined, an array or some other invalid object');
+    throw new Error(
+      "@" +
+        component.constructor.name +
+        "#render:You may have returned undefined, an array or some other invalid object"
+    );
   }
 
   refs = null;
@@ -608,10 +658,10 @@ function renderComponent(component, parentContext) {
 
 /**
  * 获得传递给子组件的上下文
- * 
- * @param {Object} component 
- * @param {Object} parentContext 
- * @returns 
+ *
+ * @param {Object} component
+ * @param {Object} parentContext
+ * @returns
  */
 function getChildContext(component, parentContext) {
   if (component.getChildContext) {
@@ -632,7 +682,10 @@ function updateVcomponent(vcomponent, newVcomponent, node, parentContext) {
   var Component = newVcomponent.type;
   var nextProps = newVcomponent.props;
 
-  var componentContext = getContextByTypes(parentContext, Component.contextTypes);
+  var componentContext = getContextByTypes(
+    parentContext,
+    Component.contextTypes
+  );
   delete node.cache[uid];
   node.cache[newVcomponent.uid] = component;
   cache.parentContext = parentContext;
@@ -670,7 +723,7 @@ function destroyVcomponent(vcomponent, node) {
 }
 
 /**
- * 
+ *
  */
 var pendingComponents = [];
 
@@ -698,7 +751,7 @@ function clearPendingComponents() {
 }
 
 /**
- * 
+ *
  */
 var pendingRefs = [];
 
@@ -722,7 +775,7 @@ function clearPendingRefs() {
 }
 
 /**
- * 
+ *
  */
 function clearPending() {
   clearPendingRefs();
@@ -793,10 +846,10 @@ function syncCache(cache, oldCache, node) {
 }
 
 /**
- * 添加缓存 
- * @param {any} cache 
- * @param {any} node 
- * @param {any} key 
+ * 添加缓存
+ * @param {any} cache
+ * @param {any} node
+ * @param {any} key
  */
 function addCache(cache, node, key) {
   node.cache = node.cache || {};
@@ -807,7 +860,7 @@ function addCache(cache, node, key) {
 // ------------------------------------------------ COMMENT
 //
 function initComment(vnode) {
-  return document.createComment('react-text: ' + (vnode.uid || getUid()));
+  return document.createComment("react-text: " + (vnode.uid || getUid()));
 }
 
 //
@@ -865,7 +918,7 @@ function createVnode(vtype, type, props, key, ref) {
 
 /**
  * 根据模型 , 生成对应模型的上下文对象
- * 
+ *
  * @param {Object} curContext 当前上下文
  * @param {Object} contextTypes 定义的上下文模型
  * @returns {Object}
@@ -894,11 +947,10 @@ function getContextByTypes(curContext, contextTypes) {
  */
 
 /**
- * 
+ *
  */
 
 var updateQueue = {
-
   /**
    * 更新器队列
    * @type {Update[]}
@@ -924,14 +976,14 @@ var updateQueue = {
 
   /**
    * 添加更新器
-   * @param {Updater} updater 
+   * @param {Updater} updater
    */
   add: function add(updater) {
     addItem(this.updaters, updater);
   },
 
   /**
-   * 
+   *
    */
   batchUpdate: function batchUpdate() {
     if (this.isPending) {
@@ -948,7 +1000,7 @@ var updateQueue = {
     var updaters = this.updaters;
 
     var updater = undefined;
-    while (updater = updaters.pop()) {
+    while ((updater = updaters.pop())) {
       updater.updateComponent();
     }
     this.isPending = false;
@@ -957,14 +1009,14 @@ var updateQueue = {
 
 /**
  * 更新器
- * 
- * @param {any} instance 
+ *
+ * @param {any} instance
  */
 function Updater(instance) {
   /**
-    * 更新器的服务实例 ( 组件 )
-    * @type {Component}
-    */
+   * 更新器的服务实例 ( 组件 )
+   * @type {Component}
+   */
   this.instance = instance;
 
   /**
@@ -974,43 +1026,45 @@ function Updater(instance) {
   this.pendingStates = [];
 
   /**
-   * 
+   *
    * @type {}
    */
   this.pendingCallbacks = [];
 
   /**
    * 是否准备就绪
-   * true  = 等待状态 , 表示当添加状态更新操作时 , 
+   * true  = 等待状态 , 表示当添加状态更新操作时 ,
    * false = 就绪状态 , 表示当添加状态更新操作时 , 可以直接触发更新操作
-   * @type {Boolean} 
+   * @type {Boolean}
    * @default false
    */
   this.isPending = false;
 
   /**
-   * 
+   *
    */
   this.nextProps = this.nextContext = null;
 
   /**
-   * 
+   *
    */
   this.clearCallbacks = this.clearCallbacks.bind(this);
 }
 
 Updater.prototype = {
   /**
-   * 
-   * 
-   * @param {any} nextProps 
-   * @param {any} nextContext 
+   *
+   *
+   * @param {any} nextProps
+   * @param {any} nextContext
    */
   emitUpdate: function emitUpdate(nextProps, nextContext) {
     this.nextProps = nextProps;
     this.nextContext = nextContext;
     // receive nextProps!! should update immediately
-    nextProps || !updateQueue.isPending ? this.updateComponent() : updateQueue.add(this);
+    nextProps || !updateQueue.isPending
+      ? this.updateComponent()
+      : updateQueue.add(this);
   },
 
   isReady: function isReady() {
@@ -1026,8 +1080,8 @@ Updater.prototype = {
   },
 
   /**
-   * 
-   * 
+   *
+   *
    */
   updateComponent: function updateComponent() {
     var instance = this.instance;
@@ -1040,13 +1094,19 @@ Updater.prototype = {
       nextContext = nextContext || instance.context;
       this.nextProps = this.nextContext = null;
       // merge the nextProps and nextState and update by one time
-      shouldUpdate(instance, nextProps, this.getState(), nextContext, this.clearCallbacks);
+      shouldUpdate(
+        instance,
+        nextProps,
+        this.getState(),
+        nextContext,
+        this.clearCallbacks
+      );
     }
   },
 
   /**
    * 添加一个"状态更新"
-   * @param {any} nextState 
+   * @param {any} nextState
    */
   addState: function addState(nextState) {
     if (nextState) {
@@ -1060,7 +1120,7 @@ Updater.prototype = {
 
   /**
    * 替换状态
-   * @param {any} nextState 
+   * @param {any} nextState
    */
   replaceState: function replaceState(nextState) {
     var pendingStates = this.pendingStates;
@@ -1073,8 +1133,8 @@ Updater.prototype = {
 
   /**
    * 获得状态
-   * 
-   * @returns 
+   *
+   * @returns
    */
   getState: function getState() {
     var instance = this.instance;
@@ -1091,17 +1151,20 @@ Updater.prototype = {
   },
 
   /**
-   * 
-   * 
+   *
+   *
    */
   hasPendingState: function hasPendingState() {
     return this.pendingStates.length;
   },
 
-  handlePendingStateQueue: function handlePendingStateQueue(componentState, componentProps) {
+  handlePendingStateQueue: function handlePendingStateQueue(
+    componentState,
+    componentProps
+  ) {
     var state = extend({}, componentState);
 
-    this.pendingStates.forEach(function (nextState) {
+    this.pendingStates.forEach(function(nextState) {
       var isReplace = isReplaceState(nextState);
 
       // 特殊处理 : 替换状态
@@ -1129,8 +1192,8 @@ Updater.prototype = {
   },
 
   /**
-   * 
-   * 
+   *
+   *
    */
   clearCallbacks: function clearCallbacks() {
     var pendingCallbacks = this.pendingCallbacks;
@@ -1138,16 +1201,16 @@ Updater.prototype = {
 
     if (pendingCallbacks.length > 0) {
       this.pendingCallbacks = [];
-      pendingCallbacks.forEach(function (callback) {
+      pendingCallbacks.forEach(function(callback) {
         return callback.call(instance);
       });
     }
   },
 
   /**
-   * 
-   * 
-   * @param {any} callback 
+   *
+   *
+   * @param {any} callback
    */
   addCallback: function addCallback(callback) {
     if (isFn(callback)) {
@@ -1163,7 +1226,11 @@ function isReplaceState(nextState) {
 function shouldUpdate(component, nextProps, nextState, nextContext, callback) {
   var shouldComponentUpdate = true;
   if (component.shouldComponentUpdate) {
-    shouldComponentUpdate = component.shouldComponentUpdate(nextProps, nextState, nextContext);
+    shouldComponentUpdate = component.shouldComponentUpdate(
+      nextProps,
+      nextState,
+      nextContext
+    );
   }
   if (shouldComponentUpdate === false) {
     component.props = nextProps;
@@ -1180,13 +1247,12 @@ function shouldUpdate(component, nextProps, nextState, nextContext, callback) {
 
 /**
  * 组件
- * 
+ *
  * @export
  * @param {Object} [props] 属性
  * @param {Object} [context] 上下文
  */
 function Component(props, context) {
-
   /**
    * 更新器 -- 负责处理状态的更新
    * @type {Updater}
@@ -1236,10 +1302,10 @@ Component.prototype = {
   // },
 
   /**
-   * 
-   * 
-   * @param {any} callback 
-   * @returns 
+   *
+   *
+   * @param {any} callback
+   * @returns
    */
   forceUpdate: function forceUpdate(callback) {
     var $updater = this.$updater;
@@ -1271,7 +1337,12 @@ Component.prototype = {
     this.props = nextProps;
     this.context = nextContext;
     var newVnode = renderComponent(this);
-    var newNode = compareTwoVnodes(vnode, newVnode, node, getChildContext(this, parentContext));
+    var newNode = compareTwoVnodes(
+      vnode,
+      newVnode,
+      node,
+      getChildContext(this, parentContext)
+    );
     if (newNode !== node) {
       newNode.cache = newNode.cache || {};
       syncCache(newNode.cache, node.cache, newNode);
@@ -1290,10 +1361,10 @@ Component.prototype = {
   },
 
   /**
-   * 
-   * 
-   * @param {any} nextState 
-   * @param {any} callback 
+   *
+   *
+   * @param {any} nextState
+   * @param {any} callback
    */
   setState: function setState(nextState, callback) {
     var $updater = this.$updater;
@@ -1303,10 +1374,10 @@ Component.prototype = {
   },
 
   /**
-   * 
-   * 
-   * @param {any} nextState 
-   * @param {any} callback 
+   *
+   *
+   * @param {any} nextState
+   * @param {any} callback
    */
   replaceState: function replaceState(nextState, callback) {
     var $updater = this.$updater;
@@ -1316,17 +1387,17 @@ Component.prototype = {
   },
 
   /**
-   * 
-   * 
-   * @returns 
+   *
+   *
+   * @returns
    */
   getDOMNode: function getDOMNode() {
     var node = this.$cache.node;
-    return node && node.nodeName === '#comment' ? null : node;
+    return node && node.nodeName === "#comment" ? null : node;
   },
 
   /**
-   * 
+   *
    * @returns {Boolean}
    */
   isMounted: function isMounted() {
@@ -1334,14 +1405,14 @@ Component.prototype = {
   },
 
   /**
-   * 
+   *
    */
   readyUpdater: function readyUpdater() {
     this.$updater.ready();
   },
 
   /**
-   * 
+   *
    */
   pendingUpdater: function pendingUpdater() {
     this.$updater.pending();
@@ -1365,291 +1436,299 @@ Component.prototype = {
 
 // event config
 var unbubbleEvents = {
-    /**
-     * should not bind mousemove in document scope
-     * even though mousemove event can bubble
-     */
-    onmousemove: 1,
-    ontouchmove: 1,
-    onmouseleave: 1,
-    onmouseenter: 1,
-    onload: 1,
-    onunload: 1,
-    onscroll: 1,
-    onfocus: 1,
-    onblur: 1,
-    onrowexit: 1,
-    onbeforeunload: 1,
-    onstop: 1,
-    ondragdrop: 1,
-    ondragenter: 1,
-    ondragexit: 1,
-    ondraggesture: 1,
-    ondragover: 1,
-    oncontextmenu: 1,
-    onerror: 1
+  /**
+   * should not bind mousemove in document scope
+   * even though mousemove event can bubble
+   */
+  onmousemove: 1,
+  ontouchmove: 1,
+  onmouseleave: 1,
+  onmouseenter: 1,
+  onload: 1,
+  onunload: 1,
+  onscroll: 1,
+  onfocus: 1,
+  onblur: 1,
+  onrowexit: 1,
+  onbeforeunload: 1,
+  onstop: 1,
+  ondragdrop: 1,
+  ondragenter: 1,
+  ondragexit: 1,
+  ondraggesture: 1,
+  ondragover: 1,
+  oncontextmenu: 1,
+  onerror: 1
 };
 
 function getEventName(key) {
-    if (key === 'onDoubleClick') {
-        key = 'ondblclick';
-    } else if (key === 'onTouchTap') {
-        key = 'onclick';
-    }
+  if (key === "onDoubleClick") {
+    key = "ondblclick";
+  } else if (key === "onTouchTap") {
+    key = "onclick";
+  }
 
-    return key.toLowerCase();
+  return key.toLowerCase();
 }
 
 // Mobile Safari does not fire properly bubble click events on
 // non-interactive elements, which means delegated click listeners do not
 // fire. The workaround for this bug involves attaching an empty click
 // listener on the target node.
-var inMobile = ('ontouchstart' in document);
+var inMobile = "ontouchstart" in document;
 var emptyFunction = function emptyFunction() {};
-var ON_CLICK_KEY = 'onclick';
+var ON_CLICK_KEY = "onclick";
 
 var eventTypes = {};
 
 function addEvent(elem, eventType, listener) {
-    eventType = getEventName(eventType);
+  eventType = getEventName(eventType);
 
-    var eventStore = elem.eventStore || (elem.eventStore = {});
-    eventStore[eventType] = listener;
+  var eventStore = elem.eventStore || (elem.eventStore = {});
+  eventStore[eventType] = listener;
 
-    if (unbubbleEvents[eventType] === 1) {
-        elem[eventType] = dispatchUnbubbleEvent;
-        return;
-    } else if (!eventTypes[eventType]) {
-        // onclick -> click
-        document.addEventListener(eventType.substr(2), dispatchEvent, false);
-        eventTypes[eventType] = true;
-    }
+  if (unbubbleEvents[eventType] === 1) {
+    elem[eventType] = dispatchUnbubbleEvent;
+    return;
+  } else if (!eventTypes[eventType]) {
+    // onclick -> click
+    document.addEventListener(eventType.substr(2), dispatchEvent, false);
+    eventTypes[eventType] = true;
+  }
 
-    if (inMobile && eventType === ON_CLICK_KEY) {
-        elem.addEventListener('click', emptyFunction, false);
-        return;
-    }
+  if (inMobile && eventType === ON_CLICK_KEY) {
+    elem.addEventListener("click", emptyFunction, false);
+    return;
+  }
 
-    var nodeName = elem.nodeName;
+  var nodeName = elem.nodeName;
 
-    if (eventType === 'onchange') {
-        addEvent(elem, 'oninput', listener);
-    }
+  if (eventType === "onchange") {
+    addEvent(elem, "oninput", listener);
+  }
 }
 
 function removeEvent(elem, eventType) {
-    eventType = getEventName(eventType);
+  eventType = getEventName(eventType);
 
-    var eventStore = elem.eventStore || (elem.eventStore = {});
-    delete eventStore[eventType];
+  var eventStore = elem.eventStore || (elem.eventStore = {});
+  delete eventStore[eventType];
 
-    if (unbubbleEvents[eventType] === 1) {
-        elem[eventType] = null;
-        return;
-    } else if (inMobile && eventType === ON_CLICK_KEY) {
-        elem.removeEventListener('click', emptyFunction, false);
-        return;
-    }
+  if (unbubbleEvents[eventType] === 1) {
+    elem[eventType] = null;
+    return;
+  } else if (inMobile && eventType === ON_CLICK_KEY) {
+    elem.removeEventListener("click", emptyFunction, false);
+    return;
+  }
 
-    var nodeName = elem.nodeName;
+  var nodeName = elem.nodeName;
 
-    if (eventType === 'onchange') {
-        delete eventStore['oninput'];
-    }
+  if (eventType === "onchange") {
+    delete eventStore["oninput"];
+  }
 }
 
 function dispatchEvent(event) {
-    var target = event.target;
-    var type = event.type;
+  var target = event.target;
+  var type = event.type;
 
-    var eventType = 'on' + type;
-    var syntheticEvent = undefined;
+  var eventType = "on" + type;
+  var syntheticEvent = undefined;
 
-    updateQueue.isPending = true;
-    while (target) {
-        var _target = target;
-        var eventStore = _target.eventStore;
+  updateQueue.isPending = true;
+  while (target) {
+    var _target = target;
+    var eventStore = _target.eventStore;
 
-        var listener = eventStore && eventStore[eventType];
-        if (!listener) {
-            target = target.parentNode;
-            continue;
-        }
-        if (!syntheticEvent) {
-            syntheticEvent = createSyntheticEvent(event);
-        }
-        syntheticEvent.currentTarget = target;
-        listener.call(target, syntheticEvent);
-        if (syntheticEvent.$cancelBubble) {
-            break;
-        }
-        target = target.parentNode;
+    var listener = eventStore && eventStore[eventType];
+    if (!listener) {
+      target = target.parentNode;
+      continue;
     }
-    updateQueue.isPending = false;
-    updateQueue.batchUpdate();
+    if (!syntheticEvent) {
+      syntheticEvent = createSyntheticEvent(event);
+    }
+    syntheticEvent.currentTarget = target;
+    listener.call(target, syntheticEvent);
+    if (syntheticEvent.$cancelBubble) {
+      break;
+    }
+    target = target.parentNode;
+  }
+  updateQueue.isPending = false;
+  updateQueue.batchUpdate();
 }
 
 function dispatchUnbubbleEvent(event) {
-    var target = event.currentTarget || event.target;
-    var eventType = 'on' + event.type;
-    var syntheticEvent = createSyntheticEvent(event);
+  var target = event.currentTarget || event.target;
+  var eventType = "on" + event.type;
+  var syntheticEvent = createSyntheticEvent(event);
 
-    syntheticEvent.currentTarget = target;
-    updateQueue.isPending = true;
+  syntheticEvent.currentTarget = target;
+  updateQueue.isPending = true;
 
-    var eventStore = target.eventStore;
+  var eventStore = target.eventStore;
 
-    var listener = eventStore && eventStore[eventType];
-    if (listener) {
-        listener.call(target, syntheticEvent);
-    }
+  var listener = eventStore && eventStore[eventType];
+  if (listener) {
+    listener.call(target, syntheticEvent);
+  }
 
-    updateQueue.isPending = false;
-    updateQueue.batchUpdate();
+  updateQueue.isPending = false;
+  updateQueue.batchUpdate();
 }
 
 function createSyntheticEvent(nativeEvent) {
-    var syntheticEvent = {};
-    var cancelBubble = function cancelBubble() {
-        return syntheticEvent.$cancelBubble = true;
-    };
-    syntheticEvent.nativeEvent = nativeEvent;
-    syntheticEvent.persist = noop;
-    for (var key in nativeEvent) {
-        if (typeof nativeEvent[key] !== 'function') {
-            syntheticEvent[key] = nativeEvent[key];
-        } else if (key === 'stopPropagation' || key === 'stopImmediatePropagation') {
-            syntheticEvent[key] = cancelBubble;
-        } else {
-            syntheticEvent[key] = nativeEvent[key].bind(nativeEvent);
-        }
+  var syntheticEvent = {};
+  var cancelBubble = function cancelBubble() {
+    return (syntheticEvent.$cancelBubble = true);
+  };
+  syntheticEvent.nativeEvent = nativeEvent;
+  syntheticEvent.persist = noop;
+  for (var key in nativeEvent) {
+    if (typeof nativeEvent[key] !== "function") {
+      syntheticEvent[key] = nativeEvent[key];
+    } else if (
+      key === "stopPropagation" ||
+      key === "stopImmediatePropagation"
+    ) {
+      syntheticEvent[key] = cancelBubble;
+    } else {
+      syntheticEvent[key] = nativeEvent[key].bind(nativeEvent);
     }
-    return syntheticEvent;
+  }
+  return syntheticEvent;
 }
 
 function setStyle(elemStyle, styles) {
-    for (var styleName in styles) {
-        if (styles.hasOwnProperty(styleName)) {
-            setStyleValue(elemStyle, styleName, styles[styleName]);
-        }
+  for (var styleName in styles) {
+    if (styles.hasOwnProperty(styleName)) {
+      setStyleValue(elemStyle, styleName, styles[styleName]);
     }
+  }
 }
 
 function removeStyle(elemStyle, styles) {
-    for (var styleName in styles) {
-        if (styles.hasOwnProperty(styleName)) {
-            elemStyle[styleName] = '';
-        }
+  for (var styleName in styles) {
+    if (styles.hasOwnProperty(styleName)) {
+      elemStyle[styleName] = "";
     }
+  }
 }
 
 function patchStyle(elemStyle, style, newStyle) {
-    if (style === newStyle) {
-        return;
-    }
-    if (!newStyle && style) {
-        removeStyle(elemStyle, style);
-        return;
-    } else if (newStyle && !style) {
-        setStyle(elemStyle, newStyle);
-        return;
-    }
+  if (style === newStyle) {
+    return;
+  }
+  if (!newStyle && style) {
+    removeStyle(elemStyle, style);
+    return;
+  } else if (newStyle && !style) {
+    setStyle(elemStyle, newStyle);
+    return;
+  }
 
-    for (var key in style) {
-        if (newStyle.hasOwnProperty(key)) {
-            if (newStyle[key] !== style[key]) {
-                setStyleValue(elemStyle, key, newStyle[key]);
-            }
-        } else {
-            elemStyle[key] = '';
-        }
+  for (var key in style) {
+    if (newStyle.hasOwnProperty(key)) {
+      if (newStyle[key] !== style[key]) {
+        setStyleValue(elemStyle, key, newStyle[key]);
+      }
+    } else {
+      elemStyle[key] = "";
     }
-    for (var key in newStyle) {
-        if (!style.hasOwnProperty(key)) {
-            setStyleValue(elemStyle, key, newStyle[key]);
-        }
+  }
+  for (var key in newStyle) {
+    if (!style.hasOwnProperty(key)) {
+      setStyleValue(elemStyle, key, newStyle[key]);
     }
+  }
 }
 
 /**
  * CSS properties which accept numbers but are not in units of "px".
  */
 var isUnitlessNumber = {
-    animationIterationCount: 1,
-    borderImageOutset: 1,
-    borderImageSlice: 1,
-    borderImageWidth: 1,
-    boxFlex: 1,
-    boxFlexGroup: 1,
-    boxOrdinalGroup: 1,
-    columnCount: 1,
-    flex: 1,
-    flexGrow: 1,
-    flexPositive: 1,
-    flexShrink: 1,
-    flexNegative: 1,
-    flexOrder: 1,
-    gridRow: 1,
-    gridColumn: 1,
-    fontWeight: 1,
-    lineClamp: 1,
-    lineHeight: 1,
-    opacity: 1,
-    order: 1,
-    orphans: 1,
-    tabSize: 1,
-    widows: 1,
-    zIndex: 1,
-    zoom: 1,
+  animationIterationCount: 1,
+  borderImageOutset: 1,
+  borderImageSlice: 1,
+  borderImageWidth: 1,
+  boxFlex: 1,
+  boxFlexGroup: 1,
+  boxOrdinalGroup: 1,
+  columnCount: 1,
+  flex: 1,
+  flexGrow: 1,
+  flexPositive: 1,
+  flexShrink: 1,
+  flexNegative: 1,
+  flexOrder: 1,
+  gridRow: 1,
+  gridColumn: 1,
+  fontWeight: 1,
+  lineClamp: 1,
+  lineHeight: 1,
+  opacity: 1,
+  order: 1,
+  orphans: 1,
+  tabSize: 1,
+  widows: 1,
+  zIndex: 1,
+  zoom: 1,
 
-    // SVG-related properties
-    fillOpacity: 1,
-    floodOpacity: 1,
-    stopOpacity: 1,
-    strokeDasharray: 1,
-    strokeDashoffset: 1,
-    strokeMiterlimit: 1,
-    strokeOpacity: 1,
-    strokeWidth: 1
+  // SVG-related properties
+  fillOpacity: 1,
+  floodOpacity: 1,
+  stopOpacity: 1,
+  strokeDasharray: 1,
+  strokeDashoffset: 1,
+  strokeMiterlimit: 1,
+  strokeOpacity: 1,
+  strokeWidth: 1
 };
 
 function prefixKey(prefix, key) {
-    return prefix + key.charAt(0).toUpperCase() + key.substring(1);
+  return prefix + key.charAt(0).toUpperCase() + key.substring(1);
 }
 
-var prefixes = ['Webkit', 'ms', 'Moz', 'O'];
+var prefixes = ["Webkit", "ms", "Moz", "O"];
 
-Object.keys(isUnitlessNumber).forEach(function (prop) {
-    prefixes.forEach(function (prefix) {
-        isUnitlessNumber[prefixKey(prefix, prop)] = 1;
-    });
+Object.keys(isUnitlessNumber).forEach(function(prop) {
+  prefixes.forEach(function(prefix) {
+    isUnitlessNumber[prefixKey(prefix, prop)] = 1;
+  });
 });
 
 var RE_NUMBER = /^-?\d+(\.\d+)?$/;
 function setStyleValue(elemStyle, styleName, styleValue) {
+  if (!isUnitlessNumber[styleName] && RE_NUMBER.test(styleValue)) {
+    elemStyle[styleName] = styleValue + "px";
+    return;
+  }
 
-    if (!isUnitlessNumber[styleName] && RE_NUMBER.test(styleValue)) {
-        elemStyle[styleName] = styleValue + 'px';
-        return;
-    }
+  if (styleName === "float") {
+    styleName = "cssFloat";
+  }
 
-    if (styleName === 'float') {
-        styleName = 'cssFloat';
-    }
+  if (styleValue == null || typeof styleValue === "boolean") {
+    styleValue = "";
+  }
 
-    if (styleValue == null || typeof styleValue === 'boolean') {
-        styleValue = '';
-    }
-
-    elemStyle[styleName] = styleValue;
+  elemStyle[styleName] = styleValue;
 }
 
-var ATTRIBUTE_NAME_START_CHAR = ':A-Z_a-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD';
-var ATTRIBUTE_NAME_CHAR = ATTRIBUTE_NAME_START_CHAR + '\\-.0-9\\uB7\\u0300-\\u036F\\u203F-\\u2040';
+var ATTRIBUTE_NAME_START_CHAR =
+  ":A-Z_a-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD";
+var ATTRIBUTE_NAME_CHAR =
+  ATTRIBUTE_NAME_START_CHAR + "\\-.0-9\\uB7\\u0300-\\u036F\\u203F-\\u2040";
 
-var VALID_ATTRIBUTE_NAME_REGEX = new RegExp('^[' + ATTRIBUTE_NAME_START_CHAR + '][' + ATTRIBUTE_NAME_CHAR + ']*$');
+var VALID_ATTRIBUTE_NAME_REGEX = new RegExp(
+  "^[" + ATTRIBUTE_NAME_START_CHAR + "][" + ATTRIBUTE_NAME_CHAR + "]*$"
+);
 
-var isCustomAttribute = RegExp.prototype.test.bind(new RegExp('^(data|aria)-[' + ATTRIBUTE_NAME_CHAR + ']*$'));
+var isCustomAttribute = RegExp.prototype.test.bind(
+  new RegExp("^(data|aria)-[" + ATTRIBUTE_NAME_CHAR + "]*$")
+);
 // will merge some data in properties below
 var properties = {};
 
@@ -1665,198 +1744,198 @@ var HAS_OVERLOADED_BOOLEAN_VALUE = 0x20;
 
 // html config
 var HTMLDOMPropertyConfig = {
-    props: {
-        /**
-         * Standard Properties
-         */
-        accept: 0,
-        acceptCharset: 0,
-        accessKey: 0,
-        action: 0,
-        allowFullScreen: HAS_BOOLEAN_VALUE,
-        allowTransparency: 0,
-        alt: 0,
-        async: HAS_BOOLEAN_VALUE,
-        autoComplete: 0,
-        autoFocus: HAS_BOOLEAN_VALUE,
-        autoPlay: HAS_BOOLEAN_VALUE,
-        capture: HAS_BOOLEAN_VALUE,
-        cellPadding: 0,
-        cellSpacing: 0,
-        charSet: 0,
-        challenge: 0,
-        checked: MUST_USE_PROPERTY | HAS_BOOLEAN_VALUE,
-        cite: 0,
-        classID: 0,
-        className: 0,
-        cols: HAS_POSITIVE_NUMERIC_VALUE,
-        colSpan: 0,
-        content: 0,
-        contentEditable: 0,
-        contextMenu: 0,
-        controls: HAS_BOOLEAN_VALUE,
-        coords: 0,
-        crossOrigin: 0,
-        data: 0, // For `<object />` acts as `src`.
-        dateTime: 0,
-        'default': HAS_BOOLEAN_VALUE,
-        // not in regular react, they did it in other way
-        defaultValue: MUST_USE_PROPERTY,
-        // not in regular react, they did it in other way
-        defaultChecked: MUST_USE_PROPERTY | HAS_BOOLEAN_VALUE,
-        defer: HAS_BOOLEAN_VALUE,
-        dir: 0,
-        disabled: HAS_BOOLEAN_VALUE,
-        download: HAS_OVERLOADED_BOOLEAN_VALUE,
-        draggable: 0,
-        encType: 0,
-        form: 0,
-        formAction: 0,
-        formEncType: 0,
-        formMethod: 0,
-        formNoValidate: HAS_BOOLEAN_VALUE,
-        formTarget: 0,
-        frameBorder: 0,
-        headers: 0,
-        height: 0,
-        hidden: HAS_BOOLEAN_VALUE,
-        high: 0,
-        href: 0,
-        hrefLang: 0,
-        htmlFor: 0,
-        httpEquiv: 0,
-        icon: 0,
-        id: 0,
-        inputMode: 0,
-        integrity: 0,
-        is: 0,
-        keyParams: 0,
-        keyType: 0,
-        kind: 0,
-        label: 0,
-        lang: 0,
-        list: 0,
-        loop: HAS_BOOLEAN_VALUE,
-        low: 0,
-        manifest: 0,
-        marginHeight: 0,
-        marginWidth: 0,
-        max: 0,
-        maxLength: 0,
-        media: 0,
-        mediaGroup: 0,
-        method: 0,
-        min: 0,
-        minLength: 0,
-        // Caution; `option.selected` is not updated if `select.multiple` is
-        // disabled with `removeAttribute`.
-        multiple: MUST_USE_PROPERTY | HAS_BOOLEAN_VALUE,
-        muted: MUST_USE_PROPERTY | HAS_BOOLEAN_VALUE,
-        name: 0,
-        nonce: 0,
-        noValidate: HAS_BOOLEAN_VALUE,
-        open: HAS_BOOLEAN_VALUE,
-        optimum: 0,
-        pattern: 0,
-        placeholder: 0,
-        poster: 0,
-        preload: 0,
-        profile: 0,
-        radioGroup: 0,
-        readOnly: HAS_BOOLEAN_VALUE,
-        referrerPolicy: 0,
-        rel: 0,
-        required: HAS_BOOLEAN_VALUE,
-        reversed: HAS_BOOLEAN_VALUE,
-        role: 0,
-        rows: HAS_POSITIVE_NUMERIC_VALUE,
-        rowSpan: HAS_NUMERIC_VALUE,
-        sandbox: 0,
-        scope: 0,
-        scoped: HAS_BOOLEAN_VALUE,
-        scrolling: 0,
-        seamless: HAS_BOOLEAN_VALUE,
-        selected: MUST_USE_PROPERTY | HAS_BOOLEAN_VALUE,
-        shape: 0,
-        size: HAS_POSITIVE_NUMERIC_VALUE,
-        sizes: 0,
-        span: HAS_POSITIVE_NUMERIC_VALUE,
-        spellCheck: 0,
-        src: 0,
-        srcDoc: 0,
-        srcLang: 0,
-        srcSet: 0,
-        start: HAS_NUMERIC_VALUE,
-        step: 0,
-        style: 0,
-        summary: 0,
-        tabIndex: 0,
-        target: 0,
-        title: 0,
-        // Setting .type throws on non-<input> tags
-        type: 0,
-        useMap: 0,
-        value: MUST_USE_PROPERTY,
-        width: 0,
-        wmode: 0,
-        wrap: 0,
+  props: {
+    /**
+     * Standard Properties
+     */
+    accept: 0,
+    acceptCharset: 0,
+    accessKey: 0,
+    action: 0,
+    allowFullScreen: HAS_BOOLEAN_VALUE,
+    allowTransparency: 0,
+    alt: 0,
+    async: HAS_BOOLEAN_VALUE,
+    autoComplete: 0,
+    autoFocus: HAS_BOOLEAN_VALUE,
+    autoPlay: HAS_BOOLEAN_VALUE,
+    capture: HAS_BOOLEAN_VALUE,
+    cellPadding: 0,
+    cellSpacing: 0,
+    charSet: 0,
+    challenge: 0,
+    checked: MUST_USE_PROPERTY | HAS_BOOLEAN_VALUE,
+    cite: 0,
+    classID: 0,
+    className: 0,
+    cols: HAS_POSITIVE_NUMERIC_VALUE,
+    colSpan: 0,
+    content: 0,
+    contentEditable: 0,
+    contextMenu: 0,
+    controls: HAS_BOOLEAN_VALUE,
+    coords: 0,
+    crossOrigin: 0,
+    data: 0, // For `<object />` acts as `src`.
+    dateTime: 0,
+    default: HAS_BOOLEAN_VALUE,
+    // not in regular react, they did it in other way
+    defaultValue: MUST_USE_PROPERTY,
+    // not in regular react, they did it in other way
+    defaultChecked: MUST_USE_PROPERTY | HAS_BOOLEAN_VALUE,
+    defer: HAS_BOOLEAN_VALUE,
+    dir: 0,
+    disabled: HAS_BOOLEAN_VALUE,
+    download: HAS_OVERLOADED_BOOLEAN_VALUE,
+    draggable: 0,
+    encType: 0,
+    form: 0,
+    formAction: 0,
+    formEncType: 0,
+    formMethod: 0,
+    formNoValidate: HAS_BOOLEAN_VALUE,
+    formTarget: 0,
+    frameBorder: 0,
+    headers: 0,
+    height: 0,
+    hidden: HAS_BOOLEAN_VALUE,
+    high: 0,
+    href: 0,
+    hrefLang: 0,
+    htmlFor: 0,
+    httpEquiv: 0,
+    icon: 0,
+    id: 0,
+    inputMode: 0,
+    integrity: 0,
+    is: 0,
+    keyParams: 0,
+    keyType: 0,
+    kind: 0,
+    label: 0,
+    lang: 0,
+    list: 0,
+    loop: HAS_BOOLEAN_VALUE,
+    low: 0,
+    manifest: 0,
+    marginHeight: 0,
+    marginWidth: 0,
+    max: 0,
+    maxLength: 0,
+    media: 0,
+    mediaGroup: 0,
+    method: 0,
+    min: 0,
+    minLength: 0,
+    // Caution; `option.selected` is not updated if `select.multiple` is
+    // disabled with `removeAttribute`.
+    multiple: MUST_USE_PROPERTY | HAS_BOOLEAN_VALUE,
+    muted: MUST_USE_PROPERTY | HAS_BOOLEAN_VALUE,
+    name: 0,
+    nonce: 0,
+    noValidate: HAS_BOOLEAN_VALUE,
+    open: HAS_BOOLEAN_VALUE,
+    optimum: 0,
+    pattern: 0,
+    placeholder: 0,
+    poster: 0,
+    preload: 0,
+    profile: 0,
+    radioGroup: 0,
+    readOnly: HAS_BOOLEAN_VALUE,
+    referrerPolicy: 0,
+    rel: 0,
+    required: HAS_BOOLEAN_VALUE,
+    reversed: HAS_BOOLEAN_VALUE,
+    role: 0,
+    rows: HAS_POSITIVE_NUMERIC_VALUE,
+    rowSpan: HAS_NUMERIC_VALUE,
+    sandbox: 0,
+    scope: 0,
+    scoped: HAS_BOOLEAN_VALUE,
+    scrolling: 0,
+    seamless: HAS_BOOLEAN_VALUE,
+    selected: MUST_USE_PROPERTY | HAS_BOOLEAN_VALUE,
+    shape: 0,
+    size: HAS_POSITIVE_NUMERIC_VALUE,
+    sizes: 0,
+    span: HAS_POSITIVE_NUMERIC_VALUE,
+    spellCheck: 0,
+    src: 0,
+    srcDoc: 0,
+    srcLang: 0,
+    srcSet: 0,
+    start: HAS_NUMERIC_VALUE,
+    step: 0,
+    style: 0,
+    summary: 0,
+    tabIndex: 0,
+    target: 0,
+    title: 0,
+    // Setting .type throws on non-<input> tags
+    type: 0,
+    useMap: 0,
+    value: MUST_USE_PROPERTY,
+    width: 0,
+    wmode: 0,
+    wrap: 0,
 
-        /**
-         * RDFa Properties
-         */
-        about: 0,
-        datatype: 0,
-        inlist: 0,
-        prefix: 0,
-        // property is also supported for OpenGraph in meta tags.
-        property: 0,
-        resource: 0,
-        'typeof': 0,
-        vocab: 0,
+    /**
+     * RDFa Properties
+     */
+    about: 0,
+    datatype: 0,
+    inlist: 0,
+    prefix: 0,
+    // property is also supported for OpenGraph in meta tags.
+    property: 0,
+    resource: 0,
+    typeof: 0,
+    vocab: 0,
 
-        /**
-         * Non-standard Properties
-         */
-        // autoCapitalize and autoCorrect are supported in Mobile Safari for
-        // keyboard hints.
-        autoCapitalize: 0,
-        autoCorrect: 0,
-        // autoSave allows WebKit/Blink to persist values of input fields on page reloads
-        autoSave: 0,
-        // color is for Safari mask-icon link
-        color: 0,
-        // itemProp, itemScope, itemType are for
-        // Microdata support. See http://schema.org/docs/gs.html
-        itemProp: 0,
-        itemScope: HAS_BOOLEAN_VALUE,
-        itemType: 0,
-        // itemID and itemRef are for Microdata support as well but
-        // only specified in the WHATWG spec document. See
-        // https://html.spec.whatwg.org/multipage/microdata.html#microdata-dom-api
-        itemID: 0,
-        itemRef: 0,
-        // results show looking glass icon and recent searches on input
-        // search fields in WebKit/Blink
-        results: 0,
-        // IE-only attribute that specifies security restrictions on an iframe
-        // as an alternative to the sandbox attribute on IE<10
-        security: 0,
-        // IE-only attribute that controls focus behavior
-        unselectable: 0
-    },
-    attrNS: {},
-    domAttrs: {
-        acceptCharset: 'accept-charset',
-        className: 'class',
-        htmlFor: 'for',
-        httpEquiv: 'http-equiv'
-    },
-    domProps: {}
+    /**
+     * Non-standard Properties
+     */
+    // autoCapitalize and autoCorrect are supported in Mobile Safari for
+    // keyboard hints.
+    autoCapitalize: 0,
+    autoCorrect: 0,
+    // autoSave allows WebKit/Blink to persist values of input fields on page reloads
+    autoSave: 0,
+    // color is for Safari mask-icon link
+    color: 0,
+    // itemProp, itemScope, itemType are for
+    // Microdata support. See http://schema.org/docs/gs.html
+    itemProp: 0,
+    itemScope: HAS_BOOLEAN_VALUE,
+    itemType: 0,
+    // itemID and itemRef are for Microdata support as well but
+    // only specified in the WHATWG spec document. See
+    // https://html.spec.whatwg.org/multipage/microdata.html#microdata-dom-api
+    itemID: 0,
+    itemRef: 0,
+    // results show looking glass icon and recent searches on input
+    // search fields in WebKit/Blink
+    results: 0,
+    // IE-only attribute that specifies security restrictions on an iframe
+    // as an alternative to the sandbox attribute on IE<10
+    security: 0,
+    // IE-only attribute that controls focus behavior
+    unselectable: 0
+  },
+  attrNS: {},
+  domAttrs: {
+    acceptCharset: "accept-charset",
+    className: "class",
+    htmlFor: "for",
+    httpEquiv: "http-equiv"
+  },
+  domProps: {}
 };
 
 // svg config
-var xlink = 'http://www.w3.org/1999/xlink';
-var xml = 'http://www.w3.org/XML/1998/namespace';
+var xlink = "http://www.w3.org/1999/xlink";
+var xml = "http://www.w3.org/XML/1998/namespace";
 
 // We use attributes for everything SVG so let's avoid some duplication and run
 // code instead.
@@ -1876,270 +1955,270 @@ var xml = 'http://www.w3.org/XML/1998/namespace';
 // - type
 // - width
 var ATTRS = {
-    accentHeight: 'accent-height',
-    accumulate: 0,
-    additive: 0,
-    alignmentBaseline: 'alignment-baseline',
-    allowReorder: 'allowReorder',
-    alphabetic: 0,
-    amplitude: 0,
-    arabicForm: 'arabic-form',
-    ascent: 0,
-    attributeName: 'attributeName',
-    attributeType: 'attributeType',
-    autoReverse: 'autoReverse',
-    azimuth: 0,
-    baseFrequency: 'baseFrequency',
-    baseProfile: 'baseProfile',
-    baselineShift: 'baseline-shift',
-    bbox: 0,
-    begin: 0,
-    bias: 0,
-    by: 0,
-    calcMode: 'calcMode',
-    capHeight: 'cap-height',
-    clip: 0,
-    clipPath: 'clip-path',
-    clipRule: 'clip-rule',
-    clipPathUnits: 'clipPathUnits',
-    colorInterpolation: 'color-interpolation',
-    colorInterpolationFilters: 'color-interpolation-filters',
-    colorProfile: 'color-profile',
-    colorRendering: 'color-rendering',
-    contentScriptType: 'contentScriptType',
-    contentStyleType: 'contentStyleType',
-    cursor: 0,
-    cx: 0,
-    cy: 0,
-    d: 0,
-    decelerate: 0,
-    descent: 0,
-    diffuseConstant: 'diffuseConstant',
-    direction: 0,
-    display: 0,
-    divisor: 0,
-    dominantBaseline: 'dominant-baseline',
-    dur: 0,
-    dx: 0,
-    dy: 0,
-    edgeMode: 'edgeMode',
-    elevation: 0,
-    enableBackground: 'enable-background',
-    end: 0,
-    exponent: 0,
-    externalResourcesRequired: 'externalResourcesRequired',
-    fill: 0,
-    fillOpacity: 'fill-opacity',
-    fillRule: 'fill-rule',
-    filter: 0,
-    filterRes: 'filterRes',
-    filterUnits: 'filterUnits',
-    floodColor: 'flood-color',
-    floodOpacity: 'flood-opacity',
-    focusable: 0,
-    fontFamily: 'font-family',
-    fontSize: 'font-size',
-    fontSizeAdjust: 'font-size-adjust',
-    fontStretch: 'font-stretch',
-    fontStyle: 'font-style',
-    fontVariant: 'font-variant',
-    fontWeight: 'font-weight',
-    format: 0,
-    from: 0,
-    fx: 0,
-    fy: 0,
-    g1: 0,
-    g2: 0,
-    glyphName: 'glyph-name',
-    glyphOrientationHorizontal: 'glyph-orientation-horizontal',
-    glyphOrientationVertical: 'glyph-orientation-vertical',
-    glyphRef: 'glyphRef',
-    gradientTransform: 'gradientTransform',
-    gradientUnits: 'gradientUnits',
-    hanging: 0,
-    horizAdvX: 'horiz-adv-x',
-    horizOriginX: 'horiz-origin-x',
-    ideographic: 0,
-    imageRendering: 'image-rendering',
-    'in': 0,
-    in2: 0,
-    intercept: 0,
-    k: 0,
-    k1: 0,
-    k2: 0,
-    k3: 0,
-    k4: 0,
-    kernelMatrix: 'kernelMatrix',
-    kernelUnitLength: 'kernelUnitLength',
-    kerning: 0,
-    keyPoints: 'keyPoints',
-    keySplines: 'keySplines',
-    keyTimes: 'keyTimes',
-    lengthAdjust: 'lengthAdjust',
-    letterSpacing: 'letter-spacing',
-    lightingColor: 'lighting-color',
-    limitingConeAngle: 'limitingConeAngle',
-    local: 0,
-    markerEnd: 'marker-end',
-    markerMid: 'marker-mid',
-    markerStart: 'marker-start',
-    markerHeight: 'markerHeight',
-    markerUnits: 'markerUnits',
-    markerWidth: 'markerWidth',
-    mask: 0,
-    maskContentUnits: 'maskContentUnits',
-    maskUnits: 'maskUnits',
-    mathematical: 0,
-    mode: 0,
-    numOctaves: 'numOctaves',
-    offset: 0,
-    opacity: 0,
-    operator: 0,
-    order: 0,
-    orient: 0,
-    orientation: 0,
-    origin: 0,
-    overflow: 0,
-    overlinePosition: 'overline-position',
-    overlineThickness: 'overline-thickness',
-    paintOrder: 'paint-order',
-    panose1: 'panose-1',
-    pathLength: 'pathLength',
-    patternContentUnits: 'patternContentUnits',
-    patternTransform: 'patternTransform',
-    patternUnits: 'patternUnits',
-    pointerEvents: 'pointer-events',
-    points: 0,
-    pointsAtX: 'pointsAtX',
-    pointsAtY: 'pointsAtY',
-    pointsAtZ: 'pointsAtZ',
-    preserveAlpha: 'preserveAlpha',
-    preserveAspectRatio: 'preserveAspectRatio',
-    primitiveUnits: 'primitiveUnits',
-    r: 0,
-    radius: 0,
-    refX: 'refX',
-    refY: 'refY',
-    renderingIntent: 'rendering-intent',
-    repeatCount: 'repeatCount',
-    repeatDur: 'repeatDur',
-    requiredExtensions: 'requiredExtensions',
-    requiredFeatures: 'requiredFeatures',
-    restart: 0,
-    result: 0,
-    rotate: 0,
-    rx: 0,
-    ry: 0,
-    scale: 0,
-    seed: 0,
-    shapeRendering: 'shape-rendering',
-    slope: 0,
-    spacing: 0,
-    specularConstant: 'specularConstant',
-    specularExponent: 'specularExponent',
-    speed: 0,
-    spreadMethod: 'spreadMethod',
-    startOffset: 'startOffset',
-    stdDeviation: 'stdDeviation',
-    stemh: 0,
-    stemv: 0,
-    stitchTiles: 'stitchTiles',
-    stopColor: 'stop-color',
-    stopOpacity: 'stop-opacity',
-    strikethroughPosition: 'strikethrough-position',
-    strikethroughThickness: 'strikethrough-thickness',
-    string: 0,
-    stroke: 0,
-    strokeDasharray: 'stroke-dasharray',
-    strokeDashoffset: 'stroke-dashoffset',
-    strokeLinecap: 'stroke-linecap',
-    strokeLinejoin: 'stroke-linejoin',
-    strokeMiterlimit: 'stroke-miterlimit',
-    strokeOpacity: 'stroke-opacity',
-    strokeWidth: 'stroke-width',
-    surfaceScale: 'surfaceScale',
-    systemLanguage: 'systemLanguage',
-    tableValues: 'tableValues',
-    targetX: 'targetX',
-    targetY: 'targetY',
-    textAnchor: 'text-anchor',
-    textDecoration: 'text-decoration',
-    textRendering: 'text-rendering',
-    textLength: 'textLength',
-    to: 0,
-    transform: 0,
-    u1: 0,
-    u2: 0,
-    underlinePosition: 'underline-position',
-    underlineThickness: 'underline-thickness',
-    unicode: 0,
-    unicodeBidi: 'unicode-bidi',
-    unicodeRange: 'unicode-range',
-    unitsPerEm: 'units-per-em',
-    vAlphabetic: 'v-alphabetic',
-    vHanging: 'v-hanging',
-    vIdeographic: 'v-ideographic',
-    vMathematical: 'v-mathematical',
-    values: 0,
-    vectorEffect: 'vector-effect',
-    version: 0,
-    vertAdvY: 'vert-adv-y',
-    vertOriginX: 'vert-origin-x',
-    vertOriginY: 'vert-origin-y',
-    viewBox: 'viewBox',
-    viewTarget: 'viewTarget',
-    visibility: 0,
-    widths: 0,
-    wordSpacing: 'word-spacing',
-    writingMode: 'writing-mode',
-    x: 0,
-    xHeight: 'x-height',
-    x1: 0,
-    x2: 0,
-    xChannelSelector: 'xChannelSelector',
-    xlinkActuate: 'xlink:actuate',
-    xlinkArcrole: 'xlink:arcrole',
-    xlinkHref: 'xlink:href',
-    xlinkRole: 'xlink:role',
-    xlinkShow: 'xlink:show',
-    xlinkTitle: 'xlink:title',
-    xlinkType: 'xlink:type',
-    xmlBase: 'xml:base',
-    xmlns: 0,
-    xmlnsXlink: 'xmlns:xlink',
-    xmlLang: 'xml:lang',
-    xmlSpace: 'xml:space',
-    y: 0,
-    y1: 0,
-    y2: 0,
-    yChannelSelector: 'yChannelSelector',
-    z: 0,
-    zoomAndPan: 'zoomAndPan'
+  accentHeight: "accent-height",
+  accumulate: 0,
+  additive: 0,
+  alignmentBaseline: "alignment-baseline",
+  allowReorder: "allowReorder",
+  alphabetic: 0,
+  amplitude: 0,
+  arabicForm: "arabic-form",
+  ascent: 0,
+  attributeName: "attributeName",
+  attributeType: "attributeType",
+  autoReverse: "autoReverse",
+  azimuth: 0,
+  baseFrequency: "baseFrequency",
+  baseProfile: "baseProfile",
+  baselineShift: "baseline-shift",
+  bbox: 0,
+  begin: 0,
+  bias: 0,
+  by: 0,
+  calcMode: "calcMode",
+  capHeight: "cap-height",
+  clip: 0,
+  clipPath: "clip-path",
+  clipRule: "clip-rule",
+  clipPathUnits: "clipPathUnits",
+  colorInterpolation: "color-interpolation",
+  colorInterpolationFilters: "color-interpolation-filters",
+  colorProfile: "color-profile",
+  colorRendering: "color-rendering",
+  contentScriptType: "contentScriptType",
+  contentStyleType: "contentStyleType",
+  cursor: 0,
+  cx: 0,
+  cy: 0,
+  d: 0,
+  decelerate: 0,
+  descent: 0,
+  diffuseConstant: "diffuseConstant",
+  direction: 0,
+  display: 0,
+  divisor: 0,
+  dominantBaseline: "dominant-baseline",
+  dur: 0,
+  dx: 0,
+  dy: 0,
+  edgeMode: "edgeMode",
+  elevation: 0,
+  enableBackground: "enable-background",
+  end: 0,
+  exponent: 0,
+  externalResourcesRequired: "externalResourcesRequired",
+  fill: 0,
+  fillOpacity: "fill-opacity",
+  fillRule: "fill-rule",
+  filter: 0,
+  filterRes: "filterRes",
+  filterUnits: "filterUnits",
+  floodColor: "flood-color",
+  floodOpacity: "flood-opacity",
+  focusable: 0,
+  fontFamily: "font-family",
+  fontSize: "font-size",
+  fontSizeAdjust: "font-size-adjust",
+  fontStretch: "font-stretch",
+  fontStyle: "font-style",
+  fontVariant: "font-variant",
+  fontWeight: "font-weight",
+  format: 0,
+  from: 0,
+  fx: 0,
+  fy: 0,
+  g1: 0,
+  g2: 0,
+  glyphName: "glyph-name",
+  glyphOrientationHorizontal: "glyph-orientation-horizontal",
+  glyphOrientationVertical: "glyph-orientation-vertical",
+  glyphRef: "glyphRef",
+  gradientTransform: "gradientTransform",
+  gradientUnits: "gradientUnits",
+  hanging: 0,
+  horizAdvX: "horiz-adv-x",
+  horizOriginX: "horiz-origin-x",
+  ideographic: 0,
+  imageRendering: "image-rendering",
+  in: 0,
+  in2: 0,
+  intercept: 0,
+  k: 0,
+  k1: 0,
+  k2: 0,
+  k3: 0,
+  k4: 0,
+  kernelMatrix: "kernelMatrix",
+  kernelUnitLength: "kernelUnitLength",
+  kerning: 0,
+  keyPoints: "keyPoints",
+  keySplines: "keySplines",
+  keyTimes: "keyTimes",
+  lengthAdjust: "lengthAdjust",
+  letterSpacing: "letter-spacing",
+  lightingColor: "lighting-color",
+  limitingConeAngle: "limitingConeAngle",
+  local: 0,
+  markerEnd: "marker-end",
+  markerMid: "marker-mid",
+  markerStart: "marker-start",
+  markerHeight: "markerHeight",
+  markerUnits: "markerUnits",
+  markerWidth: "markerWidth",
+  mask: 0,
+  maskContentUnits: "maskContentUnits",
+  maskUnits: "maskUnits",
+  mathematical: 0,
+  mode: 0,
+  numOctaves: "numOctaves",
+  offset: 0,
+  opacity: 0,
+  operator: 0,
+  order: 0,
+  orient: 0,
+  orientation: 0,
+  origin: 0,
+  overflow: 0,
+  overlinePosition: "overline-position",
+  overlineThickness: "overline-thickness",
+  paintOrder: "paint-order",
+  panose1: "panose-1",
+  pathLength: "pathLength",
+  patternContentUnits: "patternContentUnits",
+  patternTransform: "patternTransform",
+  patternUnits: "patternUnits",
+  pointerEvents: "pointer-events",
+  points: 0,
+  pointsAtX: "pointsAtX",
+  pointsAtY: "pointsAtY",
+  pointsAtZ: "pointsAtZ",
+  preserveAlpha: "preserveAlpha",
+  preserveAspectRatio: "preserveAspectRatio",
+  primitiveUnits: "primitiveUnits",
+  r: 0,
+  radius: 0,
+  refX: "refX",
+  refY: "refY",
+  renderingIntent: "rendering-intent",
+  repeatCount: "repeatCount",
+  repeatDur: "repeatDur",
+  requiredExtensions: "requiredExtensions",
+  requiredFeatures: "requiredFeatures",
+  restart: 0,
+  result: 0,
+  rotate: 0,
+  rx: 0,
+  ry: 0,
+  scale: 0,
+  seed: 0,
+  shapeRendering: "shape-rendering",
+  slope: 0,
+  spacing: 0,
+  specularConstant: "specularConstant",
+  specularExponent: "specularExponent",
+  speed: 0,
+  spreadMethod: "spreadMethod",
+  startOffset: "startOffset",
+  stdDeviation: "stdDeviation",
+  stemh: 0,
+  stemv: 0,
+  stitchTiles: "stitchTiles",
+  stopColor: "stop-color",
+  stopOpacity: "stop-opacity",
+  strikethroughPosition: "strikethrough-position",
+  strikethroughThickness: "strikethrough-thickness",
+  string: 0,
+  stroke: 0,
+  strokeDasharray: "stroke-dasharray",
+  strokeDashoffset: "stroke-dashoffset",
+  strokeLinecap: "stroke-linecap",
+  strokeLinejoin: "stroke-linejoin",
+  strokeMiterlimit: "stroke-miterlimit",
+  strokeOpacity: "stroke-opacity",
+  strokeWidth: "stroke-width",
+  surfaceScale: "surfaceScale",
+  systemLanguage: "systemLanguage",
+  tableValues: "tableValues",
+  targetX: "targetX",
+  targetY: "targetY",
+  textAnchor: "text-anchor",
+  textDecoration: "text-decoration",
+  textRendering: "text-rendering",
+  textLength: "textLength",
+  to: 0,
+  transform: 0,
+  u1: 0,
+  u2: 0,
+  underlinePosition: "underline-position",
+  underlineThickness: "underline-thickness",
+  unicode: 0,
+  unicodeBidi: "unicode-bidi",
+  unicodeRange: "unicode-range",
+  unitsPerEm: "units-per-em",
+  vAlphabetic: "v-alphabetic",
+  vHanging: "v-hanging",
+  vIdeographic: "v-ideographic",
+  vMathematical: "v-mathematical",
+  values: 0,
+  vectorEffect: "vector-effect",
+  version: 0,
+  vertAdvY: "vert-adv-y",
+  vertOriginX: "vert-origin-x",
+  vertOriginY: "vert-origin-y",
+  viewBox: "viewBox",
+  viewTarget: "viewTarget",
+  visibility: 0,
+  widths: 0,
+  wordSpacing: "word-spacing",
+  writingMode: "writing-mode",
+  x: 0,
+  xHeight: "x-height",
+  x1: 0,
+  x2: 0,
+  xChannelSelector: "xChannelSelector",
+  xlinkActuate: "xlink:actuate",
+  xlinkArcrole: "xlink:arcrole",
+  xlinkHref: "xlink:href",
+  xlinkRole: "xlink:role",
+  xlinkShow: "xlink:show",
+  xlinkTitle: "xlink:title",
+  xlinkType: "xlink:type",
+  xmlBase: "xml:base",
+  xmlns: 0,
+  xmlnsXlink: "xmlns:xlink",
+  xmlLang: "xml:lang",
+  xmlSpace: "xml:space",
+  y: 0,
+  y1: 0,
+  y2: 0,
+  yChannelSelector: "yChannelSelector",
+  z: 0,
+  zoomAndPan: "zoomAndPan"
 };
 
 var SVGDOMPropertyConfig = {
-    props: {},
-    attrNS: {
-        xlinkActuate: xlink,
-        xlinkArcrole: xlink,
-        xlinkHref: xlink,
-        xlinkRole: xlink,
-        xlinkShow: xlink,
-        xlinkTitle: xlink,
-        xlinkType: xlink,
-        xmlBase: xml,
-        xmlLang: xml,
-        xmlSpace: xml
-    },
-    domAttrs: {},
-    domProps: {}
+  props: {},
+  attrNS: {
+    xlinkActuate: xlink,
+    xlinkArcrole: xlink,
+    xlinkHref: xlink,
+    xlinkRole: xlink,
+    xlinkShow: xlink,
+    xlinkTitle: xlink,
+    xlinkType: xlink,
+    xmlBase: xml,
+    xmlLang: xml,
+    xmlSpace: xml
+  },
+  domAttrs: {},
+  domProps: {}
 };
 
-Object.keys(ATTRS).map(function (key) {
-    SVGDOMPropertyConfig.props[key] = 0;
-    if (ATTRS[key]) {
-        SVGDOMPropertyConfig.domAttrs[key] = ATTRS[key];
-    }
+Object.keys(ATTRS).map(function(key) {
+  SVGDOMPropertyConfig.props[key] = 0;
+  if (ATTRS[key]) {
+    SVGDOMPropertyConfig.domAttrs[key] = ATTRS[key];
+  }
 });
 
 // merge html and svg config into properties
@@ -2147,39 +2226,47 @@ mergeConfigToProperties(HTMLDOMPropertyConfig);
 mergeConfigToProperties(SVGDOMPropertyConfig);
 
 function mergeConfigToProperties(config) {
-    var
-    // all react/react-lite supporting property names in here
+  var // all react/react-lite supporting property names in here
     props = config.props;
-    var
-    // attributes namespace in here
+  var // attributes namespace in here
     attrNS = config.attrNS;
-    var
-    // propName in props which should use to be dom-attribute in here
+  var // propName in props which should use to be dom-attribute in here
     domAttrs = config.domAttrs;
-    var
-    // propName in props which should use to be dom-property in here
+  var // propName in props which should use to be dom-property in here
     domProps = config.domProps;
 
-    for (var propName in props) {
-        if (!props.hasOwnProperty(propName)) {
-            continue;
-        }
-        var propConfig = props[propName];
-        properties[propName] = {
-            attributeName: domAttrs.hasOwnProperty(propName) ? domAttrs[propName] : propName.toLowerCase(),
-            propertyName: domProps.hasOwnProperty(propName) ? domProps[propName] : propName,
-            attributeNamespace: attrNS.hasOwnProperty(propName) ? attrNS[propName] : null,
-            mustUseProperty: checkMask(propConfig, MUST_USE_PROPERTY),
-            hasBooleanValue: checkMask(propConfig, HAS_BOOLEAN_VALUE),
-            hasNumericValue: checkMask(propConfig, HAS_NUMERIC_VALUE),
-            hasPositiveNumericValue: checkMask(propConfig, HAS_POSITIVE_NUMERIC_VALUE),
-            hasOverloadedBooleanValue: checkMask(propConfig, HAS_OVERLOADED_BOOLEAN_VALUE)
-        };
+  for (var propName in props) {
+    if (!props.hasOwnProperty(propName)) {
+      continue;
     }
+    var propConfig = props[propName];
+    properties[propName] = {
+      attributeName: domAttrs.hasOwnProperty(propName)
+        ? domAttrs[propName]
+        : propName.toLowerCase(),
+      propertyName: domProps.hasOwnProperty(propName)
+        ? domProps[propName]
+        : propName,
+      attributeNamespace: attrNS.hasOwnProperty(propName)
+        ? attrNS[propName]
+        : null,
+      mustUseProperty: checkMask(propConfig, MUST_USE_PROPERTY),
+      hasBooleanValue: checkMask(propConfig, HAS_BOOLEAN_VALUE),
+      hasNumericValue: checkMask(propConfig, HAS_NUMERIC_VALUE),
+      hasPositiveNumericValue: checkMask(
+        propConfig,
+        HAS_POSITIVE_NUMERIC_VALUE
+      ),
+      hasOverloadedBooleanValue: checkMask(
+        propConfig,
+        HAS_OVERLOADED_BOOLEAN_VALUE
+      )
+    };
+  }
 }
 
 function checkMask(value, bitmask) {
-    return (value & bitmask) === bitmask;
+  return (value & bitmask) === bitmask;
 }
 
 /**
@@ -2191,38 +2278,47 @@ function checkMask(value, bitmask) {
  */
 
 function setPropValue(node, name, value) {
-    var propInfo = properties.hasOwnProperty(name) && properties[name];
-    if (propInfo) {
-        // should delete value from dom
-        if (value == null || propInfo.hasBooleanValue && !value || propInfo.hasNumericValue && isNaN(value) || propInfo.hasPositiveNumericValue && value < 1 || propInfo.hasOverloadedBooleanValue && value === false) {
-            removePropValue(node, name);
-        } else if (propInfo.mustUseProperty) {
-            var propName = propInfo.propertyName;
-            // dom.value has side effect
-            if (propName !== 'value' || '' + node[propName] !== '' + value) {
-                node[propName] = value;
-            }
-        } else {
-            var attributeName = propInfo.attributeName;
-            var namespace = propInfo.attributeNamespace;
+  var propInfo = properties.hasOwnProperty(name) && properties[name];
+  if (propInfo) {
+    // should delete value from dom
+    if (
+      value == null ||
+      (propInfo.hasBooleanValue && !value) ||
+      (propInfo.hasNumericValue && isNaN(value)) ||
+      (propInfo.hasPositiveNumericValue && value < 1) ||
+      (propInfo.hasOverloadedBooleanValue && value === false)
+    ) {
+      removePropValue(node, name);
+    } else if (propInfo.mustUseProperty) {
+      var propName = propInfo.propertyName;
+      // dom.value has side effect
+      if (propName !== "value" || "" + node[propName] !== "" + value) {
+        node[propName] = value;
+      }
+    } else {
+      var attributeName = propInfo.attributeName;
+      var namespace = propInfo.attributeNamespace;
 
-            // `setAttribute` with objects becomes only `[object]` in IE8/9,
-            // ('' + value) makes it output the correct toString()-value.
-            if (namespace) {
-                node.setAttributeNS(namespace, attributeName, '' + value);
-            } else if (propInfo.hasBooleanValue || propInfo.hasOverloadedBooleanValue && value === true) {
-                node.setAttribute(attributeName, '');
-            } else {
-                node.setAttribute(attributeName, '' + value);
-            }
-        }
-    } else if (isCustomAttribute(name) && VALID_ATTRIBUTE_NAME_REGEX.test(name)) {
-        if (value == null) {
-            node.removeAttribute(name);
-        } else {
-            node.setAttribute(name, '' + value);
-        }
+      // `setAttribute` with objects becomes only `[object]` in IE8/9,
+      // ('' + value) makes it output the correct toString()-value.
+      if (namespace) {
+        node.setAttributeNS(namespace, attributeName, "" + value);
+      } else if (
+        propInfo.hasBooleanValue ||
+        (propInfo.hasOverloadedBooleanValue && value === true)
+      ) {
+        node.setAttribute(attributeName, "");
+      } else {
+        node.setAttribute(attributeName, "" + value);
+      }
     }
+  } else if (isCustomAttribute(name) && VALID_ATTRIBUTE_NAME_REGEX.test(name)) {
+    if (value == null) {
+      node.removeAttribute(name);
+    } else {
+      node.setAttribute(name, "" + value);
+    }
+  }
 }
 
 /**
@@ -2233,28 +2329,28 @@ function setPropValue(node, name, value) {
  */
 
 function removePropValue(node, name) {
-    var propInfo = properties.hasOwnProperty(name) && properties[name];
-    if (propInfo) {
-        if (propInfo.mustUseProperty) {
-            var propName = propInfo.propertyName;
-            if (propInfo.hasBooleanValue) {
-                node[propName] = false;
-            } else {
-                // dom.value accept string value has side effect
-                if (propName !== 'value' || '' + node[propName] !== '') {
-                    node[propName] = '';
-                }
-            }
-        } else {
-            node.removeAttribute(propInfo.attributeName);
+  var propInfo = properties.hasOwnProperty(name) && properties[name];
+  if (propInfo) {
+    if (propInfo.mustUseProperty) {
+      var propName = propInfo.propertyName;
+      if (propInfo.hasBooleanValue) {
+        node[propName] = false;
+      } else {
+        // dom.value accept string value has side effect
+        if (propName !== "value" || "" + node[propName] !== "") {
+          node[propName] = "";
         }
-    } else if (isCustomAttribute(name)) {
-        node.removeAttribute(name);
+      }
+    } else {
+      node.removeAttribute(propInfo.attributeName);
     }
+  } else if (isCustomAttribute(name)) {
+    node.removeAttribute(name);
+  }
 }
 
 function isFn(obj) {
-  return typeof obj === 'function';
+  return typeof obj === "function";
 }
 
 var isArr = Array.isArray;
@@ -2266,7 +2362,7 @@ function identity(obj) {
 }
 
 function pipe(fn1, fn2) {
-  return function () {
+  return function() {
     fn1.apply(this, arguments);
     return fn2.apply(this, arguments);
   };
@@ -2313,7 +2409,7 @@ var EVENT_KEYS = /^on/i;
 function setProp(elem, key, value, isCustomComponent) {
   if (EVENT_KEYS.test(key)) {
     addEvent(elem, key, value);
-  } else if (key === 'style') {
+  } else if (key === "style") {
     setStyle(elem.style, value);
   } else if (key === HTML_KEY) {
     if (value && value.__html != null) {
@@ -2323,7 +2419,7 @@ function setProp(elem, key, value, isCustomComponent) {
     if (value == null) {
       elem.removeAttribute(key);
     } else {
-      elem.setAttribute(key, '' + value);
+      elem.setAttribute(key, "" + value);
     }
   } else {
     setPropValue(elem, key, value);
@@ -2333,10 +2429,10 @@ function setProp(elem, key, value, isCustomComponent) {
 function removeProp(elem, key, oldValue, isCustomComponent) {
   if (EVENT_KEYS.test(key)) {
     removeEvent(elem, key);
-  } else if (key === 'style') {
+  } else if (key === "style") {
     removeStyle(elem.style, oldValue);
   } else if (key === HTML_KEY) {
-    elem.innerHTML = '';
+    elem.innerHTML = "";
   } else if (isCustomComponent) {
     elem.removeAttribute(key);
   } else {
@@ -2345,7 +2441,7 @@ function removeProp(elem, key, oldValue, isCustomComponent) {
 }
 
 function patchProp(elem, key, value, oldValue, isCustomComponent) {
-  if (key === 'value' || key === 'checked') {
+  if (key === "value" || key === "checked") {
     oldValue = elem[key];
   }
   if (value === oldValue) {
@@ -2355,7 +2451,7 @@ function patchProp(elem, key, value, oldValue, isCustomComponent) {
     removeProp(elem, key, oldValue, isCustomComponent);
     return;
   }
-  if (key === 'style') {
+  if (key === "style") {
     patchStyle(elem.style, oldValue, value);
   } else {
     setProp(elem, key, value, isCustomComponent);
@@ -2364,7 +2460,7 @@ function patchProp(elem, key, value, oldValue, isCustomComponent) {
 
 function setProps(elem, props, isCustomComponent) {
   for (var key in props) {
-    if (key !== 'children') {
+    if (key !== "children") {
       setProp(elem, key, props[key], isCustomComponent);
     }
   }
@@ -2372,7 +2468,7 @@ function setProps(elem, props, isCustomComponent) {
 
 function patchProps(elem, props, newProps, isCustomComponent) {
   for (var key in props) {
-    if (key !== 'children') {
+    if (key !== "children") {
       if (newProps.hasOwnProperty(key)) {
         patchProp(elem, key, newProps[key], props[key], isCustomComponent);
       } else {
@@ -2381,7 +2477,7 @@ function patchProps(elem, props, newProps, isCustomComponent) {
     }
   }
   for (var key in newProps) {
-    if (key !== 'children' && !props.hasOwnProperty(key)) {
+    if (key !== "children" && !props.hasOwnProperty(key)) {
       setProp(elem, key, newProps[key], isCustomComponent);
     }
   }
@@ -2392,11 +2488,16 @@ if (!Object.freeze) {
 }
 
 function isValidContainer(node) {
-  return !!(node && (node.nodeType === ELEMENT_NODE_TYPE || node.nodeType === DOC_NODE_TYPE || node.nodeType === DOCUMENT_FRAGMENT_NODE_TYPE));
+  return !!(
+    node &&
+    (node.nodeType === ELEMENT_NODE_TYPE ||
+      node.nodeType === DOC_NODE_TYPE ||
+      node.nodeType === DOCUMENT_FRAGMENT_NODE_TYPE)
+  );
 }
 
 /**
- * 
+ *
  */
 var pendingRendering = {};
 
@@ -2408,7 +2509,7 @@ var vnodeStore = {};
 
 /**
  * 将vnode渲染到指定的容器元素中
- * 
+ *
  * @param {VNode} vnode 虚拟节点
  * @param {HtmlElement} container 容器元素
  * @param {Function} [callback] 回调函数
@@ -2416,15 +2517,20 @@ var vnodeStore = {};
  * @returns {VNode}
  */
 function renderTreeIntoContainer(vnode, container, callback, parentContext) {
-
   ensureRenderParamIsValid(vnode, container);
 
   var id = getContainerID(container);
 
   var saveContainerArgument = function saveContainerArgument() {
-    var argument = { vnode: vnode, callback: callback, parentContext: parentContext };
+    var argument = {
+      vnode: vnode,
+      callback: callback,
+      parentContext: parentContext
+    };
 
-    return isContainerLocked(id) ? createContainerArgument(id, argument) : updateContainerArgument(id, argument);
+    return isContainerLocked(id)
+      ? createContainerArgument(id, argument)
+      : updateContainerArgument(id, argument);
   };
 
   var argsCache = getContainerArgument(id);
@@ -2452,8 +2558,13 @@ function renderTreeIntoContainer(vnode, container, callback, parentContext) {
 
   var result = null;
 
-  if (typeof argsCache === 'object') {
-    result = renderTreeIntoContainer(argsCache.vnode, container, argsCache.callback, argsCache.parentContext);
+  if (typeof argsCache === "object") {
+    result = renderTreeIntoContainer(
+      argsCache.vnode,
+      container,
+      argsCache.callback,
+      argsCache.parentContext
+    );
   } else if (vnode.vtype === VELEMENT) {
     result = rootNode;
   } else if (vnode.vtype === VCOMPONENT) {
@@ -2472,11 +2583,11 @@ function renderTreeIntoContainer(vnode, container, callback, parentContext) {
 
 function ensureRenderParamIsValid(vnode, container) {
   if (!vnode.vtype) {
-    throw new Error('cannot render ' + vnode + ' to container');
+    throw new Error("cannot render " + vnode + " to container");
   }
 
   if (!isValidContainer(container)) {
-    throw new Error('container ' + container + ' is not a DOM element');
+    throw new Error("container " + container + " is not a DOM element");
   }
 }
 
@@ -2513,7 +2624,12 @@ function updateContainerArgument(id, newArgument) {
 
   argument.vnode = newArgument.vnode;
   argument.parentContext = newArgument.parentContext;
-  argument.callback = oldCallback ? pipe(oldCallback, newCallback) : newCallback;
+  argument.callback = oldCallback
+    ? pipe(
+        oldCallback,
+        newCallback
+      )
+    : newCallback;
 
   pendingRendering[id] = argument;
 
@@ -2525,7 +2641,9 @@ function renderDOMTreeToContainer(id, vnode, container, parentContext) {
   var rendered = !!oldVnode;
   var rootNode = null;
 
-  rootNode = rendered ? compareTwoVnodes(oldVnode, vnode, container.firstChild, parentContext) : initVnode(vnode, parentContext, container.namespaceURI);
+  rootNode = rendered
+    ? compareTwoVnodes(oldVnode, vnode, container.firstChild, parentContext)
+    : initVnode(vnode, parentContext, container.namespaceURI);
 
   if (!rendered) {
     clearAllChildNode(container);
@@ -2544,7 +2662,7 @@ function appendToContainer(container, node) {
 function clearAllChildNode(node) {
   var childNode = null;
 
-  while (childNode = node.lastChild) {
+  while ((childNode = node.lastChild)) {
     node.removeChild(childNode);
   }
 }
@@ -2565,7 +2683,7 @@ function callCallback(callback, context) {
 
 /**
  * 将vnode渲染到指定的容器元素中
- * 
+ *
  * @param {VNode} vnode 虚拟节点
  * @param {HtmlElement} container 容器元素
  * @param {Function} [callback] 回调函数
@@ -2576,18 +2694,23 @@ function render(vnode, container, callback) {
   return renderTreeIntoContainer(vnode, container, callback);
 }
 
-function unstable_renderSubtreeIntoContainer(parentComponent, subVnode, container, callback) {
+function unstable_renderSubtreeIntoContainer(
+  parentComponent,
+  subVnode,
+  container,
+  callback
+) {
   var context = parentComponent.$cache.parentContext;
   return renderTreeIntoContainer(subVnode, container, callback, context);
 }
 
 function unmountComponentAtNode(container) {
   if (!container.nodeName) {
-    throw new Error('expect node');
+    throw new Error("expect node");
   }
   var id = container[COMPONENT_ID];
   var vnode = null;
-  if (vnode = vnodeStore[id]) {
+  if ((vnode = vnodeStore[id])) {
     destroyVnode(vnode, container.firstChild);
     container.removeChild(container.firstChild);
     delete vnodeStore[id];
@@ -2608,7 +2731,7 @@ function findDOMNode(node) {
   if (component.getDOMNode && component.$cache.isMounted) {
     return component.getDOMNode();
   }
-  throw new Error('findDOMNode can not find Node');
+  throw new Error("findDOMNode can not find Node");
 }
 
 var ReactDOM = Object.freeze({
@@ -2619,26 +2742,26 @@ var ReactDOM = Object.freeze({
 });
 
 /**
- * 
- * 
+ *
+ *
  * @export
- * @param {any} type 
- * @param {any} props 
- * @param {any} children 
- * @returns 
+ * @param {any} type
+ * @param {any} props
+ * @param {any} children
+ * @returns
  */
 function createElement(type, props, children) {
   var vtype = null;
-  if (typeof type === 'string') {
+  if (typeof type === "string") {
     vtype = VELEMENT;
-  } else if (typeof type === 'function') {
+  } else if (typeof type === "function") {
     if (type.prototype && type.prototype.isReactComponent) {
       vtype = VCOMPONENT;
     } else {
       vtype = VSTATELESS;
     }
   } else {
-    throw new Error('React.createElement: unexpect type [ ' + type + ' ]');
+    throw new Error("React.createElement: unexpect type [ " + type + " ]");
   }
 
   var key = null;
@@ -2649,11 +2772,11 @@ function createElement(type, props, children) {
       if (!props.hasOwnProperty(propKey)) {
         continue;
       }
-      if (propKey === 'key') {
+      if (propKey === "key") {
         if (props.key !== undefined) {
-          key = '' + props.key;
+          key = "" + props.key;
         }
-      } else if (propKey === 'ref') {
+      } else if (propKey === "ref") {
         if (props.ref !== undefined) {
           ref = props.ref;
         }
@@ -2699,9 +2822,18 @@ function cloneElement(originElem, props) {
   var key = originElem.key;
   var ref = originElem.ref;
 
-  var newProps = extend(extend({ key: key, ref: ref }, originElem.props), props);
+  var newProps = extend(
+    extend({ key: key, ref: ref }, originElem.props),
+    props
+  );
 
-  for (var _len = arguments.length, children = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
+  for (
+    var _len = arguments.length,
+      children = Array(_len > 2 ? _len - 2 : 0),
+      _key = 2;
+    _key < _len;
+    _key++
+  ) {
     children[_key - 2] = arguments[_key];
   }
 
@@ -2714,7 +2846,11 @@ function cloneElement(originElem, props) {
 
 function createFactory(type) {
   var factory = function factory() {
-    for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+    for (
+      var _len2 = arguments.length, args = Array(_len2), _key2 = 0;
+      _key2 < _len2;
+      _key2++
+    ) {
       args[_key2] = arguments[_key2];
     }
 
@@ -2724,261 +2860,270 @@ function createFactory(type) {
   return factory;
 }
 
-var tagNames = 'a|abbr|address|area|article|aside|audio|b|base|bdi|bdo|big|blockquote|body|br|button|canvas|caption|cite|code|col|colgroup|data|datalist|dd|del|details|dfn|dialog|div|dl|dt|em|embed|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hgroup|hr|html|i|iframe|img|input|ins|kbd|keygen|label|legend|li|link|main|map|mark|menu|menuitem|meta|meter|nav|noscript|object|ol|optgroup|option|output|p|param|picture|pre|progress|q|rp|rt|ruby|s|samp|script|section|select|small|source|span|strong|style|sub|summary|sup|table|tbody|td|textarea|tfoot|th|thead|time|title|tr|track|u|ul|var|video|wbr|circle|clipPath|defs|ellipse|g|image|line|linearGradient|mask|path|pattern|polygon|polyline|radialGradient|rect|stop|svg|text|tspan';
+var tagNames =
+  "a|abbr|address|area|article|aside|audio|b|base|bdi|bdo|big|blockquote|body|br|button|canvas|caption|cite|code|col|colgroup|data|datalist|dd|del|details|dfn|dialog|div|dl|dt|em|embed|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hgroup|hr|html|i|iframe|img|input|ins|kbd|keygen|label|legend|li|link|main|map|mark|menu|menuitem|meta|meter|nav|noscript|object|ol|optgroup|option|output|p|param|picture|pre|progress|q|rp|rt|ruby|s|samp|script|section|select|small|source|span|strong|style|sub|summary|sup|table|tbody|td|textarea|tfoot|th|thead|time|title|tr|track|u|ul|var|video|wbr|circle|clipPath|defs|ellipse|g|image|line|linearGradient|mask|path|pattern|polygon|polyline|radialGradient|rect|stop|svg|text|tspan";
 var DOM = {};
-tagNames.split('|').forEach(function (tagName) {
-	DOM[tagName] = createFactory(tagName);
+tagNames.split("|").forEach(function(tagName) {
+  DOM[tagName] = createFactory(tagName);
 });
 
 var check = function check() {
-    return check;
+  return check;
 };
 check.isRequired = check;
 var PropTypes = {
-    "array": check,
-    "bool": check,
-    "func": check,
-    "number": check,
-    "object": check,
-    "string": check,
-    "any": check,
-    "arrayOf": check,
-    "element": check,
-    "instanceOf": check,
-    "node": check,
-    "objectOf": check,
-    "oneOf": check,
-    "oneOfType": check,
-    "shape": check
+  array: check,
+  bool: check,
+  func: check,
+  number: check,
+  object: check,
+  string: check,
+  any: check,
+  arrayOf: check,
+  element: check,
+  instanceOf: check,
+  node: check,
+  objectOf: check,
+  oneOf: check,
+  oneOfType: check,
+  shape: check
 };
 
 function only(children) {
-	if (isValidElement(children)) {
-		return children;
-	}
-	throw new Error('expect only one child');
+  if (isValidElement(children)) {
+    return children;
+  }
+  throw new Error("expect only one child");
 }
 
 function forEach(children, iteratee, context) {
-	if (children == null) {
-		return children;
-	}
-	var index = 0;
-	if (isArr(children)) {
-		flatEach(children, function (child) {
-			iteratee.call(context, child, index++);
-		});
-	} else {
-		iteratee.call(context, children, index);
-	}
+  if (children == null) {
+    return children;
+  }
+  var index = 0;
+  if (isArr(children)) {
+    flatEach(children, function(child) {
+      iteratee.call(context, child, index++);
+    });
+  } else {
+    iteratee.call(context, children, index);
+  }
 }
 
 function map(children, iteratee, context) {
-	if (children == null) {
-		return children;
-	}
-	var store = [];
-	var keyMap = {};
-	forEach(children, function (child, index) {
-		var data = {};
-		data.child = iteratee.call(context, child, index) || child;
-		data.isEqual = data.child === child;
-		var key = data.key = getKey(child, index);
-		if (keyMap.hasOwnProperty(key)) {
-			keyMap[key] += 1;
-		} else {
-			keyMap[key] = 0;
-		}
-		data.index = keyMap[key];
-		addItem(store, data);
-	});
-	var result = [];
-	store.forEach(function (_ref) {
-		var child = _ref.child;
-		var key = _ref.key;
-		var index = _ref.index;
-		var isEqual = _ref.isEqual;
+  if (children == null) {
+    return children;
+  }
+  var store = [];
+  var keyMap = {};
+  forEach(children, function(child, index) {
+    var data = {};
+    data.child = iteratee.call(context, child, index) || child;
+    data.isEqual = data.child === child;
+    var key = (data.key = getKey(child, index));
+    if (keyMap.hasOwnProperty(key)) {
+      keyMap[key] += 1;
+    } else {
+      keyMap[key] = 0;
+    }
+    data.index = keyMap[key];
+    addItem(store, data);
+  });
+  var result = [];
+  store.forEach(function(_ref) {
+    var child = _ref.child;
+    var key = _ref.key;
+    var index = _ref.index;
+    var isEqual = _ref.isEqual;
 
-		if (child == null || typeof child === 'boolean') {
-			return;
-		}
-		if (!isValidElement(child) || key == null) {
-			addItem(result, child);
-			return;
-		}
-		if (keyMap[key] !== 0) {
-			key += ':' + index;
-		}
-		if (!isEqual) {
-			key = escapeUserProvidedKey(child.key || '') + '/' + key;
-		}
-		child = cloneElement(child, { key: key });
-		addItem(result, child);
-	});
-	return result;
+    if (child == null || typeof child === "boolean") {
+      return;
+    }
+    if (!isValidElement(child) || key == null) {
+      addItem(result, child);
+      return;
+    }
+    if (keyMap[key] !== 0) {
+      key += ":" + index;
+    }
+    if (!isEqual) {
+      key = escapeUserProvidedKey(child.key || "") + "/" + key;
+    }
+    child = cloneElement(child, { key: key });
+    addItem(result, child);
+  });
+  return result;
 }
 
 function count(children) {
-	var count = 0;
-	forEach(children, function () {
-		count++;
-	});
-	return count;
+  var count = 0;
+  forEach(children, function() {
+    count++;
+  });
+  return count;
 }
 
 function toArray(children) {
-	return map(children, identity) || [];
+  return map(children, identity) || [];
 }
 
 function getKey(child, index) {
-	var key = undefined;
-	if (isValidElement(child) && typeof child.key === 'string') {
-		key = '.$' + child.key;
-	} else {
-		key = '.' + index.toString(36);
-	}
-	return key;
+  var key = undefined;
+  if (isValidElement(child) && typeof child.key === "string") {
+    key = ".$" + child.key;
+  } else {
+    key = "." + index.toString(36);
+  }
+  return key;
 }
 
 var userProvidedKeyEscapeRegex = /\/(?!\/)/g;
 function escapeUserProvidedKey(text) {
-	return ('' + text).replace(userProvidedKeyEscapeRegex, '//');
+  return ("" + text).replace(userProvidedKeyEscapeRegex, "//");
 }
 
 var Children = Object.freeze({
-	only: only,
-	forEach: forEach,
-	map: map,
-	count: count,
-	toArray: toArray
+  only: only,
+  forEach: forEach,
+  map: map,
+  count: count,
+  toArray: toArray
 });
 
 function eachMixin(mixins, iteratee) {
-	mixins.forEach(function (mixin) {
-		if (mixin) {
-			if (isArr(mixin.mixins)) {
-				eachMixin(mixin.mixins, iteratee);
-			}
-			iteratee(mixin);
-		}
-	});
+  mixins.forEach(function(mixin) {
+    if (mixin) {
+      if (isArr(mixin.mixins)) {
+        eachMixin(mixin.mixins, iteratee);
+      }
+      iteratee(mixin);
+    }
+  });
 }
 
 function combineMixinToProto(proto, mixin) {
-	for (var key in mixin) {
-		if (!mixin.hasOwnProperty(key)) {
-			continue;
-		}
-		var value = mixin[key];
-		if (key === 'getInitialState') {
-			addItem(proto.$getInitialStates, value);
-			continue;
-		}
-		var curValue = proto[key];
-		if (isFn(curValue) && isFn(value)) {
-			proto[key] = pipe(curValue, value);
-		} else {
-			proto[key] = value;
-		}
-	}
+  for (var key in mixin) {
+    if (!mixin.hasOwnProperty(key)) {
+      continue;
+    }
+    var value = mixin[key];
+    if (key === "getInitialState") {
+      addItem(proto.$getInitialStates, value);
+      continue;
+    }
+    var curValue = proto[key];
+    if (isFn(curValue) && isFn(value)) {
+      proto[key] = pipe(
+        curValue,
+        value
+      );
+    } else {
+      proto[key] = value;
+    }
+  }
 }
 
 function combineMixinToClass(Component, mixin) {
-	if (mixin.propTypes) {
-		Component.propTypes = Component.propTypes || {};
-		extend(Component.propTypes, mixin.propTypes);
-	}
-	if (mixin.contextTypes) {
-		Component.contextTypes = Component.contextTypes || {};
-		extend(Component.contextTypes, mixin.contextTypes);
-	}
-	extend(Component, mixin.statics);
-	if (isFn(mixin.getDefaultProps)) {
-		Component.defaultProps = Component.defaultProps || {};
-		extend(Component.defaultProps, mixin.getDefaultProps());
-	}
+  if (mixin.propTypes) {
+    Component.propTypes = Component.propTypes || {};
+    extend(Component.propTypes, mixin.propTypes);
+  }
+  if (mixin.contextTypes) {
+    Component.contextTypes = Component.contextTypes || {};
+    extend(Component.contextTypes, mixin.contextTypes);
+  }
+  extend(Component, mixin.statics);
+  if (isFn(mixin.getDefaultProps)) {
+    Component.defaultProps = Component.defaultProps || {};
+    extend(Component.defaultProps, mixin.getDefaultProps());
+  }
 }
 
 function bindContext(obj, source) {
-	for (var key in source) {
-		if (source.hasOwnProperty(key)) {
-			if (isFn(source[key])) {
-				obj[key] = source[key].bind(obj);
-			}
-		}
-	}
+  for (var key in source) {
+    if (source.hasOwnProperty(key)) {
+      if (isFn(source[key])) {
+        obj[key] = source[key].bind(obj);
+      }
+    }
+  }
 }
 
 var Facade = function Facade() {};
 Facade.prototype = Component.prototype;
 
 function getInitialState() {
-	var _this = this;
+  var _this = this;
 
-	var state = {};
-	var setState = this.setState;
-	this.setState = Facade;
-	this.$getInitialStates.forEach(function (getInitialState) {
-		if (isFn(getInitialState)) {
-			extend(state, getInitialState.call(_this));
-		}
-	});
-	this.setState = setState;
-	return state;
+  var state = {};
+  var setState = this.setState;
+  this.setState = Facade;
+  this.$getInitialStates.forEach(function(getInitialState) {
+    if (isFn(getInitialState)) {
+      extend(state, getInitialState.call(_this));
+    }
+  });
+  this.setState = setState;
+  return state;
 }
 function createClass(spec) {
-	if (!isFn(spec.render)) {
-		throw new Error('createClass: spec.render is not function');
-	}
-	var specMixins = spec.mixins || [];
-	var mixins = specMixins.concat(spec);
-	spec.mixins = null;
-	function Klass(props, context) {
-		Component.call(this, props, context);
-		this.constructor = Klass;
-		spec.autobind !== false && bindContext(this, Klass.prototype);
-		this.state = this.getInitialState() || this.state;
-	}
-	Klass.displayName = spec.displayName;
-	var proto = Klass.prototype = new Facade();
-	proto.$getInitialStates = [];
-	eachMixin(mixins, function (mixin) {
-		combineMixinToProto(proto, mixin);
-		combineMixinToClass(Klass, mixin);
-	});
-	proto.getInitialState = getInitialState;
-	spec.mixins = specMixins;
-	return Klass;
+  if (!isFn(spec.render)) {
+    throw new Error("createClass: spec.render is not function");
+  }
+  var specMixins = spec.mixins || [];
+  var mixins = specMixins.concat(spec);
+  spec.mixins = null;
+  function Klass(props, context) {
+    Component.call(this, props, context);
+    this.constructor = Klass;
+    spec.autobind !== false && bindContext(this, Klass.prototype);
+    this.state = this.getInitialState() || this.state;
+  }
+  Klass.displayName = spec.displayName;
+  var proto = (Klass.prototype = new Facade());
+  proto.$getInitialStates = [];
+  eachMixin(mixins, function(mixin) {
+    combineMixinToProto(proto, mixin);
+    combineMixinToClass(Klass, mixin);
+  });
+  proto.getInitialState = getInitialState;
+  spec.mixins = specMixins;
+  return Klass;
 }
 
 function shallowEqual(objA, objB) {
-    if (objA === objB) {
-        return true;
-    }
-
-    if (typeof objA !== 'object' || objA === null || typeof objB !== 'object' || objB === null) {
-        return false;
-    }
-
-    var keysA = Object.keys(objA);
-    var keysB = Object.keys(objB);
-
-    if (keysA.length !== keysB.length) {
-        return false;
-    }
-
-    // Test for A's keys different from B.
-    for (var i = 0; i < keysA.length; i++) {
-        if (!objB.hasOwnProperty(keysA[i]) || objA[keysA[i]] !== objB[keysA[i]]) {
-            return false;
-        }
-    }
-
+  if (objA === objB) {
     return true;
+  }
+
+  if (
+    typeof objA !== "object" ||
+    objA === null ||
+    typeof objB !== "object" ||
+    objB === null
+  ) {
+    return false;
+  }
+
+  var keysA = Object.keys(objA);
+  var keysB = Object.keys(objB);
+
+  if (keysA.length !== keysB.length) {
+    return false;
+  }
+
+  // Test for A's keys different from B.
+  for (var i = 0; i < keysA.length; i++) {
+    if (!objB.hasOwnProperty(keysA[i]) || objA[keysA[i]] !== objB[keysA[i]]) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 function PureComponent(props, context) {
-	Component.call(this, props, context);
+  Component.call(this, props, context);
 }
 
 PureComponent.prototype = Object.create(Component.prototype);
@@ -2987,11 +3132,14 @@ PureComponent.prototype.isPureReactComponent = true;
 PureComponent.prototype.shouldComponentUpdate = shallowCompare;
 
 function shallowCompare(nextProps, nextState) {
-	return !shallowEqual(this.props, nextProps) || !shallowEqual(this.state, nextState);
+  return (
+    !shallowEqual(this.props, nextProps) || !shallowEqual(this.state, nextState)
+  );
 }
 
-var React = extend({
-    version: '0.15.1',
+var React = extend(
+  {
+    version: "0.15.1",
     cloneElement: cloneElement,
     isValidElement: isValidElement,
     createElement: createElement,
@@ -3002,7 +3150,9 @@ var React = extend({
     Children: Children,
     PropTypes: PropTypes,
     DOM: DOM
-}, ReactDOM);
+  },
+  ReactDOM
+);
 
 React.__SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = ReactDOM;
 
