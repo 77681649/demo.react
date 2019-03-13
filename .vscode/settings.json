@@ -1,3 +1,6 @@
 {
-  "eslint.enable": false
+  "eslint.enable": false,
+  "typescript.format.enable": false,
+  "typescript.format.insertSpaceAfterConstructor": true,
+  "typescript.validate.enable": false
 }

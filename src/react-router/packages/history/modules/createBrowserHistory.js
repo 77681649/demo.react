@@ -239,7 +239,11 @@ const createBrowserHistory = (props = {}) => {
     )
 
     const action = 'PUSH'
-    const location = createLocation(path, state, createKey(), history.location)
+    const location = createLocation(
+      path, 
+      state, 
+      createKey(), 
+      history.location)
 
     transitionManager.confirmTransitionTo(location, action, getUserConfirmation, (ok) => {
       if (!ok)
