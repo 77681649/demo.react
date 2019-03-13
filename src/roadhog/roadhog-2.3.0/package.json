@@ -28,8 +28,7 @@
   "scripts": {
     "build": "node scripts/build.js",
     "test": "echo empty test",
-    "lint": "eslint --ext .js src",
-    "precommit": "lint-staged"
+    "lint": "eslint --ext .js src"
   },
   "lint-staged": {
     "*.js": [
